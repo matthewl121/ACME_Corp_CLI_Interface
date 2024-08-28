@@ -1,2 +1,5 @@
 # ECE461
-efsfnesfesfesfesfesfesfesf
+Matthew Li
+Aidan Poor
+Glen Cheng
+Julianne Iacarrino
