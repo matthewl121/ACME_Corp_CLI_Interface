@@ -1,6 +1,5 @@
 # ECE461
-efsfnesfesfesfesfesfesfesf
-dummy commit by Julianne !!
-
-
-Julianne Iaccarino
+Aidan Poor
+Glen Cheng
+Julianne Iacarrino
+Matthew Li
