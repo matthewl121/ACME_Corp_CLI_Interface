@@ -36,32 +36,19 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-require("dotenv/config");
-var api_1 = require("./api");
-var utils_1 = require("./utils/utils");
-var repoURL = "https://github.com/matthewl121/ACME_Corp_CLI_Interface";
-var token = process.env.GITHUB_TOKEN || "";
-var _a = repoURL.split('/').slice(3), owner = _a[0], repo = _a[1]; // {owner: "matthewl121", repo: "ACME_Corp_CLI_Interface"}
-var main = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var commitHistory, issueHistory;
+exports.writeFile = void 0;
+var fs_1 = require("fs");
+var writeFile = function (data, filename) { return __awaiter(void 0, void 0, void 0, function () {
+    var dataString;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, (0, api_1.fetchCommits)(owner, repo, token)];
+            case 0:
+                dataString = JSON.stringify(data, null, 2);
+                return [4 /*yield*/, fs_1.promises.writeFile(filename, dataString)];
             case 1:
-                commitHistory = _a.sent();
-                return [4 /*yield*/, (0, utils_1.writeFile)(commitHistory, "commits.json")
-                    // correctness
-                ];
-            case 2:
-                _a.sent();
-                return [4 /*yield*/, (0, api_1.fetchIssues)(owner, repo, token)];
-            case 3:
-                issueHistory = _a.sent();
-                return [4 /*yield*/, (0, utils_1.writeFile)(issueHistory, "issues.json")];
-            case 4:
                 _a.sent();
                 return [2 /*return*/];
         }
     });
 }); };
-main();
+exports.writeFile = writeFile;

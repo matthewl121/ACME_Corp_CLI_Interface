@@ -18,13 +18,14 @@ interface Commit {
 
 const BASE_URL = "https://api.github.com"
 
-export const getApi = async <T>(url: string, token?: string): Promise<GithubApiResponse<T>> => {
+export const getApi = async <T>(url: string, token?: string, params?: Record<string, any>): Promise<GithubApiResponse<T>> => {
     try {
         const config: AxiosRequestConfig = {
             headers: {
                 'Content-Type': 'application/json',
                 ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
             },
+            params,
         };
 
         const response = await axios.get<T>(url, config);
@@ -44,4 +45,18 @@ export const fetchCommits = async (owner: string, repo: string, token: string) =
     }
 
     return response.data
+};
+
+export const fetchIssues = async (owner: string, repo: string, token: string) => {
+    const url = `${BASE_URL}/repos/${owner}/${repo}/issues`;
+    const params = {
+        state: 'all',
+    };
+    const response = await getApi(url, token, params);
+    
+    if (response.error) {
+        console.error('Error fetching issues:', response.error);
+    }
+
+    return response.data;
 };

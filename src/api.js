@@ -47,10 +47,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchCommits = exports.getApi = void 0;
+exports.fetchIssues = exports.fetchCommits = exports.getApi = void 0;
 var axios_1 = require("axios");
 var BASE_URL = "https://api.github.com";
-var getApi = function (url, token) { return __awaiter(void 0, void 0, void 0, function () {
+var getApi = function (url, token, params) { return __awaiter(void 0, void 0, void 0, function () {
     var config, response, error_1;
     var _a, _b, _c;
     return __generator(this, function (_d) {
@@ -59,6 +59,7 @@ var getApi = function (url, token) { return __awaiter(void 0, void 0, void 0, fu
                 _d.trys.push([0, 2, , 3]);
                 config = {
                     headers: __assign({ 'Content-Type': 'application/json' }, (token ? { 'Authorization': "Bearer ".concat(token) } : {})),
+                    params: params,
                 };
                 return [4 /*yield*/, axios_1.default.get(url, config)];
             case 1:
@@ -90,3 +91,23 @@ var fetchCommits = function (owner, repo, token) { return __awaiter(void 0, void
     });
 }); };
 exports.fetchCommits = fetchCommits;
+var fetchIssues = function (owner, repo, token) { return __awaiter(void 0, void 0, void 0, function () {
+    var url, params, response;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                url = "".concat(BASE_URL, "/repos/").concat(owner, "/").concat(repo, "/issues");
+                params = {
+                    state: 'all',
+                };
+                return [4 /*yield*/, (0, exports.getApi)(url, token, params)];
+            case 1:
+                response = _a.sent();
+                if (response.error) {
+                    console.error('Error fetching issues:', response.error);
+                }
+                return [2 /*return*/, response.data];
+        }
+    });
+}); };
+exports.fetchIssues = fetchIssues;
