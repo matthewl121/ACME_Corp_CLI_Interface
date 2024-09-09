@@ -62,6 +62,8 @@ jobs:
             --ext .js,.jsx,.ts,.tsx
             --format @microsoft/eslint-formatter-sarif
             --output-file eslint-results.sarif
+          ls -la
+          cat eslint-results.sarif || echo "File not generated"
         continue-on-error: true
 
       - name: Upload analysis results to GitHub
