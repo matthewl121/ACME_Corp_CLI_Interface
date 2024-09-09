@@ -57,10 +57,12 @@ jobs:
 
       - name: Run ESLint
         run: npx eslint .
+          --format=json > eslint-results.json
           --config .eslintrc.js
           --ext .js,.jsx,.ts,.tsx
           --format @microsoft/eslint-formatter-sarif
           --output-file eslint-results.sarif
+          npx eslint-sarif-parser eslint-results.json > eslint-results.sarif
         continue-on-error: true
 
       - name: Upload analysis results to GitHub
