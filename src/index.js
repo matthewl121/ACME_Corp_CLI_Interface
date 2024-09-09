@@ -38,16 +38,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
 var api_1 = require("./api");
-var token = process.env.GITHUB_TOKEN;
-console.log(token);
+var repoURL = "https://github.com/matthewl121/ACME_Corp_CLI_Interface";
+var token = process.env.GITHUB_TOKEN || "";
+var _a = repoURL.split('/').slice(3), owner = _a[0], repo = _a[1]; // {owner: "matthewl121", repo: "ACME_Corp_CLI_Interface"}
 var main = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var response;
+    var data;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, (0, api_1.listRepoSecrets)("matthewl121", "ACME_CLI_Interface", token)];
+            case 0: return [4 /*yield*/, (0, api_1.fetchCommits)(owner, repo, token)];
             case 1:
-                response = _a.sent();
-                console.log(response);
+                data = _a.sent();
+                console.log(data);
                 return [2 /*return*/];
         }
     });

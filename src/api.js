@@ -47,81 +47,46 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listRepoSecrets = exports.fetchCommits = exports.getApi = void 0;
+exports.fetchCommits = exports.getApi = void 0;
+var axios_1 = require("axios");
+var BASE_URL = "https://api.github.com";
 var getApi = function (url, token) { return __awaiter(void 0, void 0, void 0, function () {
-    var headers, res, data, error_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var config, response, error_1;
+    var _a, _b, _c;
+    return __generator(this, function (_d) {
+        switch (_d.label) {
             case 0:
-                _a.trys.push([0, 3, , 4]);
-                headers = __assign({ 'Content-Type': 'application/json' }, (token ? { 'Authorization': "Bearer ".concat(token) } : {}));
-                return [4 /*yield*/, fetch(url, { method: 'GET', headers: headers })];
+                _d.trys.push([0, 2, , 3]);
+                config = {
+                    headers: __assign({ 'Content-Type': 'application/json' }, (token ? { 'Authorization': "Bearer ".concat(token) } : {})),
+                };
+                return [4 /*yield*/, axios_1.default.get(url, config)];
             case 1:
-                res = _a.sent();
-                if (!res.ok) {
-                    throw new Error("Error: ".concat(res.status, " ").concat(res.statusText));
-                }
-                return [4 /*yield*/, res.json()];
+                response = _d.sent();
+                return [2 /*return*/, { data: response.data, error: null }];
             case 2:
-                data = _a.sent();
-                return [2 /*return*/, { data: data, error: null }];
-            case 3:
-                error_1 = _a.sent();
-                return [2 /*return*/, { data: null, error: error_1.message || 'Something went wrong' }];
-            case 4: return [2 /*return*/];
+                error_1 = _d.sent();
+                console.error('Error details:', ((_a = error_1.response) === null || _a === void 0 ? void 0 : _a.data) || error_1.message || error_1);
+                return [2 /*return*/, { data: null, error: ((_c = (_b = error_1.response) === null || _b === void 0 ? void 0 : _b.data) === null || _c === void 0 ? void 0 : _c.message) || error_1.message || 'Something went wrong' }];
+            case 3: return [2 /*return*/];
         }
     });
 }); };
 exports.getApi = getApi;
-var fetchCommits = function (url, token) { return __awaiter(void 0, void 0, void 0, function () {
-    var response;
+var fetchCommits = function (owner, repo, token) { return __awaiter(void 0, void 0, void 0, function () {
+    var url, response;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, (0, exports.getApi)(url, token)];
+            case 0:
+                url = "".concat(BASE_URL, "/repos/").concat(owner, "/").concat(repo, "/commits");
+                return [4 /*yield*/, (0, exports.getApi)(url, token)];
             case 1:
                 response = _a.sent();
                 if (response.error) {
                     console.error('Error fetching data:', response.error);
                 }
-                else {
-                    console.log('Commit history:', response.data);
-                }
-                return [2 /*return*/];
+                return [2 /*return*/, response.data];
         }
     });
 }); };
 exports.fetchCommits = fetchCommits;
-var listRepoSecrets = function (owner, repo, token) { return __awaiter(void 0, void 0, void 0, function () {
-    var url, response, data, error_2;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                url = "https://api.github.com/repos/".concat(owner, "/").concat(repo, "/actions/secrets");
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 4, , 5]);
-                return [4 /*yield*/, fetch(url, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': "Bearer ".concat(token),
-                            'Accept': 'application/vnd.github.v3+json',
-                        },
-                    })];
-            case 2:
-                response = _a.sent();
-                if (!response.ok) {
-                    throw new Error("Error: ".concat(response.status, " ").concat(response.statusText));
-                }
-                return [4 /*yield*/, response.json()];
-            case 3:
-                data = _a.sent();
-                return [2 /*return*/, data];
-            case 4:
-                error_2 = _a.sent();
-                console.error('Failed to fetch secrets:', error_2.message);
-                return [2 /*return*/, null];
-            case 5: return [2 /*return*/];
-        }
-    });
-}); };
-exports.listRepoSecrets = listRepoSecrets;

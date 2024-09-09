@@ -1,13 +1,13 @@
 import 'dotenv/config';
-import { listRepoSecrets } from "./api";
+import { fetchCommits } from "./api";
 
-const token = process.env.GITHUB_TOKEN || ""
+const repoURL: string = "https://github.com/matthewl121/ACME_Corp_CLI_Interface";
+const token: string = process.env.GITHUB_TOKEN || "";
 
-console.log(token)
+const [owner, repo]: string[] = repoURL.split('/').slice(3) // {owner: "matthewl121", repo: "ACME_Corp_CLI_Interface"}
 
 const main = async () => {
-    const response = await listRepoSecrets("matthewl121", "ACME_CLI_Interface", token)
-    console.log(response)
+    const data = await fetchCommits(owner, repo, token);
 }
 
 main()
