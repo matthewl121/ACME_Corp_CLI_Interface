@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { fetchCommits, fetchIssues } from "./api";
+import { fetchCommits, fetchIssues, fetchLicense } from "./api";
 import { writeFile } from './utils/utils';
 
 const repoURL: string = "https://github.com/matthewl121/ACME_Corp_CLI_Interface";
@@ -15,6 +15,10 @@ const main = async () => {
     // correctness
     const issueHistory = await fetchIssues(owner, repo, token);
     await writeFile(issueHistory, "issues.json")
+
+    // licenses
+    const licenses = await fetchLicense(owner, repo, token);
+    await writeFile(licenses, "licenses.json")
 }
 
 main()

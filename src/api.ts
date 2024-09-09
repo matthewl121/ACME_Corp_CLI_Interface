@@ -60,3 +60,14 @@ export const fetchIssues = async (owner: string, repo: string, token: string) =>
 
     return response.data;
 };
+
+export const fetchLicense = async (owner: string, repo: string, token: string) => {
+    const url = `${BASE_URL}/repos/${owner}/${repo}/license`;
+    const response = await getApi(url, token);
+
+    if (response.error) {
+        console.error('Error fetching licenses:', response.error);
+    }
+
+    return response.data
+}

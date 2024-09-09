@@ -14,7 +14,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+        while (_) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -35,7 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 require("dotenv/config");
 var api_1 = require("./api");
 var utils_1 = require("./utils/utils");
@@ -43,7 +43,7 @@ var repoURL = "https://github.com/matthewl121/ACME_Corp_CLI_Interface";
 var token = process.env.GITHUB_TOKEN || "";
 var _a = repoURL.split('/').slice(3), owner = _a[0], repo = _a[1]; // {owner: "matthewl121", repo: "ACME_Corp_CLI_Interface"}
 var main = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var commitHistory, issueHistory;
+    var commitHistory, issueHistory, licenses;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, (0, api_1.fetchCommits)(owner, repo, token)];
@@ -57,8 +57,16 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                 return [4 /*yield*/, (0, api_1.fetchIssues)(owner, repo, token)];
             case 3:
                 issueHistory = _a.sent();
-                return [4 /*yield*/, (0, utils_1.writeFile)(issueHistory, "issues.json")];
+                return [4 /*yield*/, (0, utils_1.writeFile)(issueHistory, "issues.json")
+                    // licenses
+                ];
             case 4:
+                _a.sent();
+                return [4 /*yield*/, (0, api_1.fetchLicense)(owner, repo, token)];
+            case 5:
+                licenses = _a.sent();
+                return [4 /*yield*/, (0, utils_1.writeFile)(licenses, "licenses.json")];
+            case 6:
                 _a.sent();
                 return [2 /*return*/];
         }
