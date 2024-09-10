@@ -1,4 +1,4 @@
-import axios from "axios";
+import * as axios from "axios";
 
 interface Collaborator {
     login: string;
@@ -16,8 +16,8 @@ class RampUpTimeMetric {
         this.repo = repo;
     }
 
-    async getCollaborators(repo: string): Promise<string[]> {
-        const url = `https://api.github.com/repos/${this.owner}/${repo}/collaborators`;
+    async getCollaborators(): Promise<string[]> {
+        const url = `https://api.github.com/repos/matthewl121/ACME_Corp_CLI_Interface/collaborators`;
         const response = await axios.get<Collaborator[]>(url, {
             headers: { Authorization: `token ${this.githubToken}` }
         });
