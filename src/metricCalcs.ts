@@ -64,5 +64,5 @@ export const calcResponsiveness = (closedIssues: Issue[], pullRequests: Issue[])
 
     console.log(avgIssueCloseTime, avgPRCloseTime)
 
-    return avgIssueCloseTime + avgPRCloseTime / 2;
+    return (avgIssueCloseTime + avgPRCloseTime) / 2;
 }

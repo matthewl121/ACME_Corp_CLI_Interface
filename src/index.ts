@@ -1,19 +1,38 @@
 import 'dotenv/config';
-import { fetchContributors, fetchRecentIssuesByState, fetchLicense, fetchReleases, fetchRepoMetadata, fetchCommits, fetchRecentPullRequests } from "./api";
+import { fetchContributors, fetchRecentIssuesByState, fetchLicense, fetchReleases, fetchRepoMetadata, fetchCommits, fetchRecentPullRequests } from "./api/GithubApi";
 import { calcBusFactor, calcCorrectness, calcResponsiveness } from './metricCalcs';
-import { writeFile } from './utils/utils';
+import { writeFile, extractNpmPackageName, extractGithubOwnerAndRepo } from './utils/utils';
+import { fetchGithubUrlFromNpm } from './api/npmApi';
 import { Contributor, ContributorActivity } from './types';
 
-const repoURL: string = "https://github.com/matthewl121/ACME_Corp_CLI_Interface";
-const token: string = process.env.GITHUB_TOKEN || "";
-
-const owner = "lodash"
-const repo = "lodash"
-
-
 const main = async () => {
-    // bus factor
+    const token: string = process.env.GITHUB_TOKEN || "";
 
+    const inputURL = "https://www.npmjs.com/package/ts-node"
+    const domain = inputURL.split('/')[2]
+    let npmPackageName = "";
+    let repoURL = "";
+    let owner = "";
+    let repo = "";
+    // if url is npm
+    if (domain === "www.npmjs.com") {
+        npmPackageName = inputURL.split('/')[4]
+        const response = await fetchGithubUrlFromNpm(npmPackageName);
+        repoURL = response.data || "";
+    } else {
+        // url is github
+        repoURL = inputURL
+    }
+
+    const res = extractGithubOwnerAndRepo(repoURL)
+    if (res !== null) {
+        [owner, repo] = res
+    } else {
+        console.error('Failed to extract owner and repo from repoURL');
+        return;
+    }
+    
+    // bus factor
     const commitActivity = await fetchCommits(owner, repo, token);
     await writeFile(commitActivity, "commitActivity.json")
     
@@ -21,7 +40,7 @@ const main = async () => {
     if (commitActivity !== null) {
         busFactor = calcBusFactor(commitActivity);
 
-        // console.log(busFactor)
+        console.log("bus factor", busFactor)
     }
 
     // correctness
@@ -34,7 +53,7 @@ const main = async () => {
     if (totalOpenIssues !== null && totalClosedIssues !== null) {
         correctness = calcCorrectness(totalOpenIssues.total_count, totalClosedIssues.total_count)
 
-        // console.log(correctness)
+        console.log("correctness", correctness)
     }
 
     // responsive maintainer
@@ -45,7 +64,7 @@ const main = async () => {
     if (totalOpenIssues !== null && totalClosedIssues !== null && recentPullRequests !== null) {
         const responsiveness = calcResponsiveness(totalClosedIssues.items, recentPullRequests.items);
 
-        console.log(responsiveness);
+        console.log("responsiveness", responsiveness);
     }
 
     // // licenses
