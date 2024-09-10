@@ -1,20 +1,12 @@
 import axios, { AxiosRequestConfig } from 'axios';
-<<<<<<< HEAD
 import { ContributorActivity, IssueSearchResponse } from './types';
-=======
-import { Commit } from './types';
->>>>>>> 978aafc1219aab965874cd1b5c803abcc157f8d0
 
 interface GithubApiResponse<T> {
     data: T | null;
     error: string | null;
 }
 
-<<<<<<< HEAD
 const BASE_URL: string = "https://api.github.com"
-=======
-const BASE_URL = "https://api.github.com"
->>>>>>> 978aafc1219aab965874cd1b5c803abcc157f8d0
 
 export const getApi = async <T>(url: string, token?: string, params?: Record<string, any>): Promise<GithubApiResponse<T>> => {
     try {
@@ -47,7 +39,6 @@ export const fetchRecentIssuesByState = async (owner: string, repo: string, stat
     return response.data;
 };
 
-<<<<<<< HEAD
 export const fetchRecentPullRequests = async (owner: string, repo: string, token: string): Promise<IssueSearchResponse | null> => {
     const q = `repo:${owner}/${repo}+type:pr&sort=updated&order=desc&per_page=100`
     const url = `${BASE_URL}/search/issues?q=${q}`;
@@ -61,24 +52,16 @@ export const fetchRecentPullRequests = async (owner: string, repo: string, token
     return response.data;
 };
 
-=======
->>>>>>> 978aafc1219aab965874cd1b5c803abcc157f8d0
 export const fetchLicense = async (owner: string, repo: string, token: string) => {
     const url = `${BASE_URL}/repos/${owner}/${repo}/license`;
     const response = await getApi(url, token);
 
     if (response.error) {
         console.error('Error fetching licenses:', response.error);
-<<<<<<< HEAD
         return;
     }
 
     return response.data;
-=======
-    }
-
-    return response.data
->>>>>>> 978aafc1219aab965874cd1b5c803abcc157f8d0
 }
 
 export const fetchReleases = async (owner: string, repo: string, token: string) => {
@@ -87,16 +70,10 @@ export const fetchReleases = async (owner: string, repo: string, token: string) 
     
     if (response.error) {
         console.error('Error fetching releases:', response.error);
-<<<<<<< HEAD
         return;
     }
 
     return response.data;
-=======
-    }
-
-    return response.data
->>>>>>> 978aafc1219aab965874cd1b5c803abcc157f8d0
 }
 
 export const fetchContributors = async (owner: string, repo: string, token: string) => {
@@ -105,10 +82,7 @@ export const fetchContributors = async (owner: string, repo: string, token: stri
 
     if (response.error) {
         console.error('Error fetching contributors:', response.error);
-<<<<<<< HEAD
         return;
-=======
->>>>>>> 978aafc1219aab965874cd1b5c803abcc157f8d0
     }
 
     return response.data;
@@ -124,7 +98,6 @@ export const fetchRepoMetadata = async (owner: string, repo: string, token: stri
 
     return response.data;
 };
-<<<<<<< HEAD
 
 export const fetchCommits = async (owner: string, repo: string, token: string): Promise<ContributorActivity[] | null> => {
     const url = `${BASE_URL}/repos/${owner}/${repo}/stats/contributors`;
@@ -164,5 +137,3 @@ export const fetchCommits = async (owner: string, repo: string, token: string): 
 
 //     return response.data;
 // };
-=======
->>>>>>> 978aafc1219aab965874cd1b5c803abcc157f8d0
