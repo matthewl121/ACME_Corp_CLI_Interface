@@ -47,7 +47,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.fetchLicense = exports.fetchIssues = exports.fetchCommits = exports.getApi = void 0;
+exports.fetchContributors = exports.fetchReleases = exports.fetchLicense = exports.fetchIssues = exports.fetchCommits = exports.getApi = void 0;
 var axios_1 = require("axios");
 var BASE_URL = "https://api.github.com";
 var getApi = function (url, token, params) { return __awaiter(void 0, void 0, void 0, function () {
@@ -128,3 +128,38 @@ var fetchLicense = function (owner, repo, token) { return __awaiter(void 0, void
     });
 }); };
 exports.fetchLicense = fetchLicense;
+var fetchReleases = function (owner, repo, token) { return __awaiter(void 0, void 0, void 0, function () {
+    var url, response;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                url = "".concat(BASE_URL, "/repos/").concat(owner, "/").concat(repo, "/releases/latest");
+                return [4 /*yield*/, (0, exports.getApi)(url, token)];
+            case 1:
+                response = _a.sent();
+                if (response.error) {
+                    console.error('Error fetching releases:', response.error);
+                }
+                return [2 /*return*/, response.data];
+        }
+    });
+}); };
+exports.fetchReleases = fetchReleases;
+var fetchContributors = function (owner, repo, token) { return __awaiter(void 0, void 0, void 0, function () {
+    var url, response;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                url = "".concat(BASE_URL, "/repos/").concat(owner, "/").concat(repo, "/contributors");
+                return [4 /*yield*/, (0, exports.getApi)(url, token)];
+            case 1:
+                response = _a.sent();
+                console.log("output:", response.data);
+                if (response.error) {
+                    console.error('Error fetching contributors:', response.error);
+                }
+                return [2 /*return*/, response.data];
+        }
+    });
+}); };
+exports.fetchContributors = fetchContributors;

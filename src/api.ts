@@ -1,19 +1,9 @@
 import axios, { AxiosRequestConfig } from 'axios';
+import { Commit } from './types';
 
 interface GithubApiResponse<T> {
     data: T | null;
     error: string | null;
-}
-
-interface Commit {
-    sha: string;
-    commit: {
-        message: string;
-        author: {
-            name: string;
-            date: string;
-        };
-    };
 }
 
 const BASE_URL = "https://api.github.com"
@@ -71,3 +61,26 @@ export const fetchLicense = async (owner: string, repo: string, token: string) =
 
     return response.data
 }
+
+export const fetchReleases = async (owner: string, repo: string, token: string) => {
+    const url = `${BASE_URL}/repos/${owner}/${repo}/releases/latest`;
+    const response = await getApi(url, token);
+    
+    if (response.error) {
+        console.error('Error fetching releases:', response.error);
+    }
+
+    return response.data
+}
+
+export const fetchContributors = async (owner: string, repo: string, token: string) => {
+    const url = `${BASE_URL}/repos/${owner}/${repo}/contributors`;
+    const response = await getApi(url, token);
+    console.log("output:", response.data)
+    if (response.error) {
+        console.error('Error fetching contributors:', response.error);
+    }
+
+    return response.data;
+};
+

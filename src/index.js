@@ -41,33 +41,41 @@ var api_1 = require("./api");
 var utils_1 = require("./utils/utils");
 var repoURL = "https://github.com/matthewl121/ACME_Corp_CLI_Interface";
 var token = process.env.GITHUB_TOKEN || "";
-var _a = repoURL.split('/').slice(3), owner = _a[0], repo = _a[1]; // {owner: "matthewl121", repo: "ACME_Corp_CLI_Interface"}
+var owner = "lodash";
+var repo = "lodash";
+var parseCommitHistory = function (commits) {
+    for (var _i = 0, commits_1 = commits; _i < commits_1.length; _i++) {
+        var commit = commits_1[_i];
+        console.log(commit.commit.author.name);
+    }
+};
 var main = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var commitHistory, issueHistory, licenses;
+    var commitHistory, contributors;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, (0, api_1.fetchCommits)(owner, repo, token)];
             case 1:
                 commitHistory = _a.sent();
                 return [4 /*yield*/, (0, utils_1.writeFile)(commitHistory, "commits.json")
-                    // correctness
+                    // // correctness
+                    // const issueHistory = await fetchIssues(owner, repo, token);
+                    // await writeFile(issueHistory, "issues.json")
+                    // // licenses
+                    // const licenses = await fetchLicense(owner, repo, token);
+                    // await writeFile(licenses, "licenses.json")
+                    // collaborators
                 ];
             case 2:
                 _a.sent();
-                return [4 /*yield*/, (0, api_1.fetchIssues)(owner, repo, token)];
+                return [4 /*yield*/, (0, api_1.fetchContributors)(owner, repo, token)];
             case 3:
-                issueHistory = _a.sent();
-                return [4 /*yield*/, (0, utils_1.writeFile)(issueHistory, "issues.json")
-                    // licenses
-                ];
+                contributors = _a.sent();
+                return [4 /*yield*/, (0, utils_1.writeFile)(contributors, "contributors.json")];
             case 4:
                 _a.sent();
-                return [4 /*yield*/, (0, api_1.fetchLicense)(owner, repo, token)];
-            case 5:
-                licenses = _a.sent();
-                return [4 /*yield*/, (0, utils_1.writeFile)(licenses, "licenses.json")];
-            case 6:
-                _a.sent();
+                if (commitHistory) {
+                    parseCommitHistory(commitHistory);
+                }
                 return [2 /*return*/];
         }
     });
