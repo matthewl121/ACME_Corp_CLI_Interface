@@ -7,3 +7,8 @@ export interface Commit {
         };
     };
 }
+
+export interface Contributor {
+    login: string;
+    contributions: string;
+}

@@ -47,7 +47,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.fetchContributors = exports.fetchReleases = exports.fetchLicense = exports.fetchIssues = exports.fetchCommits = exports.getApi = void 0;
+exports.fetchRepoMetadata = exports.fetchContributors = exports.fetchReleases = exports.fetchLicense = exports.fetchIssues = exports.fetchCommits = exports.getApi = void 0;
 var axios_1 = require("axios");
 var BASE_URL = "https://api.github.com";
 var getApi = function (url, token, params) { return __awaiter(void 0, void 0, void 0, function () {
@@ -154,7 +154,6 @@ var fetchContributors = function (owner, repo, token) { return __awaiter(void 0,
                 return [4 /*yield*/, (0, exports.getApi)(url, token)];
             case 1:
                 response = _a.sent();
-                console.log("output:", response.data);
                 if (response.error) {
                     console.error('Error fetching contributors:', response.error);
                 }
@@ -163,3 +162,20 @@ var fetchContributors = function (owner, repo, token) { return __awaiter(void 0,
     });
 }); };
 exports.fetchContributors = fetchContributors;
+var fetchRepoMetadata = function (owner, repo, token) { return __awaiter(void 0, void 0, void 0, function () {
+    var url, response;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                url = "".concat(BASE_URL, "/repos/").concat(owner, "/").concat(repo);
+                return [4 /*yield*/, (0, exports.getApi)(url, token)];
+            case 1:
+                response = _a.sent();
+                if (response.error) {
+                    console.error('Error fetching repo metadata:', response.error);
+                }
+                return [2 /*return*/, response.data];
+        }
+    });
+}); };
+exports.fetchRepoMetadata = fetchRepoMetadata;

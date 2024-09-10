@@ -43,14 +43,10 @@ var repoURL = "https://github.com/matthewl121/ACME_Corp_CLI_Interface";
 var token = process.env.GITHUB_TOKEN || "";
 var owner = "lodash";
 var repo = "lodash";
-var parseCommitHistory = function (commits) {
-    for (var _i = 0, commits_1 = commits; _i < commits_1.length; _i++) {
-        var commit = commits_1[_i];
-        console.log(commit.commit.author.name);
-    }
+var calculateBusFactor = function (commitCount, contributors) {
 };
 var main = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var commitHistory, contributors;
+    var commitHistory, contributors, metadata;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, (0, api_1.fetchCommits)(owner, repo, token)];
@@ -70,11 +66,19 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                 return [4 /*yield*/, (0, api_1.fetchContributors)(owner, repo, token)];
             case 3:
                 contributors = _a.sent();
-                return [4 /*yield*/, (0, utils_1.writeFile)(contributors, "contributors.json")];
+                return [4 /*yield*/, (0, utils_1.writeFile)(contributors, "contributors.json")
+                    // metadata
+                ];
             case 4:
                 _a.sent();
+                return [4 /*yield*/, (0, api_1.fetchRepoMetadata)(owner, repo, token)];
+            case 5:
+                metadata = _a.sent();
+                return [4 /*yield*/, (0, utils_1.writeFile)(metadata, "metadata.json")];
+            case 6:
+                _a.sent();
                 if (commitHistory) {
-                    parseCommitHistory(commitHistory);
+                    // calculateBusFactor(commitCount, contributors)
                 }
                 return [2 /*return*/];
         }

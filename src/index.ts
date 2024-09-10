@@ -1,7 +1,7 @@
 import 'dotenv/config';
-import { fetchContributors, fetchCommits, fetchIssues, fetchLicense, fetchReleases } from "./api";
+import { fetchContributors, fetchCommits, fetchIssues, fetchLicense, fetchReleases, fetchRepoMetadata } from "./api";
 import { writeFile } from './utils/utils';
-import { Commit } from './types';
+import { Commit, Contributor } from './types';
 
 const repoURL: string = "https://github.com/matthewl121/ACME_Corp_CLI_Interface";
 const token: string = process.env.GITHUB_TOKEN || "";
@@ -9,10 +9,8 @@ const token: string = process.env.GITHUB_TOKEN || "";
 const owner = "lodash"
 const repo = "lodash"
 
-const parseCommitHistory = (commits: Commit[]) => {
-    for (const commit of commits) {
-        console.log(commit.commit.author.name)
-    }
+const calculateBusFactor = (commitCount: number, contributors: Contributor[]) => {
+
 }
 
 const main = async () => {
@@ -32,8 +30,12 @@ const main = async () => {
     const contributors = await fetchContributors(owner, repo, token);
     await writeFile(contributors, "contributors.json")
 
+    // metadata
+    const metadata = await fetchRepoMetadata(owner, repo, token);
+    await writeFile(metadata, "metadata.json")
+
     if (commitHistory) {
-        parseCommitHistory(commitHistory)
+        // calculateBusFactor(commitCount, contributors)
     }
 
 }

@@ -76,7 +76,7 @@ export const fetchReleases = async (owner: string, repo: string, token: string) 
 export const fetchContributors = async (owner: string, repo: string, token: string) => {
     const url = `${BASE_URL}/repos/${owner}/${repo}/contributors`;
     const response = await getApi(url, token);
-    console.log("output:", response.data)
+
     if (response.error) {
         console.error('Error fetching contributors:', response.error);
     }
@@ -84,3 +84,13 @@ export const fetchContributors = async (owner: string, repo: string, token: stri
     return response.data;
 };
 
+export const fetchRepoMetadata = async (owner: string, repo: string, token: string) => {
+    const url = `${BASE_URL}/repos/${owner}/${repo}`;
+    const response = await getApi(url, token);
+
+    if (response.error) {
+        console.error('Error fetching repo metadata:', response.error);
+    }
+
+    return response.data;
+};
