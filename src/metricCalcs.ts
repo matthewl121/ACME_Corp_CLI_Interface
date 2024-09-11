@@ -1,15 +1,15 @@
-import { ContributorActivity, Issue, IssueSearchResponse } from "./types";
+import { ContributorResponse, Issue, IssueSearchResponse } from "./types";
 
-export const calcBusFactor = (commitActivity: ContributorActivity[]) => {
-    const totalCommits = commitActivity.reduce((sum, contributor) => sum + contributor.total, 0)
+export const calcBusFactor = (contributorActivity: ContributorResponse[]) => {
+    const totalCommits = contributorActivity.reduce((sum, contributor) => sum + contributor.total, 0)
     const threshold = Math.ceil(totalCommits * 0.5); // 50% of commits
 
     let curr = 0;
     let busFactor = 0;
 
-    // commitActivity default sorting is least to greatest, so iterate R to L 
-    for (let i = commitActivity.length - 1; i >= 0; i--) {
-        curr += commitActivity[i].total;
+    // contributorActivity default sorting is least to greatest, so iterate R to L 
+    for (let i = contributorActivity.length - 1; i >= 0; i--) {
+        curr += contributorActivity[i].total;
         busFactor++;
 
         if (curr >= threshold) {
@@ -62,7 +62,6 @@ export const calcResponsiveness = (closedIssues: Issue[], pullRequests: Issue[])
         ? totalPRCloseTime / pullRequests.length
         : 0;
 
-    console.log(avgIssueCloseTime, avgPRCloseTime)
-
     return (avgIssueCloseTime + avgPRCloseTime) / 2;
 }
+

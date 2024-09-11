@@ -1,4 +1,4 @@
-export interface ContributorActivity {
+export interface ContributorResponse {
     total: number;
     author: {
         login: string;

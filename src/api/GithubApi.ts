@@ -1,5 +1,5 @@
 import { apiGetRequest, ApiResponse } from './apiUtils'
-import { ContributorActivity, IssueSearchResponse, LicenseResponse } from '../types';
+import { ContributorResponse, IssueSearchResponse, LicenseResponse } from '../types';
 
 const GITHUB_BASE_URL: string = "https://api.github.com"
 
@@ -15,9 +15,13 @@ const GITHUB_BASE_URL: string = "https://api.github.com"
         },
     }
 */
-export const fetchCommits = async (owner: string, repo: string, token: string): Promise<ApiResponse<ContributorActivity[] | null>> => {
+export const fetchContributorActivity = async (
+    owner: string, 
+    repo: string, 
+    token: string
+): Promise<ApiResponse<ContributorResponse[] | null>> => {
     const url = `${GITHUB_BASE_URL}/repos/${owner}/${repo}/stats/contributors`;
-    const response = await apiGetRequest<ContributorActivity[]>(url, token);
+    const response = await apiGetRequest<ContributorResponse[]>(url, token);
 
     if (response.error) {
         console.error('Error fetching contributor commit activity', response.error);
@@ -27,7 +31,7 @@ export const fetchCommits = async (owner: string, repo: string, token: string): 
     return { data: response.data, error: null };
 }
 
-/*  Fetches recent issues for the given repository filtered by state (open/closed).
+/*  Fetches 100 most recent issues for the given repository filtered by state (open/closed).
     Metrics Used: Correctness, Responsive Maintainer
 
     Example 200 response:
@@ -42,8 +46,13 @@ export const fetchCommits = async (owner: string, repo: string, token: string): 
         ],
     }
 */
-export const fetchRecentIssuesByState = async (owner: string, repo: string, state: string, token: string): Promise<ApiResponse<IssueSearchResponse | null>> => {
-    const q = `repo:${owner}/${repo}+type:issue+state:${state}&per_page=100&page=1`;
+export const fetchRecentIssuesByState = async (
+    owner: string, 
+    repo: string, 
+    state: string, 
+    token: string
+): Promise<ApiResponse<IssueSearchResponse | null>> => {
+    const q = `repo:${owner}/${repo}+type:issue+state:${state}&per_page=100`;
     const url = `${GITHUB_BASE_URL}/search/issues?q=${q}`;
     const response = await apiGetRequest<IssueSearchResponse>(url, token);
 
@@ -70,7 +79,11 @@ export const fetchRecentIssuesByState = async (owner: string, repo: string, stat
         ],
     }
 */
-export const fetchRecentPullRequests = async (owner: string, repo: string, token: string): Promise<ApiResponse<IssueSearchResponse | null>> => {
+export const fetchRecentPullRequests = async (
+    owner: string, 
+    repo: string, 
+    token: string
+): Promise<ApiResponse<IssueSearchResponse | null>> => {
     const q = `repo:${owner}/${repo}+type:pr&sort=updated&order=desc&per_page=100`
     const url = `${GITHUB_BASE_URL}/search/issues?q=${q}`;
     const response = await apiGetRequest<IssueSearchResponse>(url, token);
@@ -96,7 +109,11 @@ export const fetchRecentPullRequests = async (owner: string, repo: string, token
         },
     }
 */
-export const fetchLicense = async (owner: string, repo: string, token: string): Promise<ApiResponse<LicenseResponse | null>> => {
+export const fetchLicense = async (
+    owner: string, 
+    repo: string, 
+    token: string
+): Promise<ApiResponse<LicenseResponse | null>> => {
     const url = `${GITHUB_BASE_URL}/repos/${owner}/${repo}/license`;
     const response = await apiGetRequest<LicenseResponse>(url, token);
 
