@@ -5,11 +5,6 @@ export interface ContributorActivity {
     }
 }
 
-export interface Contributor {
-    login: string;
-    contributions: string;
-}
-
 export interface Issue {
     created_at: string;
     updated_at: string;
@@ -19,4 +14,13 @@ export interface Issue {
 export interface IssueSearchResponse {
     total_count: number;
     items: Issue[];
+}
+
+export interface LicenseResponse {
+    license: {
+        key: string;
+        name: string;
+        spdx_id: string;
+        url: string;
+    },
 }

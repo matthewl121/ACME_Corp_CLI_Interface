@@ -5,6 +5,8 @@ export const writeFile = async (data: any, filename: string) => {
     await fs.writeFile(filename, dataString);
 }
 
+
+
 export const extractNpmPackageName = (npmUrl: string): string | null => {
     if (!npmUrl) {
         console.error('npmUrl is undefined or empty');

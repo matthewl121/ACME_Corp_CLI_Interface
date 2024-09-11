@@ -23,7 +23,7 @@ var calcCorrectness = function (totalOpenIssuesCount, totalClosedIssuesCount) {
 };
 exports.calcCorrectness = calcCorrectness;
 // Potential rework: Responsiveness score currently caps open PRs max close time to be
-//                   30 days time. Open to other methods of penalization for open PRs
+//                   30 days. Open to other methods of penalization for open PRs
 var calcResponsiveness = function (closedIssues, pullRequests) {
     var calcCloseTime = function (created_at, closed_at) {
         var startTime = new Date(created_at);

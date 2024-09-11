@@ -36,9 +36,54 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchCommits = exports.fetchRepoMetadata = exports.fetchContributors = exports.fetchReleases = exports.fetchLicense = exports.fetchRecentPullRequests = exports.fetchRecentIssuesByState = void 0;
+exports.fetchLicense = exports.fetchRecentPullRequests = exports.fetchRecentIssuesByState = exports.fetchCommits = void 0;
 var apiUtils_1 = require("./apiUtils");
 var GITHUB_BASE_URL = "https://api.github.com";
+/*  Fetches contributor commit activity for the given repository.
+    Metrics Used: Bus Factor
+
+    Example 200 response:
+    data: {
+        total: number; // total number of commits by author
+        weeks: []; // not needed
+        author: {
+            login: string; // author's github username
+        },
+    }
+*/
+var fetchCommits = function (owner, repo, token) { return __awaiter(void 0, void 0, void 0, function () {
+    var url, response;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                url = "".concat(GITHUB_BASE_URL, "/repos/").concat(owner, "/").concat(repo, "/stats/contributors");
+                return [4 /*yield*/, (0, apiUtils_1.apiGetRequest)(url, token)];
+            case 1:
+                response = _a.sent();
+                if (response.error) {
+                    console.error('Error fetching contributor commit activity', response.error);
+                    return [2 /*return*/, null];
+                }
+                return [2 /*return*/, response.data];
+        }
+    });
+}); };
+exports.fetchCommits = fetchCommits;
+/*  Fetches recent issues for the given repository filtered by state (open/closed).
+    Metrics Used: Correctness, Responsive Maintainer
+
+    Example 200 response:
+    data: {
+        total_count: number; // total issues matching the query state
+        items: [
+            {
+                created_at: string; // issue creation date
+                updated_at: string; // last update date
+                closed_at: string | null; // issue closing date (null if open)
+            },
+        ],
+    }
+*/
 var fetchRecentIssuesByState = function (owner, repo, state, token) { return __awaiter(void 0, void 0, void 0, function () {
     var q, url, response;
     return __generator(this, function (_a) {
@@ -58,6 +103,21 @@ var fetchRecentIssuesByState = function (owner, repo, state, token) { return __a
     });
 }); };
 exports.fetchRecentIssuesByState = fetchRecentIssuesByState;
+/*  Fetches 100 most recent pull requests for the given repository, sorted by the most recently updated.
+    Metrics Used: Responsive Maintainer
+
+    Example 200 response:
+    data: {
+        total_count: number; // total number of pull requests
+        items: [
+            {
+                created_at: string; // pull request creation date
+                updated_at: string; // last update date
+                closed_at: string | null; // pull request closing date (null if open)
+            },
+        ],
+    }
+*/
 var fetchRecentPullRequests = function (owner, repo, token) { return __awaiter(void 0, void 0, void 0, function () {
     var q, url, response;
     return __generator(this, function (_a) {
@@ -77,6 +137,19 @@ var fetchRecentPullRequests = function (owner, repo, token) { return __awaiter(v
     });
 }); };
 exports.fetchRecentPullRequests = fetchRecentPullRequests;
+/*  Fetches the license information for the given repository.
+    Metrics Used: License
+
+    Example 200 response:
+    data: {
+        license: {
+            key: string; // license identifier (e.g., 'mit')
+            name: string; // full license name (e.g., 'MIT License')
+            spdx_id: string; // SPDX identifier (e.g., 'MIT')
+            url: string; // URL to the license text
+        },
+    }
+*/
 var fetchLicense = function (owner, repo, token) { return __awaiter(void 0, void 0, void 0, function () {
     var url, response;
     return __generator(this, function (_a) {
@@ -95,77 +168,32 @@ var fetchLicense = function (owner, repo, token) { return __awaiter(void 0, void
     });
 }); };
 exports.fetchLicense = fetchLicense;
-var fetchReleases = function (owner, repo, token) { return __awaiter(void 0, void 0, void 0, function () {
-    var url, response;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                url = "".concat(GITHUB_BASE_URL, "/repos/").concat(owner, "/").concat(repo, "/releases/latest");
-                return [4 /*yield*/, (0, apiUtils_1.apiGetRequest)(url, token)];
-            case 1:
-                response = _a.sent();
-                if (response.error) {
-                    console.error('Error fetching releases:', response.error);
-                    return [2 /*return*/];
-                }
-                return [2 /*return*/, response.data];
-        }
-    });
-}); };
-exports.fetchReleases = fetchReleases;
-var fetchContributors = function (owner, repo, token) { return __awaiter(void 0, void 0, void 0, function () {
-    var url, response;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                url = "".concat(GITHUB_BASE_URL, "/repos/").concat(owner, "/").concat(repo, "/contributors");
-                return [4 /*yield*/, (0, apiUtils_1.apiGetRequest)(url, token)];
-            case 1:
-                response = _a.sent();
-                if (response.error) {
-                    console.error('Error fetching contributors:', response.error);
-                    return [2 /*return*/];
-                }
-                return [2 /*return*/, response.data];
-        }
-    });
-}); };
-exports.fetchContributors = fetchContributors;
-var fetchRepoMetadata = function (owner, repo, token) { return __awaiter(void 0, void 0, void 0, function () {
-    var url, response;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                url = "".concat(GITHUB_BASE_URL, "/repos/").concat(owner, "/").concat(repo);
-                return [4 /*yield*/, (0, apiUtils_1.apiGetRequest)(url, token)];
-            case 1:
-                response = _a.sent();
-                if (response.error) {
-                    console.error('Error fetching repo metadata:', response.error);
-                }
-                return [2 /*return*/, response.data];
-        }
-    });
-}); };
-exports.fetchRepoMetadata = fetchRepoMetadata;
-var fetchCommits = function (owner, repo, token) { return __awaiter(void 0, void 0, void 0, function () {
-    var url, response;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                url = "".concat(GITHUB_BASE_URL, "/repos/").concat(owner, "/").concat(repo, "/stats/contributors");
-                return [4 /*yield*/, (0, apiUtils_1.apiGetRequest)(url, token)];
-            case 1:
-                response = _a.sent();
-                if (response.error) {
-                    console.error('Error fetching contributor commit activity', response.error);
-                    return [2 /*return*/, null];
-                }
-                return [2 /*return*/, response.data];
-        }
-    });
-}); };
-exports.fetchCommits = fetchCommits;
+// export const fetchReleases = async (owner: string, repo: string, token: string) => {
+//     const url = `${GITHUB_BASE_URL}/repos/${owner}/${repo}/releases/latest`;
+//     const response = await apiGetRequest(url, token);
+//     if (response.error) {
+//         console.error('Error fetching releases:', response.error);
+//         return;
+//     }
+//     return response.data;
+// }
+// export const fetchContributors = async (owner: string, repo: string, token: string) => {
+//     const url = `${GITHUB_BASE_URL}/repos/${owner}/${repo}/contributors`;
+//     const response = await apiGetRequest(url, token);
+//     if (response.error) {
+//         console.error('Error fetching contributors:', response.error);
+//         return;
+//     }
+//     return response.data;
+// };
+// export const fetchRepoMetadata = async (owner: string, repo: string, token: string) => {
+//     const url = `${GITHUB_BASE_URL}/repos/${owner}/${repo}`;
+//     const response = await apiGetRequest(url, token);
+//     if (response.error) {
+//         console.error('Error fetching repo metadata:', response.error);
+//     }
+//     return response.data;
+// };
 // export const fetchRecentCommits = async (owner: string, repo: string, token: string) => {
 //     const url = `${GITHUB_BASE_URL}/repos/${owner}/${repo}/commits`;
 //     const response = await apiGetRequest<Commit[]>(url, token);

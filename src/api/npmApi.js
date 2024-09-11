@@ -37,6 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fetchGithubUrlFromNpm = void 0;
+var utils_1 = require("../utils/utils");
 var apiUtils_1 = require("./apiUtils");
 var NPM_BASE_URL = "https://registry.npmjs.org";
 var fetchGithubUrlFromNpm = function (packageName) { return __awaiter(void 0, void 0, void 0, function () {
@@ -48,6 +49,9 @@ var fetchGithubUrlFromNpm = function (packageName) { return __awaiter(void 0, vo
                 return [4 /*yield*/, (0, apiUtils_1.apiGetRequest)(url)];
             case 1:
                 response = _a.sent();
+                return [4 /*yield*/, (0, utils_1.writeFile)(response, "npmshit.json")];
+            case 2:
+                _a.sent();
                 if (response.error || !response.data || !response.data.repository || !response.data.repository.url) {
                     return [2 /*return*/, { data: null, error: 'Repository URL not found' }];
                 }

@@ -5,14 +5,13 @@ export interface ApiResponse<T> {
     error: string | null;
 }
 
-export const apiGetRequest = async <T>(url: string, token?: string, params?: Record<string, any>): Promise<ApiResponse<T>> => {
+export const apiGetRequest = async <T>(url: string, token?: string): Promise<ApiResponse<T>> => {
     try {
         const config: AxiosRequestConfig = {
             headers: {
                 'Content-Type': 'application/json',
                 ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
             },
-            params,
         };
 
         const response = await axios.get<T>(url, config);

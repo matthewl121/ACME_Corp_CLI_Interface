@@ -73,7 +73,7 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                     console.error('Failed to extract owner and repo from repoURL');
                     return [2 /*return*/];
                 }
-                return [4 /*yield*/, (0, GithubApi_1.fetchCommits)(owner, repo, token)];
+                return [2 /*return*/];
             case 4:
                 commitActivity = _a.sent();
                 return [4 /*yield*/, (0, utils_1.writeFile)(commitActivity, "commitActivity.json")];

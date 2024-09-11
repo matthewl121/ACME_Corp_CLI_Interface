@@ -1,9 +1,9 @@
 import 'dotenv/config';
-import { fetchContributors, fetchRecentIssuesByState, fetchLicense, fetchReleases, fetchRepoMetadata, fetchCommits, fetchRecentPullRequests } from "./api/GithubApi";
+import { fetchRecentIssuesByState, fetchLicense, fetchCommits, fetchRecentPullRequests } from "./api/GithubApi";
 import { calcBusFactor, calcCorrectness, calcResponsiveness } from './metricCalcs';
 import { writeFile, extractNpmPackageName, extractGithubOwnerAndRepo } from './utils/utils';
 import { fetchGithubUrlFromNpm } from './api/npmApi';
-import { Contributor, ContributorActivity } from './types';
+import { ContributorActivity } from './types';
 
 const main = async () => {
     const token: string = process.env.GITHUB_TOKEN || "";
@@ -31,14 +31,15 @@ const main = async () => {
         console.error('Failed to extract owner and repo from repoURL');
         return;
     }
+
     
     // bus factor
     const commitActivity = await fetchCommits(owner, repo, token);
     await writeFile(commitActivity, "commitActivity.json")
     
     let busFactor: number | null = null;
-    if (commitActivity !== null) {
-        busFactor = calcBusFactor(commitActivity);
+    if (commitActivity !== null && commitActivity.data !== null) {
+        busFactor = calcBusFactor(commitActivity.data);
 
         console.log("bus factor", busFactor)
     }
@@ -50,8 +51,8 @@ const main = async () => {
     await writeFile(totalClosedIssues, "totalClosedIssues.json")
 
     let correctness: number | null = null;
-    if (totalOpenIssues !== null && totalClosedIssues !== null) {
-        correctness = calcCorrectness(totalOpenIssues.total_count, totalClosedIssues.total_count)
+    if (totalOpenIssues !== null && totalClosedIssues !== null && totalOpenIssues.data && totalClosedIssues.data) {
+        correctness = calcCorrectness(totalOpenIssues.data.total_count, totalClosedIssues.data.total_count)
 
         console.log("correctness", correctness)
     }
@@ -61,8 +62,8 @@ const main = async () => {
     await writeFile(recentPullRequests, "recentPullRequests.json")
 
     let responsiveness: number | null = null
-    if (totalOpenIssues !== null && totalClosedIssues !== null && recentPullRequests !== null) {
-        const responsiveness = calcResponsiveness(totalClosedIssues.items, recentPullRequests.items);
+    if (totalOpenIssues !== null && totalClosedIssues !== null && recentPullRequests !== null && totalClosedIssues.data && recentPullRequests.data) {
+        const responsiveness = calcResponsiveness(totalClosedIssues.data.items, recentPullRequests.data.items);
 
         console.log("responsiveness", responsiveness);
     }
@@ -70,14 +71,6 @@ const main = async () => {
     // // licenses
     // const licenses = await fetchLicense(owner, repo, token);
     // await writeFile(licenses, "licenses.json")
-
-    // // collaborators
-    // const contributors = await fetchContributors(owner, repo, token);
-    // await writeFile(contributors, "contributors.json")
-
-    // // metadata
-    // const metadata = await fetchRepoMetadata(owner, repo, token);
-    // await writeFile(metadata, "metadata.json")
 }
 
 main()
