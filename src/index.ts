@@ -1,63 +1,107 @@
-import RampUpTimeMetric from "./RampUpTimeMetric";
-import * as axios from 'axios';
+/*
+    This file is an example logical flow from a URL to
+    fetching and parsing repo data and calculating some metrics
+*/
 
-class GitHubRepoCollaborators {
-    private repoOwner: string;
-    private repoName: string;
-    private token: string;
-    private apiUrl: string;
-    private headers: { [key: string]: string };
+import 'dotenv/config';
+import { fetchRecentIssuesByState, fetchLicense, fetchContributorActivity, fetchRecentPullRequests } from "./api/GithubApi";
+import { calcBusFactor, calcCorrectness, calcResponsiveness } from './metricCalcs';
+import { writeFile } from './utils/utils';
+import { extractNpmPackageName, extractGithubOwnerAndRepo, extractDomainFromUrl } from './utils/urlHandler'
+import { fetchGithubUrlFromNpm } from './api/npmApi';
+import { ContributorResponse } from './types';
 
-    constructor(repoOwner: string, repoName: string, token: string) {
-        this.repoOwner = repoOwner;
-        this.repoName = repoName;
-        this.token = token;
-        this.apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/collaborators`;
-        this.headers = {
-            'Authorization': `token ${this.token}`,
-            'Accept': 'application/vnd.github.v3+json'
-        };
+const main = async () => {
+    const token: string = process.env.GITHUB_TOKEN || "";
+    const inputURL: string = "https://www.npmjs.com/package/ts-node"
+
+    // Extract hostname (www.npm.js or github.com or null)
+    const hostname = extractDomainFromUrl(inputURL)
+    if (!hostname || (hostname !== "www.npmjs.com" && hostname !== "github.com")) {
+        return;
     }
 
-    async fetchCollaborators(): Promise<any[]> {
-        try {
-            const response = await axios.get<any[]>(this.apiUrl, { headers: this.headers });
-            return response.data;
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                if (error.response) {
-                    if (error.response.status === 404) {
-                        console.error('Repository not found.');
-                    } else if (error.response.status === 403) {
-                        console.error('Forbidden: Check your authentication token.');
-                    } else {
-                        console.error(`Error: ${error.response.status} - ${error.response.statusText}`);
-                    }
-                } else {
-                    console.error('An error occurred:', error.message);
-                }
-            }
-            return [];
+    let repoURL: string = "";
+
+    // If url is npm, fetch the github repo
+    if (hostname === "www.npmjs.com") {
+        const npmPackageName = extractNpmPackageName(inputURL)
+        if (!npmPackageName) {
+            return;
         }
+
+        // Fetch the Github repo url from npm package
+        const npmResponse = await fetchGithubUrlFromNpm(npmPackageName);
+        if (!npmResponse?.data) {
+            return;
+        }
+
+        repoURL = npmResponse.data
+    } else {
+        // URL must be github, so use it directly
+        repoURL = inputURL
     }
 
-    async printCollaborators(): Promise<void> {
-        const collaborators = await this.fetchCollaborators();
-        if (collaborators.length > 0) {
-            console.log(`Collaborators of ${this.repoOwner}/${this.repoName}:`);
-            collaborators.forEach(collaborator => {
-                console.log(`- ${collaborator.login} (${collaborator.type})`);
-            });
-        } else {
-            console.log('No collaborators found or error in fetching data.');
-        }
+    const repoDetails = extractGithubOwnerAndRepo(repoURL)
+    if (!repoDetails) {
+        return;
     }
+
+    const [owner, repo]: [string, string] = repoDetails
+
+    /* 
+        Now that the repo owner (owner) and repo name (repo) have
+        been parsed, we can use the github api to calc metrics
+    */
+
+    // Bus Factor
+    const contributorActivity = await fetchContributorActivity(owner, repo, token);
+    if (!contributorActivity?.data) {
+        return;
+    }
+    
+    await writeFile(contributorActivity, "contributorActivity.json");
+    const busFactor = calcBusFactor(contributorActivity.data);
+
+    // Correctness
+    const totalOpenIssues = await fetchRecentIssuesByState(owner, repo, "open", token);
+    const totalClosedIssues = await fetchRecentIssuesByState(owner, repo, "closed", token);
+    if (!totalOpenIssues?.data || !totalClosedIssues?.data) {
+        return;
+    }
+
+    await writeFile(totalOpenIssues, "totalOpenIssues.json")
+    await writeFile(totalClosedIssues, "totalClosedIssues.json")
+    const correctness = calcCorrectness(totalOpenIssues.data.total_count, totalClosedIssues.data.total_count)
+
+    // Responsive Maintainer
+    const recentPullRequests = await fetchRecentPullRequests(owner, repo, token)
+    if (!recentPullRequests?.data) {
+        return;
+    }
+
+    await writeFile(recentPullRequests, "recentPullRequests.json")
+    const responsiveness = calcResponsiveness(totalClosedIssues.data.items, recentPullRequests.data.items);
+
+    // Licenses
+    const licenses = await fetchLicense(owner, repo, token);
+    if (!licenses?.data) {
+        return;
+    }
+
+    await writeFile(licenses, "licenses.json")
+    const license = licenses.data.license.name
+
+    // Log the metrics
+    console.log(`
+        --- METRICS --- 
+        
+        Bus Factor:     ${busFactor} devs
+        Correctness:    ${correctness}%
+        Responsiveness: ${responsiveness} hours
+        License:        ${license}
+    `);
+        
 }
 
-// Example usage:
-const repoOwner = 'octocat';
-const repoName = 'Hello-World';
-const token = 'your_github_token_here';
-
-const githubCollaborators = new GitHubRepoCollaborators(repoOwner, repoName, token);
-githubCollaborators.printCollaborators();
+main()
