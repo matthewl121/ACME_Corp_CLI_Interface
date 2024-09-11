@@ -1,0 +1,28 @@
+{
+  "data": {
+    "name": "LICENSE",
+    "path": "LICENSE",
+    "sha": "983fbe8aec3f4e2d4add592bb1083b00d7366f66",
+    "size": 1103,
+    "url": "https://api.github.com/repos/TypeStrong/ts-node/contents/LICENSE?ref=main",
+    "html_url": "https://github.com/TypeStrong/ts-node/blob/main/LICENSE",
+    "git_url": "https://api.github.com/repos/TypeStrong/ts-node/git/blobs/983fbe8aec3f4e2d4add592bb1083b00d7366f66",
+    "download_url": "https://raw.githubusercontent.com/TypeStrong/ts-node/main/LICENSE",
+    "type": "file",
+    "content": "VGhlIE1JVCBMaWNlbnNlIChNSVQpCgpDb3B5cmlnaHQgKGMpIDIwMTQgQmxh\na2UgRW1icmV5IChoZWxsb0BibGFrZWVtYnJleS5jb20pCgpQZXJtaXNzaW9u\nIGlzIGhlcmVieSBncmFudGVkLCBmcmVlIG9mIGNoYXJnZSwgdG8gYW55IHBl\ncnNvbiBvYnRhaW5pbmcgYSBjb3B5Cm9mIHRoaXMgc29mdHdhcmUgYW5kIGFz\nc29jaWF0ZWQgZG9jdW1lbnRhdGlvbiBmaWxlcyAodGhlICJTb2Z0d2FyZSIp\nLCB0byBkZWFsCmluIHRoZSBTb2Z0d2FyZSB3aXRob3V0IHJlc3RyaWN0aW9u\nLCBpbmNsdWRpbmcgd2l0aG91dCBsaW1pdGF0aW9uIHRoZSByaWdodHMKdG8g\ndXNlLCBjb3B5LCBtb2RpZnksIG1lcmdlLCBwdWJsaXNoLCBkaXN0cmlidXRl\nLCBzdWJsaWNlbnNlLCBhbmQvb3Igc2VsbApjb3BpZXMgb2YgdGhlIFNvZnR3\nYXJlLCBhbmQgdG8gcGVybWl0IHBlcnNvbnMgdG8gd2hvbSB0aGUgU29mdHdh\ncmUgaXMKZnVybmlzaGVkIHRvIGRvIHNvLCBzdWJqZWN0IHRvIHRoZSBmb2xs\nb3dpbmcgY29uZGl0aW9uczoKClRoZSBhYm92ZSBjb3B5cmlnaHQgbm90aWNl\nIGFuZCB0aGlzIHBlcm1pc3Npb24gbm90aWNlIHNoYWxsIGJlIGluY2x1ZGVk\nIGluCmFsbCBjb3BpZXMgb3Igc3Vic3RhbnRpYWwgcG9ydGlvbnMgb2YgdGhl\nIFNvZnR3YXJlLgoKVEhFIFNPRlRXQVJFIElTIFBST1ZJREVEICJBUyBJUyIs\nIFdJVEhPVVQgV0FSUkFOVFkgT0YgQU5ZIEtJTkQsIEVYUFJFU1MgT1IKSU1Q\nTElFRCwgSU5DTFVESU5HIEJVVCBOT1QgTElNSVRFRCBUTyBUSEUgV0FSUkFO\nVElFUyBPRiBNRVJDSEFOVEFCSUxJVFksCkZJVE5FU1MgRk9SIEEgUEFSVElD\nVUxBUiBQVVJQT1NFIEFORCBOT05JTkZSSU5HRU1FTlQuIElOIE5PIEVWRU5U\nIFNIQUxMIFRIRQpBVVRIT1JTIE9SIENPUFlSSUdIVCBIT0xERVJTIEJFIExJ\nQUJMRSBGT1IgQU5ZIENMQUlNLCBEQU1BR0VTIE9SIE9USEVSCkxJQUJJTElU\nWSwgV0hFVEhFUiBJTiBBTiBBQ1RJT04gT0YgQ09OVFJBQ1QsIFRPUlQgT1Ig\nT1RIRVJXSVNFLCBBUklTSU5HIEZST00sCk9VVCBPRiBPUiBJTiBDT05ORUNU\nSU9OIFdJVEggVEhFIFNPRlRXQVJFIE9SIFRIRSBVU0UgT1IgT1RIRVIgREVB\nTElOR1MgSU4KVEhFIFNPRlRXQVJFLgo=\n",
+    "encoding": "base64",
+    "_links": {
+      "self": "https://api.github.com/repos/TypeStrong/ts-node/contents/LICENSE?ref=main",
+      "git": "https://api.github.com/repos/TypeStrong/ts-node/git/blobs/983fbe8aec3f4e2d4add592bb1083b00d7366f66",
+      "html": "https://github.com/TypeStrong/ts-node/blob/main/LICENSE"
+    },
+    "license": {
+      "key": "mit",
+      "name": "MIT License",
+      "spdx_id": "MIT",
+      "url": "https://api.github.com/licenses/mit",
+      "node_id": "MDc6TGljZW5zZTEz"
+    }
+  },
+  "error": null
+}
