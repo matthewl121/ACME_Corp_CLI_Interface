@@ -1,10 +1,5 @@
 import axios from "axios";
 
-interface Collaborator {
-    login: string;
-    created_at: string;
-}
-
 class RampUpTimeMetric {
     private githubToken: string;
     private owner: string;
@@ -16,13 +11,14 @@ class RampUpTimeMetric {
         this.repo = repo;
     }
 
-    async getCollaborators(): Promise<string[]> {
-        const url = `https://api.github.com/repos/matthewl121/ACME_Corp_CLI_Interface/collaborators`;
-        const response = await axios.get<Collaborator[]>(url, {
-            headers: { Authorization: `token ${this.githubToken}` }
+    async getRampUpTime() {
+        const url = `https://api.github.com/repos/${this.owner}/${this.repo}/commits?since=2024-01-01`;
+        const response = await axios.get(url, {
+            headers: {
+                'Authorization': `Bearer ${this.githubToken}`
+            }
         });
-        return response.data.map(collaborator => collaborator.login);
     }
-}
 
-export default RampUpTimeMetric;
+    
+}
