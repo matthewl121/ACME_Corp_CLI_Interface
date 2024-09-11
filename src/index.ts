@@ -50,49 +50,6 @@ const main = async () => {
 
     const [owner, repo]: [string, string] = repoDetails
 
-    /* 
-        Now that the repo owner (owner) and repo name (repo) have
-        been parsed, we can use the github api to calc metrics
-    */
-
-    // // Bus Factor
-    // const contributorActivity = await fetchContributorActivity(owner, repo, token);
-    // if (!contributorActivity?.data) {
-    //     return;
-    // }
-    
-    // await writeFile(contributorActivity, "contributorActivity.json");
-    // const busFactor = calcBusFactor(contributorActivity.data);
-
-    // // Correctness
-    // const totalOpenIssues = await fetchRecentIssuesByState(owner, repo, "open", token);
-    // const totalClosedIssues = await fetchRecentIssuesByState(owner, repo, "closed", token);
-    // if (!totalOpenIssues?.data || !totalClosedIssues?.data) {
-    //     return;
-    // }
-
-    // await writeFile(totalOpenIssues, "totalOpenIssues.json")
-    // await writeFile(totalClosedIssues, "totalClosedIssues.json")
-    // const correctness = calcCorrectness(totalOpenIssues.data.total_count, totalClosedIssues.data.total_count)
-
-    // // Responsive Maintainer
-    // const recentPullRequests = await fetchRecentPullRequests(owner, repo, token)
-    // if (!recentPullRequests?.data) {
-    //     return;
-    // }
-
-    // await writeFile(recentPullRequests, "recentPullRequests.json")
-    // const responsiveness = calcResponsiveness(totalClosedIssues.data.items, recentPullRequests.data.items);
-
-    // // Licenses
-    // const licenses = await fetchLicense(owner, repo, token);
-    // if (!licenses?.data) {
-    //     return;
-    // }
-
-    // await writeFile(licenses, "licenses.json")
-    // const license = licenses.data.license.name
-
     // Log the metrics
     try {
         // Create an instance of MetricManager with necessary details
