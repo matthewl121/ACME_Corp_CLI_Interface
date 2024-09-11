@@ -12,8 +12,8 @@ import { fetchGithubUrlFromNpm } from './api/npmApi';
 import { ContributorResponse } from './types';
 
 const main = async () => {
-    const token: string = process.env.GITHUB_TOKEN || "";
-    const inputURL: string = "https://www.npmjs.com/package/ts-node"
+    const token = process.env.GITHUB_TOKEN || "";
+    const inputURL = "https://www.npmjs.com/package/ts-node"
 
     // Extract hostname (www.npm.js or github.com or null)
     const hostname = extractDomainFromUrl(inputURL)
@@ -21,7 +21,7 @@ const main = async () => {
         return;
     }
 
-    let repoURL: string = "";
+    let repoURL ="";
 
     // If url is npm, fetch the github repo
     if (hostname === "www.npmjs.com") {
@@ -47,7 +47,7 @@ const main = async () => {
         return;
     }
 
-    const [owner, repo]: [string, string] = repoDetails
+    const [owner, repo] = repoDetails
 
     /* 
         Now that the repo owner (owner) and repo name (repo) have
