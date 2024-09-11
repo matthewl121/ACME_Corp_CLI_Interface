@@ -27,7 +27,7 @@ export const calcCorrectness = (totalOpenIssuesCount: number, totalClosedIssuesC
 }
 
 // Potential rework: Responsiveness score currently caps open PRs max close time to be
-//                   30 days time. Open to other methods of penalization for open PRs
+//                   30 days. Open to other methods of penalization for open PRs
 export const calcResponsiveness = (closedIssues: Issue[], pullRequests: Issue[]): number => {
     const calcCloseTime = (created_at: string, closed_at: string): number => {
         const startTime = new Date(created_at);
