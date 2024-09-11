@@ -1,4 +1,4 @@
-import * as axios from "axios";
+import axios from "axios";
 
 interface Collaborator {
     login: string;
