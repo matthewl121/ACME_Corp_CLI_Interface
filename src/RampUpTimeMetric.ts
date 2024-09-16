@@ -12,7 +12,7 @@ class RampUpTimeMetric {
     }
 
     async getRampUpTime() {
-        const url = `https://api.github.com/repos/${this.owner}/${this.repo}/commits?since=2024-01-01`;
+        const url = `https://api.github.com/repos/${this.owner}/${this.repo}/comm`;
         const response = await axios.get(url, {
             headers: {
                 'Authorization': `Bearer ${this.githubToken}`
