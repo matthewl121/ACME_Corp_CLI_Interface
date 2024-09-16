@@ -13,12 +13,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -39,11 +39,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
-var urlHandler_1 = require("./utils/urlHandler");
-var npmApi_1 = require("./api/npmApi");
-var metricManager_1 = require("./metricManager");
+var urlHandler_js_1 = require("./utils/urlHandler.js");
+var npmApi_js_1 = require("./api/npmApi.js");
+var metricManager_js_1 = require("./metricManager.js");
 var main = function () { return __awaiter(void 0, void 0, void 0, function () {
     var token, inputURL, hostname, repoURL, npmPackageName, npmResponse, repoDetails, owner, repo, metricManager, manager, metrics, error_1;
     return __generator(this, function (_a) {
@@ -51,17 +51,17 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
             case 0:
                 token = process.env.GITHUB_TOKEN || "";
                 inputURL = "https://www.npmjs.com/package/ts-node";
-                hostname = (0, urlHandler_1.extractDomainFromUrl)(inputURL);
+                hostname = (0, urlHandler_js_1.extractDomainFromUrl)(inputURL);
                 if (!hostname || (hostname !== "www.npmjs.com" && hostname !== "github.com")) {
                     return [2 /*return*/];
                 }
                 repoURL = "";
                 if (!(hostname === "www.npmjs.com")) return [3 /*break*/, 2];
-                npmPackageName = (0, urlHandler_1.extractNpmPackageName)(inputURL);
+                npmPackageName = (0, urlHandler_js_1.extractNpmPackageName)(inputURL);
                 if (!npmPackageName) {
                     return [2 /*return*/];
                 }
-                return [4 /*yield*/, (0, npmApi_1.fetchGithubUrlFromNpm)(npmPackageName)];
+                return [4 /*yield*/, (0, npmApi_js_1.fetchGithubUrlFromNpm)(npmPackageName)];
             case 1:
                 npmResponse = _a.sent();
                 if (!(npmResponse === null || npmResponse === void 0 ? void 0 : npmResponse.data)) {
@@ -74,7 +74,7 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                 repoURL = inputURL;
                 _a.label = 3;
             case 3:
-                repoDetails = (0, urlHandler_1.extractGithubOwnerAndRepo)(repoURL);
+                repoDetails = (0, urlHandler_js_1.extractGithubOwnerAndRepo)(repoURL);
                 if (!repoDetails) {
                     return [2 /*return*/];
                 }
@@ -82,8 +82,8 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                 _a.label = 4;
             case 4:
                 _a.trys.push([4, 6, , 7]);
-                metricManager = new metricManager_1.MetricManager(owner, repo, token);
-                manager = new metricManager_1.MetricManager(owner, repo, token);
+                metricManager = new metricManager_js_1.MetricManager(owner, repo, token);
+                manager = new metricManager_js_1.MetricManager(owner, repo, token);
                 return [4 /*yield*/, manager.getMetrics()];
             case 5:
                 metrics = _a.sent();
@@ -99,4 +99,4 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
         }
     });
 }); };
-main();
+main().catch(console.error);

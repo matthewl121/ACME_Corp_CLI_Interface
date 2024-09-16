@@ -4,17 +4,13 @@
 */
 
 import 'dotenv/config';
-import { fetchRecentIssuesByState, fetchLicense, fetchContributorActivity, fetchRecentPullRequests } from "./api/GithubApi";
-import { calcBusFactor, calcCorrectness, calcResponsiveness } from './metricCalcs';
-import { writeFile } from './utils/utils';
-import { extractNpmPackageName, extractGithubOwnerAndRepo, extractDomainFromUrl } from './utils/urlHandler'
-import { fetchGithubUrlFromNpm } from './api/npmApi';
-import { ContributorResponse } from './types';
-import { MetricManager } from './metricManager';
+import { extractDomainFromUrl, extractNpmPackageName, extractGithubOwnerAndRepo } from './utils/urlHandler.js';
+import { fetchGithubUrlFromNpm } from './api/npmApi.js';
+import { MetricManager } from './metricManager.js';
 
 const main = async () => {
-    const token: string = process.env.GITHUB_TOKEN || "";
-    const inputURL: string = "https://www.npmjs.com/package/ts-node"
+    const token = process.env.GITHUB_TOKEN || "";
+    const inputURL = "https://www.npmjs.com/package/ts-node";
 
     // Extract hostname (www.npm.js or github.com or null)
     const hostname = extractDomainFromUrl(inputURL)
@@ -77,6 +73,6 @@ const main = async () => {
         console.error("An error occurred in the main function:", error);
     }
         
-}
+};
 
-main()
+main().catch(console.error);

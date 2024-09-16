@@ -1,8 +1,15 @@
 import 'dotenv/config';
-import { fetchRecentIssuesByState, fetchLicense, fetchContributorActivity, fetchRecentPullRequests } from "./api/GithubApi";
-import { calcBusFactor, calcCorrectness, calcResponsiveness } from './metricCalcs';
-import { writeFile } from './utils/utils';
-import { Metrics } from './metrics';
+import { fetchRecentIssuesByState, fetchLicense, fetchContributorActivity, fetchRecentPullRequests } from "./api/GithubApi.js";
+import { calcBusFactor, calcCorrectness, calcResponsiveness } from './metricCalcs.js';
+import { writeFile } from './utils/utils.js';
+
+// metrics.ts
+export interface Metrics {
+    busFactor: number | null;
+    correctness: number | null;
+    responsiveness: number | null;
+    license: string | null;
+}
 
 export class MetricManager {
     private owner: string;
