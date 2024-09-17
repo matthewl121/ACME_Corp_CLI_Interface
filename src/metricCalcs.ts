@@ -6,7 +6,13 @@ export const calcBusFactor = (contributorActivity: ContributorResponse[]): numbe
         return 0;
     }
 
-    const totalCommits = contributorActivity.reduce((sum, contributor) => sum + contributor.total, 0)
+    let totalCommits = 0;
+    let totalContributors = 0;
+    for (const contributor of contributorActivity) {
+        totalCommits += contributor.total
+        ++totalContributors
+    }
+
     const threshold = Math.ceil(totalCommits * 0.5); // 50% of commits
 
     let curr = 0;
@@ -22,7 +28,17 @@ export const calcBusFactor = (contributorActivity: ContributorResponse[]): numbe
         }
     }
 
-    return busFactor;
+    // max is half the total contributors
+    const maxBusFactor = Math.max(1, Math.floor((totalContributors + 1) / 2));
+    const averageBusFactor = 4
+
+    let busFactorScore = Math.min(1, busFactor / averageBusFactor)
+    // account for smaller repos w/ less contirbutors
+    if (maxBusFactor < averageBusFactor) {
+        busFactorScore = Math.min(1, busFactorScore);
+    }
+
+    return busFactorScore;
 }
 
 export const calcCorrectness = (totalOpenIssuesCount: number, totalClosedIssuesCount: number): number => {
