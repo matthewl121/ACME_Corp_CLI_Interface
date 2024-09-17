@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { fetchRecentIssuesByState, fetchLicense, fetchContributorActivity, fetchRecentPullRequests } from "./api/GithubApi.js";
 import { calcBusFactor, calcCorrectness, calcResponsiveness } from './metricCalcs.js';
 import { writeFile } from './utils/utils.js';
+import { logToFile } from './utils/log.js';
 
 // metrics.ts
 export interface Metrics {
@@ -132,7 +133,8 @@ export class MetricManager {
             // Create JSON output
 
             // Log the JSON output
-            console.log("Metrics Output (JSON):", JSON.stringify(metrics, null, 2)); // Pretty-print with 2-space indentation
+            logToFile("Metrics Output (JSON):", 1);
+            logToFile(JSON.stringify(metrics, null, 2), 1); // Pretty-print with 2-space indentation
         } catch (error) {
             console.error("Error calculating metrics:", error);
         }
