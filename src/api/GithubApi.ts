@@ -1,5 +1,6 @@
-import { apiGetRequest, ApiResponse } from './apiUtils'
+import { apiGetRequest, apiGetRequest_NoOutput, ApiResponse } from './apiUtils'
 import { ContributorResponse, IssueSearchResponse, LicenseResponse } from '../types';
+import fetch from 'node-fetch';
 
 const GITHUB_BASE_URL: string = "https://api.github.com"
 
@@ -46,6 +47,98 @@ export const fetchContributorActivity = async (
         ],
     }
 */
+export const fetchReadMe = async (
+    owner: string, 
+    repo: string, 
+    token: string
+): Promise<ApiResponse<IssueSearchResponse | null>> => {
+    const q = `repo:${owner}/${repo}+filename:readme`;
+    const url = `${GITHUB_BASE_URL}/search/code?q=${q}`;
+    const response = await apiGetRequest_NoOutput<IssueSearchResponse>(url, token);
+
+    if (response.error) {
+        console.error('Error fetching readme file:', response.error);
+        return { data: null, error: response.error };
+    }
+
+    return { data: response.data, error: null };
+}
+
+export const fetchExamplesFolder = async (
+    owner: string,
+    repo: string,
+    token?: string
+): Promise<boolean> => {
+    const url = `${GITHUB_BASE_URL}/repo/${owner}/${repo}/contents/examples`;
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/vnd.github.v3+json',
+                ...(token && { 'Authorization': `token ${token}` })
+            }
+        });
+
+        if(response.status === 200) {
+            const data = await response.json();
+            return Array.isArray(data) && data.length > 0;
+        } else if(response.status === 404) {
+            return false;
+        } else {
+            throw new Error(`${response.status}: ${response.statusText}`);
+        }
+    } catch (error) {
+        console.error('Error fetching examples folder:', error);
+        return false;
+    }
+    
+}
+
+export const getReadmeDetails = async (
+    readMe: any,
+    examplesFolder: boolean
+): Promise<string> => {
+    const git_content = readMe.data.items[0].url;
+    try {
+        const response = await fetch(git_content, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/vnd.github.v3+json',
+            }
+        });
+        if(!response.ok) {
+            throw new Error(`${response.status}: ${response.statusText}`);
+        }
+        const data = await response.json();
+        const content = Buffer.from(data.content, 'base64').toString('utf-8');
+        const linesLength= content.split('\n').length;
+        console.log(linesLength)
+        if(linesLength > 75) {
+            if(content.includes('documentation') && examplesFolder === true) {
+                return 'Low (Separate website with documentation and examples)';
+            } else if(content.includes('documentation')) {
+                return 'Low (Separate website with documentation)';
+            } else if(examplesFolder === true) {
+                return 'Low (Examples can be found in repository)';
+            } else {
+                return 'Medium (readme has enough information)';
+            }
+        } else {
+            if(content.includes('documentation') && examplesFolder === true) {
+                return 'Low (Separate website with documentation and examples)';
+            } else if(content.includes('documentation')) {
+                return 'Low (Separate website with documentation)';
+            } else if(examplesFolder === true) {
+                return 'Low (Examples can be found in repository)';
+            } else {
+                return 'High (readme lacks information)';
+            }
+        }
+    } catch (error) {
+        return 'empty';
+    }
+}
+
 export const fetchRecentIssuesByState = async (
     owner: string, 
     repo: string, 

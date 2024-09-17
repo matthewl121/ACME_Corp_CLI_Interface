@@ -4,16 +4,17 @@
 */
 
 import 'dotenv/config';
-import { fetchRecentIssuesByState, fetchLicense, fetchContributorActivity, fetchRecentPullRequests } from "./api/GithubApi";
+import { fetchRecentIssuesByState, fetchLicense, fetchContributorActivity, fetchRecentPullRequests, fetchRampUpContent, fetchReadMe, fetchExamplesFolder, getReadmeLength, getReadmeDetails } from "./api/GithubApi";
 import { calcBusFactor, calcCorrectness, calcResponsiveness } from './metricCalcs';
 import { writeFile } from './utils/utils';
 import { extractNpmPackageName, extractGithubOwnerAndRepo, extractDomainFromUrl } from './utils/urlHandler'
 import { fetchGithubUrlFromNpm } from './api/npmApi';
 import { ContributorResponse } from './types';
+import { get } from 'axios';
 
 const main = async () => {
     const token = process.env.GITHUB_TOKEN || "";
-    const inputURL = "https://www.npmjs.com/package/ts-node"
+    const inputURL = "https://github.com/mrdoob/three.js/"
 
     // Extract hostname (www.npm.js or github.com or null)
     const hostname = extractDomainFromUrl(inputURL)
@@ -91,12 +92,23 @@ const main = async () => {
 
     await writeFile(licenses, "licenses.json")
     const license = licenses.data.license.name
+    let rampUp = null;
+    const readMe = await fetchReadMe(owner, repo, token);
+    if(!readMe?.data) {
+        rampUp = 'High (readme has no information)';
+    } else {
+        const exampleFolder = await fetchExamplesFolder(owner, repo, token);
+        rampUp = await getReadmeDetails(readMe, exampleFolder);
+
+        await writeFile(exampleFolder, "exampleFolder.json")
+    }
 
     // Log the metrics
     console.log(`
         --- METRICS --- 
         
         Bus Factor:     ${busFactor} devs
+        Ramp Up:        ${rampUp}
         Correctness:    ${correctness}%
         Responsiveness: ${responsiveness} hours
         License:        ${license}

@@ -47,7 +47,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.apiGetRequest = void 0;
+exports.apiGetRequest_NoOutput = exports.apiGetRequest = void 0;
 var axios_1 = require("axios");
 var apiGetRequest = function (url, token) { return __awaiter(void 0, void 0, void 0, function () {
     var config, response, error_1;
@@ -72,3 +72,25 @@ var apiGetRequest = function (url, token) { return __awaiter(void 0, void 0, voi
     });
 }); };
 exports.apiGetRequest = apiGetRequest;
+var apiGetRequest_NoOutput = function (url, token) { return __awaiter(void 0, void 0, void 0, function () {
+    var config, response, error_2;
+    var _a, _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                _c.trys.push([0, 2, , 3]);
+                config = {
+                    headers: __assign({ 'Content-Type': 'application/json' }, (token ? { 'Authorization': "Bearer ".concat(token) } : {}))
+                };
+                return [4 /*yield*/, axios_1["default"].get(url, config)];
+            case 1:
+                response = _c.sent();
+                return [2 /*return*/, { data: response.data, error: null }];
+            case 2:
+                error_2 = _c.sent();
+                return [2 /*return*/, { data: null, error: ((_b = (_a = error_2.response) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.message) || error_2.message || 'Something went wrong' }];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.apiGetRequest_NoOutput = apiGetRequest_NoOutput;

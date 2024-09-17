@@ -21,3 +21,19 @@ export const apiGetRequest = async <T>(url: string, token?: string): Promise<Api
         return { data: null, error: error.response?.data?.message || error.message || 'Something went wrong' };
     }
 };
+
+export const apiGetRequest_NoOutput = async <T>(url: string, token?: string): Promise<ApiResponse<T>> => {
+    try {
+        const config: AxiosRequestConfig = {
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+            },
+        };
+
+        const response = await axios.get<T>(url, config);
+        return { data: response.data, error: null };
+    } catch (error: any) {
+        return { data: null, error: error.response?.data?.message || error.message || 'Something went wrong' };
+    }
+};

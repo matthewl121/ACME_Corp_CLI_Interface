@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+const fs = require('fs');
 const {exec} = require('child_process');
 const {Command} = require('commander');
 
@@ -11,12 +11,11 @@ program
     .action(() => {
         exec('npm install --save-dev && tsc --init', (error, stdout, stderr) => {
             if (error) {
-                console.error(`Error installing dependencies: ${error}`);
-                console.error(`Error installing dependencies: ${stderr}`);
+                console.error(`%cError installing dependencies: ${error}`, `color: red`);
+                console.error(`%cError installing dependencies: ${stderr}`, `color: red`);
                 process.exit(1);
             }
-            console.log(`${stdout}`);
-            process.exit(0);
+            console.log(`%c${stdout}`, 'color: green');
         });
     });
 

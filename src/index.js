@@ -47,12 +47,12 @@ var utils_1 = require("./utils/utils");
 var urlHandler_1 = require("./utils/urlHandler");
 var npmApi_1 = require("./api/npmApi");
 var main = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var token, inputURL, hostname, repoURL, npmPackageName, npmResponse, repoDetails, owner, repo, contributorActivity, busFactor, totalOpenIssues, totalClosedIssues, correctness, recentPullRequests, responsiveness, licenses, license;
+    var token, inputURL, hostname, repoURL, npmPackageName, npmResponse, repoDetails, owner, repo, contributorActivity, busFactor, totalOpenIssues, totalClosedIssues, correctness, recentPullRequests, responsiveness, licenses, license, rampUp, readMe, exampleFolder;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 token = process.env.GITHUB_TOKEN || "";
-                inputURL = "https://www.npmjs.com/package/ts-node";
+                inputURL = "https://github.com/mrdoob/three.js/";
                 hostname = (0, urlHandler_1.extractDomainFromUrl)(inputURL);
                 if (!hostname || (hostname !== "www.npmjs.com" && hostname !== "github.com")) {
                     return [2 /*return*/];
@@ -127,8 +127,27 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
             case 13:
                 _a.sent();
                 license = licenses.data.license.name;
+                console.log(owner, repo);
+                rampUp = null;
+                return [4 /*yield*/, (0, GithubApi_1.fetchReadMe)(owner, repo, token)];
+            case 14:
+                readMe = _a.sent();
+                if (!!(readMe === null || readMe === void 0 ? void 0 : readMe.data)) return [3 /*break*/, 15];
+                rampUp = 'High (readme has no information)';
+                return [3 /*break*/, 19];
+            case 15: return [4 /*yield*/, (0, GithubApi_1.fetchExamplesFolder)(owner, repo, token)];
+            case 16:
+                exampleFolder = _a.sent();
+                return [4 /*yield*/, (0, GithubApi_1.getReadmeDetails)(readMe, exampleFolder)];
+            case 17:
+                rampUp = _a.sent();
+                return [4 /*yield*/, (0, utils_1.writeFile)(exampleFolder, "exampleFolder.json")];
+            case 18:
+                _a.sent();
+                _a.label = 19;
+            case 19:
                 // Log the metrics
-                console.log("\n        --- METRICS --- \n        \n        Bus Factor:     ".concat(busFactor, " devs\n        Correctness:    ").concat(correctness, "%\n        Responsiveness: ").concat(responsiveness, " hours\n        License:        ").concat(license, "\n    "));
+                console.log("\n        --- METRICS --- \n        \n        Bus Factor:     ".concat(busFactor, " devs\n        Ramp Up:        ").concat(rampUp, "\n        Correctness:    ").concat(correctness, "%\n        Responsiveness: ").concat(responsiveness, " hours\n        License:        ").concat(license, "\n    "));
                 return [2 /*return*/];
         }
     });

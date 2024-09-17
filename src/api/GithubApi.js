@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -36,8 +47,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.fetchLicense = exports.fetchRecentPullRequests = exports.fetchRecentIssuesByState = exports.fetchContributorActivity = void 0;
+exports.fetchLicense = exports.fetchRecentPullRequests = exports.fetchRecentIssuesByState = exports.getReadmeDetails = exports.fetchExamplesFolder = exports.fetchReadMe = exports.fetchContributorActivity = void 0;
 var apiUtils_1 = require("./apiUtils");
+var node_fetch_1 = require("node-fetch");
 var GITHUB_BASE_URL = "https://api.github.com";
 /*  Fetches contributor commit activity for the given repository.
     Metrics Used: Bus Factor
@@ -84,6 +96,126 @@ exports.fetchContributorActivity = fetchContributorActivity;
         ],
     }
 */
+var fetchReadMe = function (owner, repo, token) { return __awaiter(void 0, void 0, void 0, function () {
+    var q, url, response;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                q = "repo:".concat(owner, "/").concat(repo, "+filename:readme");
+                url = "".concat(GITHUB_BASE_URL, "/search/code?q=").concat(q);
+                return [4 /*yield*/, (0, apiUtils_1.apiGetRequest_NoOutput)(url, token)];
+            case 1:
+                response = _a.sent();
+                if (response.error) {
+                    console.error('Error fetching readme file:', response.error);
+                    return [2 /*return*/, { data: null, error: response.error }];
+                }
+                return [2 /*return*/, { data: response.data, error: null }];
+        }
+    });
+}); };
+exports.fetchReadMe = fetchReadMe;
+var fetchExamplesFolder = function (owner, repo, token) { return __awaiter(void 0, void 0, void 0, function () {
+    var url, response, data, error_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                url = "".concat(GITHUB_BASE_URL, "/repo/").concat(owner, "/").concat(repo, "/contents/examples");
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 6, , 7]);
+                return [4 /*yield*/, (0, node_fetch_1["default"])(url, {
+                        method: 'GET',
+                        headers: __assign({ 'Accept': 'application/vnd.github.v3+json' }, (token && { 'Authorization': "token ".concat(token) }))
+                    })];
+            case 2:
+                response = _a.sent();
+                if (!(response.status === 200)) return [3 /*break*/, 4];
+                return [4 /*yield*/, response.json()];
+            case 3:
+                data = _a.sent();
+                return [2 /*return*/, Array.isArray(data) && data.length > 0];
+            case 4:
+                if (response.status === 404) {
+                    return [2 /*return*/, false];
+                }
+                else {
+                    throw new Error("".concat(response.status, ": ").concat(response.statusText));
+                }
+                _a.label = 5;
+            case 5: return [3 /*break*/, 7];
+            case 6:
+                error_1 = _a.sent();
+                console.error('Error fetching examples folder:', error_1);
+                return [2 /*return*/, false];
+            case 7: return [2 /*return*/];
+        }
+    });
+}); };
+exports.fetchExamplesFolder = fetchExamplesFolder;
+var getReadmeDetails = function (readMe, examplesFolder) { return __awaiter(void 0, void 0, void 0, function () {
+    var git_content, response, data, content, linesLength, error_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                git_content = readMe.data.items[0].url;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 4, , 5]);
+                return [4 /*yield*/, (0, node_fetch_1["default"])(git_content, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    })];
+            case 2:
+                response = _a.sent();
+                if (!response.ok) {
+                    throw new Error("".concat(response.status, ": ").concat(response.statusText));
+                }
+                return [4 /*yield*/, response.json()];
+            case 3:
+                data = _a.sent();
+                content = Buffer.from(data.content, 'base64').toString('utf-8');
+                linesLength = content.split('\n').length;
+                console.log(linesLength);
+                if (linesLength > 75) {
+                    if (content.includes('documentation') && examplesFolder === true) {
+                        return [2 /*return*/, 'Low (Separate website with documentation and examples)'];
+                    }
+                    else if (content.includes('documentation')) {
+                        return [2 /*return*/, 'Low (Separate website with documentation)'];
+                    }
+                    else if (examplesFolder === true) {
+                        return [2 /*return*/, 'Low (Examples can be found in repository)'];
+                    }
+                    else {
+                        return [2 /*return*/, 'Medium (readme has enough information)'];
+                    }
+                }
+                else {
+                    if (content.includes('documentation') && examplesFolder === true) {
+                        return [2 /*return*/, 'Low (Separate website with documentation and examples)'];
+                    }
+                    else if (content.includes('documentation')) {
+                        return [2 /*return*/, 'Low (Separate website with documentation)'];
+                    }
+                    else if (examplesFolder === true) {
+                        return [2 /*return*/, 'Low (Examples can be found in repository)'];
+                    }
+                    else {
+                        return [2 /*return*/, 'High (readme lacks information)'];
+                    }
+                }
+                return [3 /*break*/, 5];
+            case 4:
+                error_2 = _a.sent();
+                return [2 /*return*/, 'empty'];
+            case 5: return [2 /*return*/];
+        }
+    });
+}); };
+exports.getReadmeDetails = getReadmeDetails;
 var fetchRecentIssuesByState = function (owner, repo, state, token) { return __awaiter(void 0, void 0, void 0, function () {
     var q, url, response;
     return __generator(this, function (_a) {
