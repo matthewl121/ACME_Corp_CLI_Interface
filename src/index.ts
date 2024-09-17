@@ -49,10 +49,10 @@ const main = async () => {
     // Log the metrics
     try {
         // Create an instance of MetricManager with necessary details
-        const metricManager = new MetricManager(owner, repo, token);
+        // const metricManager = new MetricManager(owner, repo, token, repoURL);
 
         // Calculate and log all metrics (bus factor, correctness, responsiveness)
-        const manager = new MetricManager(owner, repo, token);
+        const manager = new MetricManager(owner, repo, token, repoURL);
 
         // Get metrics and do something with them
         // const metrics = await manager.getMetrics();
