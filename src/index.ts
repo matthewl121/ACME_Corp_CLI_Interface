@@ -55,16 +55,17 @@ const main = async () => {
         const manager = new MetricManager(owner, repo, token);
 
         // Get metrics and do something with them
-        const metrics = await manager.getMetrics();
+        // const metrics = await manager.getMetrics();
+        const metricsALL = await manager.calculateAndLogMetrics();
         // console.log("Metrics Object:", metrics);
-        console.log(`
-            --- METRICS --- 
+        // console.log(`
+        //     --- METRICS --- 
             
-            Bus Factor:     ${metrics.busFactor} devs
-            Correctness:    ${metrics.correctness}%
-            Responsiveness: ${metrics.responsiveness} hours
-            License:        ${metrics.license}
-        `);
+        //     Bus Factor:     ${metrics.busFactor} devs
+        //     Correctness:    ${metrics.correctness}%
+        //     Responsiveness: ${metrics.responsiveness} hours
+        //     License:        ${metrics.license}
+        // `);
 
         // await metricManager.calculateAllMetrics();
 
