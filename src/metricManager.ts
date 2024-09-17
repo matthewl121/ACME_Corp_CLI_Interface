@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { fetchRecentIssuesByState, fetchLicense, fetchContributorActivity, fetchRecentPullRequests } from "./api/GithubApi.js";
 import { calcBusFactor, calcCorrectness, calcResponsiveness } from './metricCalcs.js';
 import { writeFile } from './utils/utils.js';
+import { logToFile } from './utils/log.js';
 
 // metrics.ts
 export interface Metrics {
@@ -110,18 +111,21 @@ export class MetricManager {
         try {
             const metrics = await this.getMetrics();
             if (!metrics) {
-                console.log("No metrics found");
+                logToFile("No metrics found", 2);
+                // console.log("No metrics found");
                 return;
             }
             // Calculate weighted metrics
             const weightedMetrics = await this.getWeightedMetrics(metrics);
             const finalScore = weightedMetrics.busFactor + weightedMetrics.correctness + weightedMetrics.responsiveness + weightedMetrics.license;
 
-            console.log("Final Metrics:", metrics);
-            console.log("Weighted Metrics:", weightedMetrics);
-            console.log("Final Score:", finalScore);
+            logToFile("Final Metrics:", 1); 
+            logToFile(metrics, 1); // pass object directly
+            logToFile("Weighted Metrics:", 1);
+            logToFile(weightedMetrics, 1); // pass object directly
+            logToFile(`Final Score: ${finalScore}`, 1);
         } catch (error) {
-            console.error("Error calculating metrics:", error);
+            logToFile(`Error calculating metrics: ${error}`, 2);
         }
     }
 }

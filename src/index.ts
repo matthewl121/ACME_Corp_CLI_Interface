@@ -7,8 +7,11 @@ import 'dotenv/config';
 import { extractDomainFromUrl, extractNpmPackageName, extractGithubOwnerAndRepo } from './utils/urlHandler.js';
 import { fetchGithubUrlFromNpm } from './api/npmApi.js';
 import { MetricManager } from './metricManager.js';
+import { initLogFile, logToFile } from './utils/log.js';
 
 const main = async () => {
+    initLogFile();
+    
     const token = process.env.GITHUB_TOKEN || "";
     const inputURL = "https://www.npmjs.com/package/ts-node";
 
@@ -48,9 +51,6 @@ const main = async () => {
 
     // Log the metrics
     try {
-        // Create an instance of MetricManager with necessary details
-        const metricManager = new MetricManager(owner, repo, token);
-
         // Calculate and log all metrics (bus factor, correctness, responsiveness)
         const manager = new MetricManager(owner, repo, token);
 
