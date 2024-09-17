@@ -128,11 +128,9 @@ export class MetricManager {
             const netScore = weightedMetrics.BusFactor + weightedMetrics.Correctness + weightedMetrics.ResponsiveMaintainer + weightedMetrics.License;
             metrics.NetScore = netScore;
 
-            logToFile("Final Metrics:", 1); 
-            logToFile(metrics, 1); // pass object directly
-            logToFile("Weighted Metrics:", 1);
-            logToFile(weightedMetrics, 1); // pass object directly
-            logToFile(`Final Score: ${finalScore}`, 1);
+
+            logToFile("Metrics Output (JSON):", 1);
+            logToFile(JSON.stringify(metrics, null, 2), 1); // Pretty-print with 2-space indentation
         } catch (error) {
             logToFile(`Error calculating metrics: ${error}`, 2);
         }

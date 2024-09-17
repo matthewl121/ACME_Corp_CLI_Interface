@@ -11,7 +11,7 @@ import { initLogFile, logToFile } from './utils/log.js';
 
 const main = async () => {
     initLogFile();
-
+    
     const token = process.env.GITHUB_TOKEN || "";
     const inputURL = "https://www.npmjs.com/package/ts-node";
 

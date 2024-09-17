@@ -44,11 +44,13 @@ require("dotenv/config");
 var urlHandler_js_1 = require("./utils/urlHandler.js");
 var npmApi_js_1 = require("./api/npmApi.js");
 var metricManager_js_1 = require("./metricManager.js");
+var log_js_1 = require("./utils/log.js");
 var main = function () { return __awaiter(void 0, void 0, void 0, function () {
     var token, inputURL, hostname, repoURL, npmPackageName, npmResponse, repoDetails, owner, repo, manager, metricsALL, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
+                (0, log_js_1.initLogFile)();
                 token = process.env.GITHUB_TOKEN || "";
                 inputURL = "https://www.npmjs.com/package/ts-node";
                 hostname = (0, urlHandler_js_1.extractDomainFromUrl)(inputURL);
