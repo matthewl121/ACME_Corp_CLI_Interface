@@ -113,11 +113,14 @@ export const fetchLicense = async (
     owner: string, 
     repo: string, 
     token: string
-): Promise<ApiResponse<LicenseResponse | null>> => {
+): Promise<ApiResponse<LicenseResponse | null> | "NO_LICENSE"> => {
     const url = `${GITHUB_BASE_URL}/repos/${owner}/${repo}/license`;
     const response = await apiGetRequest<LicenseResponse>(url, token);
 
     if (response.error) {
+        if (response.error === "Not Found") {
+            return "NO_LICENSE"
+        }
         console.error('Error fetching licenses:', response.error);
         return { data: null, error: response.error };
     }

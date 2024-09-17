@@ -13,7 +13,7 @@ import { ContributorResponse } from './types';
 
 const main = async () => {
     const token: string = process.env.GITHUB_TOKEN || "";
-    const inputURL: string = "https://www.npmjs.com/package/ts-node"
+    const inputURL: string = "https://github.com/prathameshnetake/libvlc"
 
     // Extract hostname (www.npm.js or github.com or null)
     const hostname = extractDomainFromUrl(inputURL)
@@ -55,12 +55,14 @@ const main = async () => {
     */
 
     // Bus Factor
+    console.log(repoURL)
     const contributorActivity = await fetchContributorActivity(owner, repo, token);
-    if (!contributorActivity?.data) {
+    await writeFile(contributorActivity, "contributorActivity.json");
+    if (!contributorActivity?.data || !Array.isArray(contributorActivity.data)) {
+        console.error('Invalid contributor activity data:', contributorActivity.data);
         return;
     }
     
-    await writeFile(contributorActivity, "contributorActivity.json");
     const busFactor = calcBusFactor(contributorActivity.data);
 
     // Correctness
@@ -84,14 +86,20 @@ const main = async () => {
     const responsiveness = calcResponsiveness(totalClosedIssues.data.items, recentPullRequests.data.items);
 
     // Licenses
+    // TODO: CHECK IF LICENSE IN README
     const licenses = await fetchLicense(owner, repo, token);
-    if (!licenses?.data) {
-        return;
+    let license = "";
+    if (licenses === "NO_LICENSE") {
+        license = "None"
+    } else {
+        if (!licenses?.data) {
+            return;
+        }
+    
+        await writeFile(licenses, "licenses.json")
+        license = licenses.data.license.name
     }
-
-    await writeFile(licenses, "licenses.json")
-    const license = licenses.data.license.name
-
+    
     // Log the metrics
     console.log(`
         --- METRICS --- 

@@ -1,6 +1,10 @@
-import { ContributorResponse, Issue, IssueSearchResponse } from "./types";
+import { ContributorResponse, Issue, IssueSearchResponse, LicenseResponse } from "./types";
 
-export const calcBusFactor = (contributorActivity: ContributorResponse[]) => {
+export const calcBusFactor = (contributorActivity: ContributorResponse[]): number => {
+    if (!contributorActivity) {
+        return 0;
+    }
+
     const totalCommits = contributorActivity.reduce((sum, contributor) => sum + contributor.total, 0)
     const threshold = Math.ceil(totalCommits * 0.5); // 50% of commits
 
@@ -22,6 +26,9 @@ export const calcBusFactor = (contributorActivity: ContributorResponse[]) => {
 
 export const calcCorrectness = (totalOpenIssuesCount: number, totalClosedIssuesCount: number): number => {
     const totalIssues = totalOpenIssuesCount + totalClosedIssuesCount;
+    if (totalIssues == 0) {
+        return 100;
+    }
 
     return (totalClosedIssuesCount / totalIssues) * 100;
 }
@@ -65,3 +72,11 @@ export const calcResponsiveness = (closedIssues: Issue[], pullRequests: Issue[])
     return (avgIssueCloseTime + avgPRCloseTime) / 2;
 }
 
+export const calcLicenseScore = (license: LicenseResponse): number => {
+    // unlicensed repos have spdx_id as "NOASSERTION"
+    if (license.license.spdx_id == "NOASSERTION") {
+        return 0;
+    }
+
+    return 1;
+}
