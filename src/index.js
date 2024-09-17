@@ -45,7 +45,7 @@ var urlHandler_js_1 = require("./utils/urlHandler.js");
 var npmApi_js_1 = require("./api/npmApi.js");
 var metricManager_js_1 = require("./metricManager.js");
 var main = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var token, inputURL, hostname, repoURL, npmPackageName, npmResponse, repoDetails, owner, repo, metricManager, manager, metrics, error_1;
+    var token, inputURL, hostname, repoURL, npmPackageName, npmResponse, repoDetails, owner, repo, metricManager, manager, metricsALL, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -84,11 +84,9 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                 _a.trys.push([4, 6, , 7]);
                 metricManager = new metricManager_js_1.MetricManager(owner, repo, token);
                 manager = new metricManager_js_1.MetricManager(owner, repo, token);
-                return [4 /*yield*/, manager.getMetrics()];
+                return [4 /*yield*/, manager.calculateAndLogMetrics()];
             case 5:
-                metrics = _a.sent();
-                // console.log("Metrics Object:", metrics);
-                console.log("\n            --- METRICS --- \n            \n            Bus Factor:     ".concat(metrics.busFactor, " devs\n            Correctness:    ").concat(metrics.correctness, "%\n            Responsiveness: ").concat(metrics.responsiveness, " hours\n            License:        ").concat(metrics.license, "\n        "));
+                metricsALL = _a.sent();
                 return [3 /*break*/, 7];
             case 6:
                 error_1 = _a.sent();

@@ -8,7 +8,7 @@ export interface Metrics {
     busFactor: number | null;
     correctness: number | null;
     responsiveness: number | null;
-    license: string | null;
+    license: number | null;
 }
 
 export class MetricManager {
@@ -45,8 +45,6 @@ export class MetricManager {
         await writeFile(totalOpenIssues, "totalOpenIssues.json");
         await writeFile(totalClosedIssues, "totalClosedIssues.json");
         const correctness = calcCorrectness(totalOpenIssues.data.total_count, totalClosedIssues.data.total_count);
-        
-        console.log("correctness", correctness);
         return correctness;
     }
 
@@ -60,12 +58,11 @@ export class MetricManager {
 
         await writeFile(recentPullRequests, "recentPullRequests.json")
         const responsiveness = calcResponsiveness(totalClosedIssues.data.items, recentPullRequests.data.items);
-        console.log("responsiveness", responsiveness);
         return responsiveness;
     }
 
     // Fetches and calculates the license
-    public async getLicense(): Promise<string | null> {
+    public async getLicense(): Promise<number | null> {
         const licenses = await fetchLicense(this.owner, this.repo, this.token);
         if (!licenses?.data) {
             return null;
@@ -73,18 +70,9 @@ export class MetricManager {
 
         await writeFile(licenses, "licenses.json")
         const license = licenses.data.license.name
-        console.log("responsiveness", license); 
-        return license;
-    }
-
-    // Combined method to calculate all metrics
-    public async calculateAllMetrics(): Promise<void> {
-        const busFactor = await this.getBusFactor();
-        const correctness = await this.getCorrectness();
-        const responsiveness = await this.getResponsiveness();
-
-        console.log("Final Metrics:");
-        console.log({ busFactor, correctness, responsiveness });
+        // Handle license as 1 or 0 based on its presence
+        const licenseValue = license != null ? 1 : 0;
+        return licenseValue;
     }
 
     // Calculates all metrics and returns them in a structured format
@@ -103,11 +91,35 @@ export class MetricManager {
         return metrics;
     }
 
+    // Calculates weighted metrics based on provided metrics
+    public async getWeightedMetrics(metrics: Metrics): Promise<Metrics> {
+        // Handle license as 1 or 0 based on its presence
+        const licenseValue = metrics.license != null ? 1 : 0;
+        const weightedMetrics: Metrics = {
+            busFactor: (metrics.busFactor ?? 0) * 0.25,
+            correctness: (metrics.correctness ?? 0) * 0.30,
+            responsiveness: (metrics.responsiveness ?? 0) * 0.15,
+            license: (licenseValue) * 0.10, //?? 0) * 0.10, // Assuming license should be numeric for weighting
+        };
+
+        return weightedMetrics;
+    }
+
     // Optionally, calculate and log all metrics
     public async calculateAndLogMetrics(): Promise<void> {
         try {
             const metrics = await this.getMetrics();
+            if (!metrics) {
+                console.log("No metrics found");
+                return;
+            }
+            // Calculate weighted metrics
+            const weightedMetrics = await this.getWeightedMetrics(metrics);
+            const finalScore = weightedMetrics.busFactor + weightedMetrics.correctness + weightedMetrics.responsiveness + weightedMetrics.license;
+
             console.log("Final Metrics:", metrics);
+            console.log("Weighted Metrics:", weightedMetrics);
+            console.log("Final Score:", finalScore);
         } catch (error) {
             console.error("Error calculating metrics:", error);
         }
