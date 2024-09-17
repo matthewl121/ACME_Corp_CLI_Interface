@@ -115,11 +115,11 @@ export class MetricManager {
             }
             // Calculate weighted metrics
             const weightedMetrics = await this.getWeightedMetrics(metrics);
-            const finalScore = weightedMetrics.busFactor + weightedMetrics.correctness + weightedMetrics.responsiveness + weightedMetrics.license;
+            const netScore = weightedMetrics.busFactor + weightedMetrics.correctness + weightedMetrics.responsiveness + weightedMetrics.license;
 
             console.log("Final Metrics:", metrics);
             console.log("Weighted Metrics:", weightedMetrics);
-            console.log("Final Score:", finalScore);
+            console.log("Net Score:", netScore);
         } catch (error) {
             console.error("Error calculating metrics:", error);
         }
