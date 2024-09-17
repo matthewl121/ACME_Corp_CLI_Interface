@@ -1,12 +1,7 @@
-import { apiGetRequest, ApiResponse } from './apiUtils';
+import { ApiResponse, NpmApiResponse } from '../types';
+import { apiGetRequest } from './apiUtils';
 
 const NPM_BASE_URL: string = "https://registry.npmjs.org";
-
-export interface NpmApiResponse {
-    repository: {
-        url: string;
-    };
-}
 
 export const fetchGithubUrlFromNpm = async (packageName: string): Promise<ApiResponse<string | null>> => {
     const url = `${NPM_BASE_URL}/${packageName}`;

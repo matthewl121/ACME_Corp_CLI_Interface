@@ -22,5 +22,21 @@ export interface LicenseResponse {
         name: string;
         spdx_id: string;
         url: string;
-    },
+    } | null,
+    hasLicense: boolean;
+}
+
+export interface ReadmeResponse {
+    content: string
+}
+
+export interface NpmApiResponse {
+    repository: {
+        url: string;
+    };
+}
+
+export interface ApiResponse<T> {
+    data: T | null;
+    error: string | null;
 }

@@ -1,5 +1,7 @@
-import { apiGetRequest, ApiResponse } from './apiUtils'
+import { apiGetRequest } from './apiUtils'
+import { ApiResponse, ReadmeResponse } from '../types';
 import { ContributorResponse, IssueSearchResponse, LicenseResponse } from '../types';
+import { writeFile } from '../utils/utils';
 
 const GITHUB_BASE_URL: string = "https://api.github.com"
 
@@ -113,78 +115,36 @@ export const fetchLicense = async (
     owner: string, 
     repo: string, 
     token: string
-): Promise<ApiResponse<LicenseResponse | null> | "NO_LICENSE"> => {
+): Promise<ApiResponse<LicenseResponse>> => {
     const url = `${GITHUB_BASE_URL}/repos/${owner}/${repo}/license`;
     const response = await apiGetRequest<LicenseResponse>(url, token);
 
+    await writeFile(response, "licenserep.json");
+
     if (response.error) {
         if (response.error === "Not Found") {
-            return "NO_LICENSE"
+            return { data: { license: null, hasLicense: false }, error: null };
         }
         console.error('Error fetching licenses:', response.error);
         return { data: null, error: response.error };
     }
 
-    return { data: response.data, error: null };
-}
-// export const fetchReleases = async (owner: string, repo: string, token: string) => {
-//     const url = `${GITHUB_BASE_URL}/repos/${owner}/${repo}/releases/latest`;
-//     const response = await apiGetRequest(url, token);
+    const data = response.data ?? { license: null, hasLicense: false };
+    return { data: { ...data, hasLicense: true }, error: null };
+};
+
+export const fetchReadme = async (
+    owner: string,
+    repo: string,
+    token: string
+): Promise<ApiResponse<ReadmeResponse | null>> => {
+    const url = `${GITHUB_BASE_URL}/repos/${owner}/${repo}/readme`;
+    const response = await apiGetRequest<ReadmeResponse>(url, token)
+
+    if (response.error || !response.data?.content) {
+        console.error('Error fetching issues:', response.error);
+        return { data: null, error: response.error };
+    }
     
-//     if (response.error) {
-//         console.error('Error fetching releases:', response.error);
-//         return;
-//     }
-
-//     return response.data;
-// }
-
-// export const fetchContributors = async (owner: string, repo: string, token: string) => {
-//     const url = `${GITHUB_BASE_URL}/repos/${owner}/${repo}/contributors`;
-//     const response = await apiGetRequest(url, token);
-
-//     if (response.error) {
-//         console.error('Error fetching contributors:', response.error);
-//         return;
-//     }
-
-//     return response.data;
-// };
-
-// export const fetchRepoMetadata = async (owner: string, repo: string, token: string) => {
-//     const url = `${GITHUB_BASE_URL}/repos/${owner}/${repo}`;
-//     const response = await apiGetRequest(url, token);
-
-//     if (response.error) {
-//         console.error('Error fetching repo metadata:', response.error);
-//     }
-
-//     return response.data;
-// };
-
-// export const fetchRecentCommits = async (owner: string, repo: string, token: string) => {
-//     const url = `${GITHUB_BASE_URL}/repos/${owner}/${repo}/commits`;
-//     const response = await apiGetRequest<Commit[]>(url, token);
-
-//     if (response.error) {
-//         console.error('Error fetching data:', response.error);
-//         return;
-//     }
-
-//     return response.data
-// };
-
-// export const fetchRecentIssues = async (owner: string, repo: string, token: string) => {
-//     const url = `${GITHUB_BASE_URL}/repos/${owner}/${repo}/issues`;
-//     const params = {
-//         state: 'all',
-//     };
-//     const response = await apiGetRequest(url, token, params);
-    
-//     if (response.error) {
-//         console.error('Error fetching issues:', response.error);
-//         return;
-//     }
-
-//     return response.data;
-// };
+    return { data: response.data, error: null};
+};

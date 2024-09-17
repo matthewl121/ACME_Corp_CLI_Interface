@@ -4,16 +4,15 @@
 */
 
 import 'dotenv/config';
-import { fetchRecentIssuesByState, fetchLicense, fetchContributorActivity, fetchRecentPullRequests } from "./api/GithubApi";
-import { calcBusFactor, calcCorrectness, calcResponsiveness } from './metricCalcs';
-import { writeFile } from './utils/utils';
+import { fetchRecentIssuesByState, fetchLicense, fetchContributorActivity, fetchRecentPullRequests, fetchReadme } from "./api/GithubApi";
+import { calcBusFactor, calcCorrectness, calcLicenseScore, calcResponsiveness } from './metricCalcs';
+import { hasLicenseHeading, writeFile } from './utils/utils';
 import { extractNpmPackageName, extractGithubOwnerAndRepo, extractDomainFromUrl } from './utils/urlHandler'
 import { fetchGithubUrlFromNpm } from './api/npmApi';
-import { ContributorResponse } from './types';
 
 const main = async () => {
     const token: string = process.env.GITHUB_TOKEN || "";
-    const inputURL: string = "https://github.com/prathameshnetake/libvlc"
+    const inputURL: string = "https://github.com/nodejs/node"
 
     // Extract hostname (www.npm.js or github.com or null)
     const hostname = extractDomainFromUrl(inputURL)
@@ -55,7 +54,6 @@ const main = async () => {
     */
 
     // Bus Factor
-    console.log(repoURL)
     const contributorActivity = await fetchContributorActivity(owner, repo, token);
     await writeFile(contributorActivity, "contributorActivity.json");
     if (!contributorActivity?.data || !Array.isArray(contributorActivity.data)) {
@@ -85,31 +83,39 @@ const main = async () => {
     await writeFile(recentPullRequests, "recentPullRequests.json")
     const responsiveness = calcResponsiveness(totalClosedIssues.data.items, recentPullRequests.data.items);
 
-    // Licenses
+    // licenseResponse
     // TODO: CHECK IF LICENSE IN README
-    const licenses = await fetchLicense(owner, repo, token);
-    let license = "";
-    if (licenses === "NO_LICENSE") {
-        license = "None"
-    } else {
-        if (!licenses?.data) {
-            return;
-        }
-    
-        await writeFile(licenses, "licenses.json")
-        license = licenses.data.license.name
+    const licenseResponse = await fetchLicense(owner, repo, token);
+    if (!licenseResponse?.data) {
+        console.error("Error retrieving license information.");
+        return;
     }
+
+    await writeFile(licenseResponse, "licenseResponse.json");
+
+
+    const readmeResponse = await fetchReadme(owner, repo, token)
+    await writeFile(readmeResponse, "readme.json");
+    if (readmeResponse.error || !readmeResponse.data) {
+        return;
+    }
+
+    const base64Content = readmeResponse.data?.content;
+    const buffer = Buffer.from(base64Content, 'base64');
+    const readmeContent = buffer.toString('utf-8');
+
+    await writeFile(readmeContent, "readmeContent.txt")
     
+    const license = calcLicenseScore(licenseResponse.data, readmeContent)
     // Log the metrics
     console.log(`
         --- METRICS --- 
         
-        Bus Factor:     ${busFactor} devs
-        Correctness:    ${correctness}%
-        Responsiveness: ${responsiveness} hours
-        License:        ${license}
+        Bus Factor Score:     ${busFactor} devs
+        Correctness Score:    ${correctness}%
+        Responsiveness Score: ${responsiveness} hours
+        License Score:        ${license}
     `);
-        
 }
 
 main()

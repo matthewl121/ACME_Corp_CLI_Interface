@@ -1,4 +1,5 @@
 import { ContributorResponse, Issue, IssueSearchResponse, LicenseResponse } from "./types";
+import { hasLicenseHeading } from "./utils/utils";
 
 export const calcBusFactor = (contributorActivity: ContributorResponse[]): number => {
     if (!contributorActivity) {
@@ -72,11 +73,11 @@ export const calcResponsiveness = (closedIssues: Issue[], pullRequests: Issue[])
     return (avgIssueCloseTime + avgPRCloseTime) / 2;
 }
 
-export const calcLicenseScore = (license: LicenseResponse): number => {
-    // unlicensed repos have spdx_id as "NOASSERTION"
-    if (license.license.spdx_id == "NOASSERTION") {
-        return 0;
+export const calcLicenseScore = (license: LicenseResponse, readmeContent: string): number => {
+    if (license.license?.spdx_id === "NOASSERTION") {
+        return hasLicenseHeading(readmeContent) ? 1 : 0;
     }
 
-    return 1;
-}
+    return license.hasLicense ? 1 : 0;
+};
+

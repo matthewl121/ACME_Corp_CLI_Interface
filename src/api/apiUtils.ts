@@ -1,10 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { ContributorResponse } from '../types';
-
-export interface ApiResponse<T> {
-    data: T | null;
-    error: string | null;
-}
+import { ApiResponse, ContributorResponse } from '../types';
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -15,7 +10,6 @@ export const apiGetRequest = async <T>(
     retryDelay: number = 2000
 ): Promise<ApiResponse<T>> => {
     try {
-        console.log("orig url: ", url)
         const config: AxiosRequestConfig = {
             headers: {
                 'Content-Type': 'application/json',
@@ -24,8 +18,6 @@ export const apiGetRequest = async <T>(
         };
 
         let response = await axios.get<T>(url, config);
-        
-        console.log(response)
         
         if (response.status === 202 && retries > 0) {
             console.log(`Received 202, retrying in ${retryDelay / 1000} seconds...`);
