@@ -6,21 +6,25 @@ import { logToFile } from './utils/log.js';
 
 // metrics.ts
 export interface Metrics {
-    busFactor: number | null;
-    correctness: number | null;
-    responsiveness: number | null;
-    license: number | null;
+    URL: string; // Added URL field to the Metrics class
+    NetScore:  number | null;
+    BusFactor: number | null;
+    Correctness: number | null;
+    ResponsiveMaintainer: number | null;
+    License: number | null;
 }
 
 export class MetricManager {
     private owner: string;
     private repo: string;
     private token: string;
+    private url: string;
 
-    constructor(owner: string, repo: string, token: string) {
+    constructor(owner: string, repo: string, token: string, url: string) {
         this.owner = owner;
         this.repo = repo;
         this.token = token;
+        this.url = url;
     }
 
     // Fetches and calculates the bus factor
@@ -83,10 +87,12 @@ export class MetricManager {
         const responsiveness = await this.getResponsiveness();
         const license = await this.getLicense();
         const metrics: Metrics = {
-            busFactor,
-            correctness,
-            responsiveness,
-            license,
+            URL: this.url,
+            NetScore: null,
+            BusFactor: busFactor,
+            Correctness: correctness,
+            ResponsiveMaintainer: responsiveness,
+            License: license,
         };
 
         return metrics;
@@ -95,12 +101,14 @@ export class MetricManager {
     // Calculates weighted metrics based on provided metrics
     public async getWeightedMetrics(metrics: Metrics): Promise<Metrics> {
         // Handle license as 1 or 0 based on its presence
-        const licenseValue = metrics.license != null ? 1 : 0;
+        const licenseValue = metrics.License != null ? 1 : 0;
         const weightedMetrics: Metrics = {
-            busFactor: (metrics.busFactor ?? 0) * 0.25,
-            correctness: (metrics.correctness ?? 0) * 0.30,
-            responsiveness: (metrics.responsiveness ?? 0) * 0.15,
-            license: (licenseValue) * 0.10, //?? 0) * 0.10, // Assuming license should be numeric for weighting
+            URL: this.url,
+            NetScore: null,
+            BusFactor: (metrics.BusFactor ?? 0) * 0.25,
+            Correctness: (metrics.Correctness ?? 0) * 0.30,
+            ResponsiveMaintainer: (metrics.ResponsiveMaintainer ?? 0) * 0.15,
+            License: (licenseValue) * 0.10, //?? 0) * 0.10, // Assuming license should be numeric for weighting
         };
 
         return weightedMetrics;
@@ -117,7 +125,8 @@ export class MetricManager {
             }
             // Calculate weighted metrics
             const weightedMetrics = await this.getWeightedMetrics(metrics);
-            const finalScore = weightedMetrics.busFactor + weightedMetrics.correctness + weightedMetrics.responsiveness + weightedMetrics.license;
+            const netScore = weightedMetrics.BusFactor + weightedMetrics.Correctness + weightedMetrics.ResponsiveMaintainer + weightedMetrics.License;
+            metrics.NetScore = netScore;
 
             logToFile("Final Metrics:", 1); 
             logToFile(metrics, 1); // pass object directly

@@ -11,7 +11,7 @@ import { initLogFile, logToFile } from './utils/log.js';
 
 const main = async () => {
     initLogFile();
-    
+
     const token = process.env.GITHUB_TOKEN || "";
     const inputURL = "https://www.npmjs.com/package/ts-node";
 
@@ -52,7 +52,7 @@ const main = async () => {
     // Log the metrics
     try {
         // Calculate and log all metrics (bus factor, correctness, responsiveness)
-        const manager = new MetricManager(owner, repo, token);
+        const manager = new MetricManager(owner, repo, token, repoURL);
 
         // Get metrics and do something with them
         // const metrics = await manager.getMetrics();

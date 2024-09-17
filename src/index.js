@@ -45,7 +45,7 @@ var urlHandler_js_1 = require("./utils/urlHandler.js");
 var npmApi_js_1 = require("./api/npmApi.js");
 var metricManager_js_1 = require("./metricManager.js");
 var main = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var token, inputURL, hostname, repoURL, npmPackageName, npmResponse, repoDetails, owner, repo, metricManager, manager, metricsALL, error_1;
+    var token, inputURL, hostname, repoURL, npmPackageName, npmResponse, repoDetails, owner, repo, manager, metricsALL, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -82,8 +82,7 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                 _a.label = 4;
             case 4:
                 _a.trys.push([4, 6, , 7]);
-                metricManager = new metricManager_js_1.MetricManager(owner, repo, token);
-                manager = new metricManager_js_1.MetricManager(owner, repo, token);
+                manager = new metricManager_js_1.MetricManager(owner, repo, token, repoURL);
                 return [4 /*yield*/, manager.calculateAndLogMetrics()];
             case 5:
                 metricsALL = _a.sent();
