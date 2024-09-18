@@ -64,40 +64,40 @@ export const fetchReadMe = async (
     return { data: response.data, error: null };
 }
 
-export const fetchExamplesFolder = async (
+export const checkFolderExists = async (
     owner: string,
     repo: string,
     token?: string
-): Promise<boolean> => {
-    const url = `${GITHUB_BASE_URL}/repo/${owner}/${repo}/contents/examples`;
-    try {
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/vnd.github.v3+json',
-                ...(token && { 'Authorization': `token ${token}` })
-            }
-        });
-
-        if(response.status === 200) {
-            const data = await response.json();
-            return Array.isArray(data) && data.length > 0;
-        } else if(response.status === 404) {
-            return false;
-        } else {
-            throw new Error(`${response.status}: ${response.statusText}`);
-        }
-    } catch (error) {
-        console.error('Error fetching examples folder:', error);
-        return false;
-    }
+  ): Promise<boolean> => {
+    const url = `https://api.github.com/repos/${owner}/${repo}/contents/examples`;
     
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers["Authorization"] = `token ${token}`;
+    }
+  
+    try {
+      const response = await fetch(url, { headers });
+      
+      if (response.status === 200) {
+        return true
+      } else if (response.status === 404) {
+        console.log("Folder does not exist.");
+        return false
+      } else {
+        console.log(`Error: ${response.status} - ${response.statusText}`);
+        return false
+      }
+    } catch (error) {
+      console.error("Request failed:", error);
+      return false
+    }
 }
 
 export const getReadmeDetails = async (
     readMe: any,
     examplesFolder: boolean
-): Promise<string> => {
+): Promise<number> => {
     const git_content = readMe.data.items[0].url;
     try {
         const response = await fetch(git_content, {
@@ -112,30 +112,29 @@ export const getReadmeDetails = async (
         const data = await response.json();
         const content = Buffer.from(data.content, 'base64').toString('utf-8');
         const linesLength= content.split('\n').length;
-        console.log(linesLength)
         if(linesLength > 75) {
             if(content.includes('documentation') && examplesFolder === true) {
-                return 'Low (Separate website with documentation and examples)';
+                return 0.9;
             } else if(content.includes('documentation')) {
-                return 'Low (Separate website with documentation)';
+                return 0.7;
             } else if(examplesFolder === true) {
-                return 'Low (Examples can be found in repository)';
+                return 0.6;
             } else {
-                return 'Medium (readme has enough information)';
+                return 0.5;
             }
         } else {
             if(content.includes('documentation') && examplesFolder === true) {
-                return 'Low (Separate website with documentation and examples)';
+                return 0.8;
             } else if(content.includes('documentation')) {
-                return 'Low (Separate website with documentation)';
+                return 0.7;
             } else if(examplesFolder === true) {
-                return 'Low (Examples can be found in repository)';
+                return 0.6;
             } else {
-                return 'High (readme lacks information)';
+                return 0.2;
             }
         }
     } catch (error) {
-        return 'empty';
+        return -1;
     }
 }
 
