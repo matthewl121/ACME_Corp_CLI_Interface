@@ -109,8 +109,8 @@ const main = async () => {
     }
 
     // Log the metrics
-    const manager = new MetricManager(owner, repo, token, repoURL);
-    const metricsALL = await manager.calculateAndLogMetrics();
+    // const manager = new MetricManager(owner, repo, token, repoURL);
+    // const metricsALL = await manager.calculateAndLogMetrics();
     console.log(`
         --- METRICS --- 
         
