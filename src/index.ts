@@ -4,17 +4,21 @@
 */
 
 import 'dotenv/config';
-import { fetchRecentIssuesByState, fetchLicense, fetchContributorActivity, fetchRecentPullRequests, fetchRampUpContent, fetchReadMe, fetchExamplesFolder, getReadmeLength, getReadmeDetails } from "./api/GithubApi";
+import { fetchRecentIssuesByState, fetchLicense, fetchContributorActivity, fetchRecentPullRequests, fetchReadMe, fetchExamplesFolder, getReadmeDetails } from "./api/GithubApi";
 import { calcBusFactor, calcCorrectness, calcResponsiveness } from './metricCalcs';
 import { writeFile } from './utils/utils';
 import { extractNpmPackageName, extractGithubOwnerAndRepo, extractDomainFromUrl } from './utils/urlHandler'
 import { fetchGithubUrlFromNpm } from './api/npmApi';
 import { ContributorResponse } from './types';
+import { MetricManager } from './metricManager.js';
+import { initLogFile, logToFile } from './utils/log.js';
 import { get } from 'axios';
 
 const main = async () => {
+    initLogFile();
+    
     const token = process.env.GITHUB_TOKEN || "";
-    const inputURL = "https://github.com/mrdoob/three.js/"
+    const inputURL = "https://github.com/mrdoob/three.js/";
 
     // Extract hostname (www.npm.js or github.com or null)
     const hostname = extractDomainFromUrl(inputURL)
@@ -92,6 +96,7 @@ const main = async () => {
 
     await writeFile(licenses, "licenses.json")
     const license = licenses.data.license.name
+
     let rampUp = null;
     const readMe = await fetchReadMe(owner, repo, token);
     if(!readMe?.data) {
@@ -104,11 +109,12 @@ const main = async () => {
     }
 
     // Log the metrics
+    const manager = new MetricManager(owner, repo, token, repoURL);
+    const metricsALL = await manager.calculateAndLogMetrics();
     console.log(`
         --- METRICS --- 
         
         Bus Factor:     ${busFactor} devs
-        Ramp Up:        ${rampUp}
         Correctness:    ${correctness}%
         Responsiveness: ${responsiveness} hours
         License:        ${license}
