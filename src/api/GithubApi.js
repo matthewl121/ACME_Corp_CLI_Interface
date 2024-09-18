@@ -124,11 +124,11 @@ var checkFolderExists = function (owner, repo, token) { return __awaiter(void 0,
                     return [2 /*return*/, true];
                 }
                 else if (response.status === 404) {
-                    console.log("Folder does not exist.");
+                    // console.log("Folder does not exist.");
                     return [2 /*return*/, false];
                 }
                 else {
-                    console.log("Error: ".concat(response.status, " - ").concat(response.statusText));
+                    // console.log(`Error: ${response.status} - ${response.statusText}`);
                     return [2 /*return*/, false];
                 }
                 return [3 /*break*/, 4];
@@ -168,36 +168,46 @@ var getReadmeDetails = function (readMe, examplesFolder) { return __awaiter(void
                 linesLength = content.split('\n').length;
                 if (linesLength > 75) {
                     if (content.includes('documentation') && examplesFolder === true) {
-                        return [2 /*return*/, 'Low (Separate website with documentation and examples)'];
+                        return [2 /*return*/, 0.1];
                     }
                     else if (content.includes('documentation')) {
-                        return [2 /*return*/, 'Low (Separate website with documentation)'];
+                        return [2 /*return*/, 0.2];
                     }
                     else if (examplesFolder === true) {
-                        return [2 /*return*/, 'Low (Examples can be found in repository)'];
+                        return [2 /*return*/, 0.2];
                     }
                     else {
-                        return [2 /*return*/, 'Medium (readme has enough information)'];
+                        return [2 /*return*/, 0.4];
                     }
                 }
+                else if (content.includes('documentation') && examplesFolder === true) {
+                    return [2 /*return*/, 0.2];
+                }
+                else if (content.includes('documentation')) {
+                    return [2 /*return*/, 0.3];
+                }
+                else if (examplesFolder === true) {
+                    return [2 /*return*/, 0.3];
+                }
+                else if (linesLength <= 5) {
+                    return [2 /*return*/, 0.9];
+                }
+                else if (linesLength > 5 && linesLength <= 20) {
+                    return [2 /*return*/, 0.8];
+                }
+                else if (linesLength > 20 && linesLength <= 35) {
+                    return [2 /*return*/, 0.7];
+                }
+                else if (linesLength > 35 && linesLength <= 50) {
+                    return [2 /*return*/, 0.6];
+                }
                 else {
-                    if (content.includes('documentation') && examplesFolder === true) {
-                        return [2 /*return*/, 'Low (Separate website with documentation and examples)'];
-                    }
-                    else if (content.includes('documentation')) {
-                        return [2 /*return*/, 'Low (Separate website with documentation)'];
-                    }
-                    else if (examplesFolder === true) {
-                        return [2 /*return*/, 'Low (Examples can be found in repository)'];
-                    }
-                    else {
-                        return [2 /*return*/, 'High (readme lacks information)'];
-                    }
+                    return [2 /*return*/, 0.5];
                 }
                 return [3 /*break*/, 5];
             case 4:
                 error_2 = _a.sent();
-                return [2 /*return*/, 'empty'];
+                return [2 /*return*/, -1];
             case 5: return [2 /*return*/];
         }
     });

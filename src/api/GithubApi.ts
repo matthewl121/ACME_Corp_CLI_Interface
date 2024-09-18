@@ -82,10 +82,10 @@ export const checkFolderExists = async (
       if (response.status === 200) {
         return true
       } else if (response.status === 404) {
-        console.log("Folder does not exist.");
+        // console.log("Folder does not exist.");
         return false
       } else {
-        console.log(`Error: ${response.status} - ${response.statusText}`);
+        // console.log(`Error: ${response.status} - ${response.statusText}`);
         return false
       }
     } catch (error) {
@@ -114,24 +114,30 @@ export const getReadmeDetails = async (
         const linesLength= content.split('\n').length;
         if(linesLength > 75) {
             if(content.includes('documentation') && examplesFolder === true) {
-                return 0.9;
+                return 0.1;
             } else if(content.includes('documentation')) {
-                return 0.7;
-            } else if(examplesFolder === true) {
-                return 0.6;
-            } else {
-                return 0.5;
-            }
-        } else {
-            if(content.includes('documentation') && examplesFolder === true) {
-                return 0.8;
-            } else if(content.includes('documentation')) {
-                return 0.7;
-            } else if(examplesFolder === true) {
-                return 0.6;
-            } else {
                 return 0.2;
+            } else if(examplesFolder === true) {
+                return 0.2;
+            } else {
+                return 0.4;
             }
+        } else if(content.includes('documentation') && examplesFolder === true) {
+            return 0.2;
+        } else if(content.includes('documentation')) {
+            return 0.3;
+        } else if(examplesFolder === true) {
+            return 0.3;
+        } else if(linesLength <= 5) {
+            return 0.9;
+        } else if(linesLength > 5 && linesLength <= 20) {
+            return 0.8;
+        } else if (linesLength > 20 && linesLength <= 35) {
+            return 0.7;
+        } else if (linesLength > 35 && linesLength <= 50) {
+            return 0.6;
+        } else {
+            return 0.5;
         }
     } catch (error) {
         return -1;

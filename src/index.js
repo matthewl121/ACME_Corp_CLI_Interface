@@ -148,7 +148,7 @@ var main = function () { return __awaiter(void 0, void 0, void 0, function () {
                 // Log the metrics
                 // const manager = new MetricManager(owner, repo, token, repoURL);
                 // const metricsALL = await manager.calculateAndLogMetrics();
-                console.log("\n        --- METRICS --- \n        \n        Bus Factor:     ".concat(busFactor, " devs\n        Ramp Up:        ").concat(rampUp, "\n        Correctness:    ").concat(correctness, "%\n        Responsiveness: ").concat(responsiveness, " hours\n        License:        ").concat(license, "\n    "));
+                console.log("\n        --- METRICS --- \n        \n        Bus Factor:     ".concat(busFactor, " devs\n        Ramp Up Time:   ").concat(rampUp, "\n        Correctness:    ").concat(correctness, "%\n        Responsiveness: ").concat(responsiveness, " hours\n        License:        ").concat(license, "\n    "));
                 return [2 /*return*/];
         }
     });

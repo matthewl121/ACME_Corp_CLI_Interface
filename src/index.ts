@@ -115,7 +115,7 @@ const main = async () => {
         --- METRICS --- 
         
         Bus Factor:     ${busFactor} devs
-        Ramp Up:        ${rampUp}
+        Ramp Up Time:   ${rampUp}
         Correctness:    ${correctness}%
         Responsiveness: ${responsiveness} hours
         License:        ${license}
