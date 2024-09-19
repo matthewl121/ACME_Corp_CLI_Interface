@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { ApiResponse, ContributorResponse } from '../types';
+import { ApiResponse } from '../types';
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -33,6 +33,28 @@ export const apiGetRequest = async <T>(
             return { data: null, error: "Not Found" };
         }
         
+        console.error('Error details:', error.response?.data || error.message || error);
+        return { data: null, error: error.response?.data?.message || error.message || 'Something went wrong' };
+    }
+};
+
+export const apiPostRequest = async <T>(
+    url: string, 
+    data: any, 
+    token?: string
+): Promise<ApiResponse<T>> => {
+    try {
+        const config: AxiosRequestConfig = {
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+            },
+        };
+
+        const response = await axios.post<T>(url, data, config);
+        
+        return { data: response.data, error: null };
+    } catch (error: any) {
         console.error('Error details:', error.response?.data || error.message || error);
         return { data: null, error: error.response?.data?.message || error.message || 'Something went wrong' };
     }

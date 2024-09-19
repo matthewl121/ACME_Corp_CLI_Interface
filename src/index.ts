@@ -4,15 +4,16 @@
 */
 
 import 'dotenv/config';
-import { fetchRecentIssuesByState, fetchLicense, fetchContributorActivity, fetchRecentPullRequests, fetchReadme } from "./api/GithubApi";
+import { fetchContributorActivity, fetchRepoData } from "./api/GithubApi";
 import { calcBusFactorScore, calcCorrectnessScore, calcLicenseScore, calcResponsivenessScore } from './metricCalcs';
-import { hasLicenseHeading, writeFile } from './utils/utils';
+import { writeFile } from './utils/utils';
 import { extractNpmPackageName, extractGithubOwnerAndRepo, extractDomainFromUrl } from './utils/urlHandler'
 import { fetchGithubUrlFromNpm } from './api/npmApi';
 
 const main = async () => {
     const token: string = process.env.GITHUB_TOKEN || "";
-    const inputURL: string = "https://github.com/defunkt/exception_logger"
+    const inputURL: string = "https://github.com/nodejs/node"
+    
 
     // Extract hostname (www.npm.js or github.com or null)
     const hostname = extractDomainFromUrl(inputURL)
@@ -48,6 +49,8 @@ const main = async () => {
 
     const [owner, repo]: [string, string] = repoDetails
 
+
+
     /* 
         Now that the repo owner (owner) and repo name (repo) have
         been parsed, we can use the github api to calc metrics
@@ -55,58 +58,56 @@ const main = async () => {
 
     // Bus Factor
     const contributorActivity = await fetchContributorActivity(owner, repo, token);
-    await writeFile(contributorActivity, "contributorActivity.json");
     if (!contributorActivity?.data || !Array.isArray(contributorActivity.data)) {
         console.error('Invalid contributor activity data:', contributorActivity.data);
         return;
     }
-    
     const busFactor = calcBusFactorScore(contributorActivity.data);
 
-    // Correctness
-    const totalOpenIssues = await fetchRecentIssuesByState(owner, repo, "open", token);
-    const totalClosedIssues = await fetchRecentIssuesByState(owner, repo, "closed", token);
-    if (!totalOpenIssues?.data || !totalClosedIssues?.data) {
+    const repoData = await fetchRepoData(owner, repo, token);
+    if (!repoData.data) {
+        console.log("Error fetching repo data")
         return;
     }
 
-    await writeFile(totalOpenIssues, "totalOpenIssues.json")
-    await writeFile(totalClosedIssues, "totalClosedIssues.json")
-    const correctness = calcCorrectnessScore(totalOpenIssues.data.total_count, totalClosedIssues.data.total_count)
+    const totalOpenIssues = repoData.data.data.repository.openIssues;
+    const totalClosedIssues = repoData.data.data.repository.closedIssues;
+    const recentPullRequests = repoData.data.data.repository.pullRequests;
+    const licenseResponse = repoData.data.data.repository.licenseInfo;
+    const readmeResponse = repoData.data.data.repository.readme;
+
+    // DEBUG:
+    // await writeFile(contributorActivity, "contributorActivity.json");
+    // await writeFile(totalOpenIssues, "totalOpenIssues.json")
+    // await writeFile(totalClosedIssues, "totalClosedIssues.json")
+    // await writeFile(recentPullRequests, "recentPullRequests.json")
+    // await writeFile(licenseResponse, "licenseResponse.json");
+    // await writeFile(readmeResponse, "readmeResponse.txt")
+
+    // Correctness
+    if (!totalOpenIssues || !totalClosedIssues) {
+        return;
+    }
+    const correctness = calcCorrectnessScore(totalOpenIssues.totalCount, totalClosedIssues.totalCount)
 
     // Responsive Maintainer
-    const recentPullRequests = await fetchRecentPullRequests(owner, repo, token)
-    if (!recentPullRequests?.data) {
+    if (!recentPullRequests?.nodes) {
         return;
     }
-
-    await writeFile(recentPullRequests, "recentPullRequests.json")
-    const responsiveness = calcResponsivenessScore(totalClosedIssues.data.items, recentPullRequests.data.items);
+    const responsiveness = calcResponsivenessScore(totalClosedIssues.nodes, recentPullRequests.nodes);
 
     // licenseResponse
-    // TODO: CHECK IF LICENSE IN README
-    const licenseResponse = await fetchLicense(owner, repo, token);
-    if (!licenseResponse?.data) {
+    if (!licenseResponse) {
         console.error("Error retrieving license information.");
         return;
     }
-
-    await writeFile(licenseResponse, "licenseResponse.json");
-
-
-    const readmeResponse = await fetchReadme(owner, repo, token)
-    await writeFile(readmeResponse, "readme.json");
-    if (readmeResponse.error || !readmeResponse.data) {
+    if (!readmeResponse) {
+        console.error("Error retrieving README information.");
         return;
     }
+    const license = calcLicenseScore(licenseResponse, readmeResponse.text)
 
-    const base64Content = readmeResponse.data?.content;
-    const buffer = Buffer.from(base64Content, 'base64');
-    const readmeContent = buffer.toString('utf-8');
-
-    await writeFile(readmeContent, "readmeContent.txt")
     
-    const license = calcLicenseScore(licenseResponse.data, readmeContent)
     // Log the metrics
     console.log(`
         --- METRICS ---       --- SCORE --- 

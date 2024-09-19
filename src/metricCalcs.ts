@@ -1,4 +1,4 @@
-import { ContributorResponse, Issue, LicenseResponse } from "./types";
+import { ContributorResponse, ClosedIssueNode, LicenseResponse, PullRequestNode, LicenseInfo } from "./types";
 import { hasLicenseHeading } from "./utils/utils";
 
 export const calcBusFactorScore = (contributorActivity: ContributorResponse[]): number => {
@@ -44,7 +44,7 @@ export const calcCorrectnessScore = (totalOpenIssuesCount: number, totalClosedIs
 
 // Potential rework: Responsiveness score currently caps open PRs max close time to be
 //                   30 days. Open to other methods of penalization for open PRs
-export const calcResponsivenessScore = (closedIssues: Issue[], pullRequests: Issue[]): number => {
+export const calcResponsivenessScore = (closedIssues: ClosedIssueNode[], pullRequests: PullRequestNode[]): number => {
     const calcCloseTime = (created_at: string, closed_at: string): number => {
         const startTime = new Date(created_at);
         const endTime = new Date(closed_at);
@@ -58,15 +58,15 @@ export const calcResponsivenessScore = (closedIssues: Issue[], pullRequests: Iss
     // calc total time for issue closing
     let totalIssueCloseTime = 0;
     for (const issue of closedIssues) {
-        totalIssueCloseTime += calcCloseTime(issue.created_at, issue.closed_at);
+        totalIssueCloseTime += calcCloseTime(issue.createdAt, issue.closedAt);
     }
     
     // calc total time for PR closing
     let totalPRCloseTime = 0;
     for (const pr of pullRequests) {
         // if PR is open, set close time to current time
-        const closeTime = pr.closed_at || new Date().toISOString();
-        totalPRCloseTime += Math.min(calcCloseTime(pr.created_at, closeTime), MAX_CLOSE_TIME_HOURS);
+        const closeTime = pr.closedAt || new Date().toISOString();
+        totalPRCloseTime += Math.min(calcCloseTime(pr.createdAt, closeTime), MAX_CLOSE_TIME_HOURS);
     }
 
     // handle div by 0 with empty case
@@ -82,12 +82,12 @@ export const calcResponsivenessScore = (closedIssues: Issue[], pullRequests: Iss
     return (avgIssueCloseTime + avgPRCloseTime) / 2;
 }
 
-export const calcLicenseScore = (license: LicenseResponse, readmeContent: string): number => {
+export const calcLicenseScore = (license: LicenseInfo, readmeText: string): number => {
     // if no LICENSE file, check README for license header
-    if (license.license?.spdx_id === "NOASSERTION") {
-        return hasLicenseHeading(readmeContent) ? 1 : 0;
+    if (license.spdxId === "NOASSERTION") {
+        return hasLicenseHeading(readmeText) ? 1 : 0;
     }
 
-    return license.hasLicense ? 1 : 0;
+    return 1;
 };
 

@@ -40,3 +40,61 @@ export interface ApiResponse<T> {
     data: T | null;
     error: string | null;
 }
+
+export interface LicenseInfo {
+    key: string;
+    name: string;
+    spdxId: string;
+    url: string;
+}
+
+export interface Readme {
+    text: string;
+}
+
+export interface OpenIssueNode {
+    createdAt: string;
+    updatedAt: string;
+    closedAt: string | null;
+}
+
+export interface ClosedIssueNode {
+    createdAt: string;
+    updatedAt: string;
+    closedAt: string;
+}
+
+export interface OpenIssues {
+    totalCount: number;
+    nodes: OpenIssueNode[];
+}
+
+export interface ClosedIssues {
+    totalCount: number;
+    nodes: ClosedIssueNode[];
+}
+
+export interface PullRequestNode {
+    createdAt: string;
+    updatedAt: string;
+    closedAt: string | null;
+}
+
+export interface PullRequests {
+    totalCount: number;
+    nodes?: PullRequestNode[];
+}
+
+export interface RepositoryResponse {
+    licenseInfo: LicenseInfo;
+    readme: Readme;
+    openIssues: OpenIssues;
+    closedIssues: ClosedIssues;
+    pullRequests: PullRequests;
+}
+
+export interface GraphQLResponse {
+    data: {
+        repository: RepositoryResponse;
+    }
+}
