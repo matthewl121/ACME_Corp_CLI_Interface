@@ -77,7 +77,6 @@ export const calcResponsivenessScore = (closedIssues: ClosedIssueNode[], pullReq
         ? totalPRCloseTime / pullRequests.length
         : 0;
 
-    console.log("avgIssueCloseTime:", avgIssueCloseTime, "avgPRCloseTime", avgPRCloseTime)
 
     return (avgIssueCloseTime + avgPRCloseTime) / 2;
 }
