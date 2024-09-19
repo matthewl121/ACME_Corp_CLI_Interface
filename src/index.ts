@@ -5,14 +5,14 @@
 
 import 'dotenv/config';
 import { fetchRecentIssuesByState, fetchLicense, fetchContributorActivity, fetchRecentPullRequests, fetchReadme } from "./api/GithubApi";
-import { calcBusFactor, calcCorrectness, calcLicenseScore, calcResponsiveness } from './metricCalcs';
+import { calcBusFactorScore, calcCorrectnessScore, calcLicenseScore, calcResponsivenessScore } from './metricCalcs';
 import { hasLicenseHeading, writeFile } from './utils/utils';
 import { extractNpmPackageName, extractGithubOwnerAndRepo, extractDomainFromUrl } from './utils/urlHandler'
 import { fetchGithubUrlFromNpm } from './api/npmApi';
 
 const main = async () => {
     const token: string = process.env.GITHUB_TOKEN || "";
-    const inputURL: string = "https://github.com/nodejs/node"
+    const inputURL: string = "https://github.com/defunkt/exception_logger"
 
     // Extract hostname (www.npm.js or github.com or null)
     const hostname = extractDomainFromUrl(inputURL)
@@ -61,7 +61,7 @@ const main = async () => {
         return;
     }
     
-    const busFactor = calcBusFactor(contributorActivity.data);
+    const busFactor = calcBusFactorScore(contributorActivity.data);
 
     // Correctness
     const totalOpenIssues = await fetchRecentIssuesByState(owner, repo, "open", token);
@@ -72,7 +72,7 @@ const main = async () => {
 
     await writeFile(totalOpenIssues, "totalOpenIssues.json")
     await writeFile(totalClosedIssues, "totalClosedIssues.json")
-    const correctness = calcCorrectness(totalOpenIssues.data.total_count, totalClosedIssues.data.total_count)
+    const correctness = calcCorrectnessScore(totalOpenIssues.data.total_count, totalClosedIssues.data.total_count)
 
     // Responsive Maintainer
     const recentPullRequests = await fetchRecentPullRequests(owner, repo, token)
@@ -81,7 +81,7 @@ const main = async () => {
     }
 
     await writeFile(recentPullRequests, "recentPullRequests.json")
-    const responsiveness = calcResponsiveness(totalClosedIssues.data.items, recentPullRequests.data.items);
+    const responsiveness = calcResponsivenessScore(totalClosedIssues.data.items, recentPullRequests.data.items);
 
     // licenseResponse
     // TODO: CHECK IF LICENSE IN README
@@ -109,12 +109,12 @@ const main = async () => {
     const license = calcLicenseScore(licenseResponse.data, readmeContent)
     // Log the metrics
     console.log(`
-        --- METRICS --- 
+        --- METRICS ---       --- SCORE --- 
         
-        Bus Factor Score:     ${busFactor} devs
-        Correctness Score:    ${correctness}%
-        Responsiveness Score: ${responsiveness} hours
-        License Score:        ${license}
+        Bus Factor Score:     ${busFactor.toFixed(2)}
+        Correctness Score:    ${correctness.toFixed(2)}
+        Responsiveness Score: ${responsiveness.toFixed(2)}
+        License Score:        ${license.toFixed(2)}
     `);
 }
 

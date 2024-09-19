@@ -1,7 +1,7 @@
-import { ContributorResponse, Issue, IssueSearchResponse, LicenseResponse } from "./types";
+import { ContributorResponse, Issue, LicenseResponse } from "./types";
 import { hasLicenseHeading } from "./utils/utils";
 
-export const calcBusFactor = (contributorActivity: ContributorResponse[]): number => {
+export const calcBusFactorScore = (contributorActivity: ContributorResponse[]): number => {
     if (!contributorActivity) {
         return 0;
     }
@@ -28,49 +28,40 @@ export const calcBusFactor = (contributorActivity: ContributorResponse[]): numbe
         }
     }
 
-    // max is half the total contributors
-    const maxBusFactor = Math.max(1, Math.floor((totalContributors + 1) / 2));
-    const averageBusFactor = 4
-
-    let busFactorScore = Math.min(1, busFactor / averageBusFactor)
-    // account for smaller repos w/ less contirbutors
-    if (maxBusFactor < averageBusFactor) {
-        busFactorScore = Math.min(1, busFactorScore);
-    }
-
-    return busFactorScore;
+    // scale bus factor values using sigmoid function
+    const averageBusFactor = 3;
+    return busFactor < 9 ? 1 - Math.exp(-(busFactor ** 2) / (2 * averageBusFactor ** 2)) : 1;
 }
 
-export const calcCorrectness = (totalOpenIssuesCount: number, totalClosedIssuesCount: number): number => {
+export const calcCorrectnessScore = (totalOpenIssuesCount: number, totalClosedIssuesCount: number): number => {
     const totalIssues = totalOpenIssuesCount + totalClosedIssuesCount;
     if (totalIssues == 0) {
-        return 100;
+        return 1;
     }
 
-    return (totalClosedIssuesCount / totalIssues) * 100;
+    return totalClosedIssuesCount / totalIssues;
 }
 
 // Potential rework: Responsiveness score currently caps open PRs max close time to be
 //                   30 days. Open to other methods of penalization for open PRs
-export const calcResponsiveness = (closedIssues: Issue[], pullRequests: Issue[]): number => {
+export const calcResponsivenessScore = (closedIssues: Issue[], pullRequests: Issue[]): number => {
     const calcCloseTime = (created_at: string, closed_at: string): number => {
         const startTime = new Date(created_at);
         const endTime = new Date(closed_at);
-    
-        // calc the difference in hours
-        const diffMs = endTime.getTime() - startTime.getTime();
-        // Convert milliseconds to hours
-        return diffMs / (1000 * 60 * 60);
+        
+        // close time in hours
+        return (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
     };
 
     const MAX_CLOSE_TIME_HOURS = 24 * 30 // cap stagnant open PRs at 30 days response time
 
+    // calc total time for issue closing
     let totalIssueCloseTime = 0;
     for (const issue of closedIssues) {
         totalIssueCloseTime += calcCloseTime(issue.created_at, issue.closed_at);
     }
     
-    // calc avg time for PR closing
+    // calc total time for PR closing
     let totalPRCloseTime = 0;
     for (const pr of pullRequests) {
         // if PR is open, set close time to current time
@@ -86,10 +77,13 @@ export const calcResponsiveness = (closedIssues: Issue[], pullRequests: Issue[])
         ? totalPRCloseTime / pullRequests.length
         : 0;
 
+    console.log("avgIssueCloseTime:", avgIssueCloseTime, "avgPRCloseTime", avgPRCloseTime)
+
     return (avgIssueCloseTime + avgPRCloseTime) / 2;
 }
 
 export const calcLicenseScore = (license: LicenseResponse, readmeContent: string): number => {
+    // if no LICENSE file, check README for license header
     if (license.license?.spdx_id === "NOASSERTION") {
         return hasLicenseHeading(readmeContent) ? 1 : 0;
     }
