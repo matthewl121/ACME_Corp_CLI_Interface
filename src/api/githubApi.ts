@@ -2,6 +2,7 @@ import { apiGetRequest, apiPostRequest } from './apiUtils'
 import { ApiResponse, GraphQLResponse, ReadmeResponse } from '../types';
 import { ContributorResponse, IssueSearchResponse, LicenseResponse } from '../types';
 import { getRepoDataQuery } from './graphqlQueries';
+import { writeFile } from '../utils/utils';
 
 const GITHUB_BASE_URL: string = "https://api.github.com"
 
@@ -43,6 +44,8 @@ export const fetchRepoData = async (
     const body = JSON.stringify({ query });
 
     const response = await apiPostRequest<GraphQLResponse>(url, body, token);
+    await writeFile(response, "response1.json")
+
     if (response.error || !response.data) {
         console.error('Error fetching repository data:', response.error);
         return { data: null, error: response.error };

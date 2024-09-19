@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { ApiResponse } from '../types';
+import { writeFile } from '../utils/utils';
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
