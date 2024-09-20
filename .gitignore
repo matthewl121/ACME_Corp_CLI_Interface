@@ -1,5 +1,5 @@
 /node_modules
-/repos/
+/repos/*
 .env
 *.json
 *.js
