@@ -67,6 +67,7 @@ export const calcResponsivenessScore = (
 
     if (isLocked) {
         // repo is no longer maintained
+        console.log('Repo is locked')
         return 0;
     }
 
