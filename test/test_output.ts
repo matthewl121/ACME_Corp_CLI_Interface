@@ -7,6 +7,17 @@ try {
   const filePath = path.join(__dirname, 'jest-output.txt');
   const data = fs.readFileSync(filePath, 'utf8');
   const lines = data.split('\n');
+
+  // Get total number of tests and number of tests passed
+  const testsCountRegex = /Tests:\s+(\d+)\s+passed,\s+(\d+)\s+total/;
+  const match = data.match(testsCountRegex);
+  let passed = -1;
+  let total = -1;
+  if (match) {
+    passed = parseInt(match[1], 10);
+    total = parseInt(match[2], 10);
+  }
+
   // Check if there are at least 5 lines
   if (lines.length >= 5) {
     // Get the 5th line (index 4)
@@ -21,7 +32,7 @@ try {
       const coverage = parseInt(values[3], 10);
 
       if (!isNaN(coverage)) {
-        console.log(`_/_ test cases passed. ${coverage}% line coverage achieved.`);
+        console.log(`${passed}/${total} test cases passed. ${coverage}% line coverage achieved.`);
       } else {
         logToFile('The 4th value on the 5th line is not a valid integer', 1);
       }
