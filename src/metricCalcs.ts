@@ -1,4 +1,7 @@
-import { ContributorResponse, ClosedIssueNode, PullRequestNode, LicenseInfo, OpenIssueNode } from "./types";
+import { clone } from 'isomorphic-git';
+import * as fs from 'fs';
+import http from 'isomorphic-git/http/node';
+import { ContributorResponse, ClosedIssueNode, PullRequestNode, OpenIssueNode } from "./types";
 import { hasLicenseHeading } from "./utils/utils";
 
 export const calcBusFactorScore = (contributorActivity: ContributorResponse[]): number => {
@@ -30,7 +33,13 @@ export const calcBusFactorScore = (contributorActivity: ContributorResponse[]): 
 
     // scale bus factor values using sigmoid function
     const averageBusFactor = 3;
-    return busFactor < 9 ? 1 - Math.exp(-(busFactor ** 2) / (2 * averageBusFactor ** 2)) : 1;
+
+    // if bus factor is 10+, thats more than enough
+    if (busFactor > 9) {
+        return 1;
+    }
+    
+    return Math.exp(-(busFactor ** 2) / (2 * averageBusFactor ** 2));
 }
 
 export const calcCorrectnessScore = (totalOpenIssuesCount: number, totalClosedIssuesCount: number): number => {
@@ -108,12 +117,36 @@ export const calcResponsivenessScore = (
   }
   
 
-export const calcLicenseScore = (license: LicenseInfo, readmeText: string): number => {
-    // if no LICENSE file, check README for license header
-    if (license.spdxId === "NOASSERTION") {
-        return hasLicenseHeading(readmeText) ? 1 : 0;
+// export const calcLicenseScore = (license: LicenseInfo, readmeText: string): number => {
+//     // if no LICENSE file, check README for license header
+//     if (license.spdxId === "NOASSERTION") {
+//         return hasLicenseHeading(readmeText) ? 1 : 0;
+//     }
+
+//     return 1;
+// };
+
+export const calcLicenseScore = async (repoUrl: string, localDir: string): Promise<number> => {
+    await clone({
+        fs,
+        http,
+        dir: localDir,
+        url: repoUrl,
+        singleBranch: true,
+        depth: 1,
+    });
+  
+    const licenseFilePath = `${localDir}/LICENSE`;
+    const readmeFilePath = `${localDir}/README.md`;
+  
+    if (fs.existsSync(licenseFilePath)) {
+      return 1;
     }
-
-    return 1;
-};
-
+  
+    if (fs.existsSync(readmeFilePath)) {
+      const readmeText = fs.readFileSync(readmeFilePath, 'utf8');
+      return hasLicenseHeading(readmeText) ? 1 : 0;
+    }
+  
+    return 0;
+  };

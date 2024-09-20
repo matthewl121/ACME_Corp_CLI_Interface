@@ -5,6 +5,7 @@ import { calcBusFactorScore, calcCorrectnessScore, calcLicenseScore, calcRespons
 import { writeFile } from './utils/utils';
 import { extractNpmPackageName, extractGithubOwnerAndRepo, extractDomainFromUrl } from './utils/urlHandler'
 import { fetchGithubUrlFromNpm } from './api/npmApi';
+import * as path from 'path';
 
 const main = async (url: string) => {
     const token: string = process.env.GITHUB_TOKEN || "";
@@ -22,6 +23,20 @@ const main = async (url: string) => {
     console.log(owner, repo)
 
     try {
+        try {
+            // Create a unique directory for the cloned repo (e.g., ./repos/owner_repo)
+            const localDir = path.join("./repos", `${owner}_${repo}`);
+            
+            // Call the function and pass the unique directory
+            const res = await calcLicenseScore(url, localDir);
+        
+            console.log("License score:", res);
+            return
+        } catch (error) {
+            console.error("Error processing the repository:", error);
+            return
+        }
+        
         const repoData = await fetchRepoData(owner, repo, token);
         if (!repoData.data?.data) {
             console.log("Error fetching repo data for", inputURL);
@@ -30,8 +45,6 @@ const main = async (url: string) => {
 
         await writeFile(repoData, "repoData.json")
 
-        return
-        
         const totalClosedIssues = repoData.data.data.repository.closedIssues;
         const totalOpenIssues = repoData.data.data.repository.openIssues;
         const recentPullRequests = repoData.data.data.repository.pullRequests;
