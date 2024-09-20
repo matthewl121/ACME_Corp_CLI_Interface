@@ -125,7 +125,7 @@ export class MetricManager {
             }
             // Calculate weighted metrics
             const weightedMetrics = await this.getWeightedMetrics(metrics);
-            const netScore = weightedMetrics.BusFactor + weightedMetrics.Correctness + weightedMetrics.ResponsiveMaintainer + weightedMetrics.License;
+            const netScore = (weightedMetrics.BusFactor ?? 0) + (weightedMetrics.Correctness ?? 0) + (weightedMetrics.ResponsiveMaintainer ?? 0) + (weightedMetrics.License ?? 0);
             metrics.NetScore = netScore;
 
 

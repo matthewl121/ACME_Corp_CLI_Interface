@@ -10,7 +10,7 @@ export function initLogFile() {
     }
 }
 
-export function logToFile(message, message_level) {
+export function logToFile(message: string, message_level: number) {
     let log_level = parseInt(process.env.LOG_LEVEL || '1', 10);
     // Check if LOG_LEVEL is valid
     if (isNaN(log_level) || log_level < 0 || log_level > 3) {
@@ -29,5 +29,5 @@ export function logToFile(message, message_level) {
 }
 
 // Usage examples:
-logToFile('Informational messages', 1);
-logToFile('Debug messages', 2);
+// logToFile('Informational messages', 1);
+// logToFile('Debug messages', 2);
