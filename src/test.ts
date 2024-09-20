@@ -28,9 +28,8 @@ const main = async (url: string) => {
             return;
         }
 
-        console.log(repoData)
-
         const totalClosedIssues = repoData.data.data.repository.closedIssues;
+        const totalOpenIssues = repoData.data.data.repository.openIssues;
         const recentPullRequests = repoData.data.data.repository.pullRequests;
 
         if (!recentPullRequests?.nodes) {
@@ -38,10 +37,10 @@ const main = async (url: string) => {
             return;
         }
 
-        const responsiveness = calcResponsivenessScore(totalClosedIssues.nodes, recentPullRequests.nodes);
+        const responsiveness = calcResponsivenessScore(totalClosedIssues.nodes, totalOpenIssues.nodes, recentPullRequests.nodes);
 
-        // Append the result to the output file
         await fs.appendFile('./src/data/out.txt', `${inputURL}, ${responsiveness}, ${totalClosedIssues.totalCount}, ${recentPullRequests.totalCount}\n`, 'utf-8');
+        await fs.appendFile('./src/data/resp.txt', `${responsiveness}\n`);
         console.log(`Processed ${inputURL}, responsiveness: ${responsiveness}`);
     } catch (error) {
         console.error("Error processing URL:", inputURL, error);
@@ -50,11 +49,10 @@ const main = async (url: string) => {
 
 const processUrls = async () => {
     try {
-        // Read URLs from the file
-        await fs.writeFile('./src/data/out.txt', "");
+        await fs.writeFile('./src/data/out.txt', "URL, Score, Closed Issue Count, PR Count\n");
+        await fs.writeFile('./src/data/resp.txt', "Score\n");
         const data = await fs.readFile('./src/data/urls.txt', 'utf-8');
         
-        // Split by new lines and filter out empty lines, trimming each URL to remove any trailing \r or \n
         const urls = data.split('\n').map(url => url.trim()).filter(url => url.length > 0);
 
         for (const url of urls) {
