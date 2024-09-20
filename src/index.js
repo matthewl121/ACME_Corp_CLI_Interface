@@ -39,63 +39,121 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __asyncValues = (this && this.__asyncValues) || function (o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
 var urlHandler_js_1 = require("./utils/urlHandler.js");
 var npmApi_js_1 = require("./api/npmApi.js");
 var metricManager_js_1 = require("./metricManager.js");
 var log_js_1 = require("./utils/log.js");
-var main = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var token, inputURL, hostname, repoURL, npmPackageName, npmResponse, repoDetails, owner, repo, manager, metricsALL, error_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+var fs = require("fs");
+var readline = require("readline");
+var main = function (filePath) { return __awaiter(void 0, void 0, void 0, function () {
+    var token, urlsArray, fileStream, rl, _a, rl_1, rl_1_1, line, inputURL, _i, urlsArray_1, url, hostname, repoURL, npmPackageName, npmResponse, repoDetails, owner, repo, manager, metricsALL, error_1, e_1_1;
+    var _b, e_1, _c, _d;
+    return __generator(this, function (_e) {
+        switch (_e.label) {
             case 0:
                 (0, log_js_1.initLogFile)();
                 token = process.env.GITHUB_TOKEN || "";
-                inputURL = "https://www.npmjs.com/package/ts-node";
-                hostname = (0, urlHandler_js_1.extractDomainFromUrl)(inputURL);
+                urlsArray = [];
+                fileStream = fs.createReadStream(filePath);
+                rl = readline.createInterface({
+                    input: fileStream,
+                    crlfDelay: Infinity
+                });
+                _e.label = 1;
+            case 1:
+                _e.trys.push([1, 14, 15, 20]);
+                _a = true, rl_1 = __asyncValues(rl);
+                _e.label = 2;
+            case 2: return [4 /*yield*/, rl_1.next()];
+            case 3:
+                if (!(rl_1_1 = _e.sent(), _b = rl_1_1.done, !_b)) return [3 /*break*/, 13];
+                _d = rl_1_1.value;
+                _a = false;
+                line = _d;
+                inputURL = line.trim();
+                if (inputURL) {
+                    urlsArray.push(inputURL); // Store the URL in the array
+                }
+                _i = 0, urlsArray_1 = urlsArray;
+                _e.label = 4;
+            case 4:
+                if (!(_i < urlsArray_1.length)) return [3 /*break*/, 12];
+                url = urlsArray_1[_i];
+                hostname = (0, urlHandler_js_1.extractDomainFromUrl)(url);
                 if (!hostname || (hostname !== "www.npmjs.com" && hostname !== "github.com")) {
                     return [2 /*return*/];
                 }
                 repoURL = "";
-                if (!(hostname === "www.npmjs.com")) return [3 /*break*/, 2];
+                if (!(hostname === "www.npmjs.com")) return [3 /*break*/, 6];
                 npmPackageName = (0, urlHandler_js_1.extractNpmPackageName)(inputURL);
                 if (!npmPackageName) {
                     return [2 /*return*/];
                 }
                 return [4 /*yield*/, (0, npmApi_js_1.fetchGithubUrlFromNpm)(npmPackageName)];
-            case 1:
-                npmResponse = _a.sent();
+            case 5:
+                npmResponse = _e.sent();
                 if (!(npmResponse === null || npmResponse === void 0 ? void 0 : npmResponse.data)) {
                     return [2 /*return*/];
                 }
                 repoURL = npmResponse.data;
-                return [3 /*break*/, 3];
-            case 2:
+                return [3 /*break*/, 7];
+            case 6:
                 // URL must be github, so use it directly
                 repoURL = inputURL;
-                _a.label = 3;
-            case 3:
+                _e.label = 7;
+            case 7:
                 repoDetails = (0, urlHandler_js_1.extractGithubOwnerAndRepo)(repoURL);
                 if (!repoDetails) {
                     return [2 /*return*/];
                 }
                 owner = repoDetails[0], repo = repoDetails[1];
-                _a.label = 4;
-            case 4:
-                _a.trys.push([4, 6, , 7]);
+                _e.label = 8;
+            case 8:
+                _e.trys.push([8, 10, , 11]);
                 manager = new metricManager_js_1.MetricManager(owner, repo, token, repoURL);
                 return [4 /*yield*/, manager.calculateAndLogMetrics()];
-            case 5:
-                metricsALL = _a.sent();
-                return [3 /*break*/, 7];
-            case 6:
-                error_1 = _a.sent();
+            case 9:
+                metricsALL = _e.sent();
+                return [3 /*break*/, 11];
+            case 10:
+                error_1 = _e.sent();
                 // Handle any errors that might occur during the API calls or calculations
                 console.error("An error occurred in the main function:", error_1);
-                return [3 /*break*/, 7];
-            case 7: return [2 /*return*/];
+                return [3 /*break*/, 11];
+            case 11:
+                _i++;
+                return [3 /*break*/, 4];
+            case 12:
+                _a = true;
+                return [3 /*break*/, 2];
+            case 13: return [3 /*break*/, 20];
+            case 14:
+                e_1_1 = _e.sent();
+                e_1 = { error: e_1_1 };
+                return [3 /*break*/, 20];
+            case 15:
+                _e.trys.push([15, , 18, 19]);
+                if (!(!_a && !_b && (_c = rl_1.return))) return [3 /*break*/, 17];
+                return [4 /*yield*/, _c.call(rl_1)];
+            case 16:
+                _e.sent();
+                _e.label = 17;
+            case 17: return [3 /*break*/, 19];
+            case 18:
+                if (e_1) throw e_1.error;
+                return [7 /*endfinally*/];
+            case 19: return [7 /*endfinally*/];
+            case 20: return [2 /*return*/];
         }
     });
 }); };
-main().catch(console.error);
+main(process.argv[2]).catch(console.error);

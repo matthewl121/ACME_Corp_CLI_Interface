@@ -133,6 +133,7 @@ export class MetricManager {
             // Create JSON output
 
             // Log the JSON output
+            console.log("Metrics Object:", metrics);
             logToFile("Metrics Output (JSON):", 1);
             logToFile(JSON.stringify(metrics, null, 2), 1); // Pretty-print with 2-space indentation
         } catch (error) {
