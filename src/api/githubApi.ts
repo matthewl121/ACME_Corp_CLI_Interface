@@ -1,6 +1,6 @@
 import { apiGetRequest, apiPostRequest } from './apiUtils'
-import { ApiResponse, GraphQLResponse, ReadmeResponse } from '../types';
-import { ContributorResponse, IssueSearchResponse, LicenseResponse } from '../types';
+import { ApiResponse, GraphQLResponse } from '../types';
+import { ContributorResponse } from '../types';
 import { getRepoDataQuery } from './graphqlQueries';
 import { writeFile } from '../utils/utils';
 

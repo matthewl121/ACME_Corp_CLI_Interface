@@ -94,7 +94,7 @@ const main = async () => {
     if (!recentPullRequests?.nodes) {
         return;
     }
-    const responsiveness = calcResponsivenessScore(totalClosedIssues.nodes, recentPullRequests.nodes);
+    const responsiveness = calcResponsivenessScore(totalClosedIssues.nodes, totalOpenIssues.nodes, recentPullRequests.nodes);
 
     // licenseResponse
     if (!licenseResponse) {

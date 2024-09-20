@@ -23,21 +23,26 @@ const main = async (url: string) => {
 
     try {
         const repoData = await fetchRepoData(owner, repo, token);
-        if (!repoData.data?.data.repository) {
+        if (!repoData.data?.data) {
             console.log("Error fetching repo data for", inputURL);
             return;
         }
 
+        await writeFile(repoData, "repoData.json")
+
+        return
+        
         const totalClosedIssues = repoData.data.data.repository.closedIssues;
         const totalOpenIssues = repoData.data.data.repository.openIssues;
         const recentPullRequests = repoData.data.data.repository.pullRequests;
+        const isLocked = repoData.data?.data.repository.isLocked
 
         if (!recentPullRequests?.nodes) {
             console.log("No pull requests found for", inputURL);
             return;
         }
 
-        const responsiveness = calcResponsivenessScore(totalClosedIssues.nodes, totalOpenIssues.nodes, recentPullRequests.nodes);
+        const responsiveness = calcResponsivenessScore(totalClosedIssues.nodes, totalOpenIssues.nodes, recentPullRequests.nodes, isLocked);
 
         await fs.appendFile('./src/data/out.txt', `${inputURL}, ${responsiveness}, ${totalClosedIssues.totalCount}, ${recentPullRequests.totalCount}\n`, 'utf-8');
         await fs.appendFile('./src/data/resp.txt', `${responsiveness}\n`);
@@ -51,7 +56,7 @@ const processUrls = async () => {
     try {
         await fs.writeFile('./src/data/out.txt', "URL, Score, Closed Issue Count, PR Count\n");
         await fs.writeFile('./src/data/resp.txt', "Score\n");
-        const data = await fs.readFile('./src/data/urls.txt', 'utf-8');
+        const data = await fs.readFile('./src/data/url.txt', 'utf-8');
         
         const urls = data.split('\n').map(url => url.trim()).filter(url => url.length > 0);
 

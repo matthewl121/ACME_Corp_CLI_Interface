@@ -1,4 +1,4 @@
-import { ContributorResponse, ClosedIssueNode, LicenseResponse, PullRequestNode, LicenseInfo, OpenIssueNode } from "./types";
+import { ContributorResponse, ClosedIssueNode, PullRequestNode, LicenseInfo, OpenIssueNode } from "./types";
 import { hasLicenseHeading } from "./utils/utils";
 
 export const calcBusFactorScore = (contributorActivity: ContributorResponse[]): number => {
@@ -42,63 +42,68 @@ export const calcCorrectnessScore = (totalOpenIssuesCount: number, totalClosedIs
     return totalClosedIssuesCount / totalIssues;
 }
 
-// Potential rework: Responsiveness score currently caps open PRs max close time to be
-//                   30 days. Open to other methods of penalization for open PRs
+// Need to calc score
 export const calcResponsivenessScore = (
     closedIssues: ClosedIssueNode[], 
     openIssues: OpenIssueNode[], 
-    pullRequests: PullRequestNode[]
-  ): number => {
-      const calcCloseTime = (created_at: string, closed_at: string): number => {
-          const startTime = new Date(created_at);
-          const endTime = new Date(closed_at);
-          
-          // close time in hours
-          return (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
-      };
+    pullRequests: PullRequestNode[],
+    isLocked: boolean
+): number => {
+    const calcCloseTime = (created_at: string, closed_at: string): number => {
+        const startTime = new Date(created_at);
+        const endTime = new Date(closed_at);
+        
+        // close time in hours
+        return (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
+    };
   
-      const calcOpenTime = (created_at: string): number => {
-          const startTime = new Date(created_at);
-          const now = new Date();
-          
-          // open time in hours (from creation to current time)
-          return (now.getTime() - startTime.getTime()) / (1000 * 60 * 60);
-      };
-  
-      // calc total time for closed issue resolution
-      let totalIssueCloseTime = 0;
-      for (const issue of closedIssues) {
-          totalIssueCloseTime += calcCloseTime(issue.createdAt, issue.closedAt);
-      }
-  
-      // calc total time for open issue penalization
-      let totalOpenIssueTime = 0;
-      for (const issue of openIssues) {
-          totalOpenIssueTime += calcOpenTime(issue.createdAt);
-      }
-  
-      // calc total time for PR closing
-      let totalPRCloseTime = 0;
-      for (const pr of pullRequests) {
-          const prCloseTime = pr.closedAt || new Date().toISOString();
-          totalPRCloseTime += calcCloseTime(pr.createdAt, prCloseTime);
-      }
-  
-      // handle div by 0 with empty case
-      const avgIssueCloseTime = closedIssues.length > 0 
-          ? totalIssueCloseTime / closedIssues.length
-          : 0;
-      
-      const avgOpenIssueTime = openIssues.length > 0 
-          ? totalOpenIssueTime / openIssues.length
-          : 0;
-  
-      const avgPRCloseTime = pullRequests.length > 0 
-          ? totalPRCloseTime / pullRequests.length
-          : 0;
-  
-      // Calculate the final score (you can tweak the weight of open issues)
-      return (avgIssueCloseTime + avgPRCloseTime + avgOpenIssueTime) / 3;
+    const calcOpenTime = (created_at: string): number => {
+        const startTime = new Date(created_at);
+        const now = new Date();
+        
+        // open time in hours (from creation to current time)
+        return (now.getTime() - startTime.getTime()) / (1000 * 60 * 60);
+    };
+
+    if (isLocked) {
+        // repo is no longer maintained
+        return 0;
+    }
+
+    // calc total time for closed issue resolution
+    let totalIssueCloseTime = 0;
+    for (const issue of closedIssues) {
+        totalIssueCloseTime += calcCloseTime(issue.createdAt, issue.closedAt);
+    }
+
+    // calc total time for open issue penalization
+    let totalOpenIssueTime = 0;
+    for (const issue of openIssues) {
+        totalOpenIssueTime += calcOpenTime(issue.createdAt);
+    }
+
+    // calc total time for PR closing
+    let totalPRCloseTime = 0;
+    for (const pr of pullRequests) {
+        const prCloseTime = pr.closedAt || new Date().toISOString();
+        totalPRCloseTime += calcCloseTime(pr.createdAt, prCloseTime);
+    }
+
+    // handle div by 0 with empty case
+    const avgIssueCloseTime = closedIssues.length > 0 
+        ? totalIssueCloseTime / closedIssues.length
+        : 0;
+    
+    const avgOpenIssueTime = openIssues.length > 0 
+        ? totalOpenIssueTime / openIssues.length
+        : 0;
+
+    const avgPRCloseTime = pullRequests.length > 0 
+        ? totalPRCloseTime / pullRequests.length
+        : 0;
+
+    // Calculate the final score (you can tweak the weight of open issues)
+    return (avgIssueCloseTime + avgPRCloseTime + avgOpenIssueTime) / 3;
   }
   
 

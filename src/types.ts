@@ -5,31 +5,6 @@ export interface ContributorResponse {
     }
 }
 
-export interface Issue {
-    created_at: string;
-    updated_at: string;
-    closed_at: string;
-}
-
-export interface IssueSearchResponse {
-    total_count: number;
-    items: Issue[];
-}
-
-export interface LicenseResponse {
-    license: {
-        key: string;
-        name: string;
-        spdx_id: string;
-        url: string;
-    } | null,
-    hasLicense: boolean;
-}
-
-export interface ReadmeResponse {
-    content: string
-}
-
 export interface NpmApiResponse {
     repository: {
         url: string;
@@ -91,6 +66,7 @@ export interface RepositoryResponse {
     openIssues: OpenIssues;
     closedIssues: ClosedIssues;
     pullRequests: PullRequests;
+    isLocked: boolean;
 }
 
 export interface GraphQLResponse {
