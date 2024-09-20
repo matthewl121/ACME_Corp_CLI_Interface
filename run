@@ -86,7 +86,7 @@ program
         try {
             // Compile the TypeScript test file
             // console.log('Compiling TypeScript...');
-            execSync('npx tsc test_output.ts', { stdio: 'inherit' });
+            execSync('tsc test_output.ts', { stdio: 'inherit' });
             // console.log('TypeScript compiled successfully.');
         } catch (error) {
             // console.error('Error: Failed to compile TypeScript file "test_output.ts".');
