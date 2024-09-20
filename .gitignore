@@ -1,4 +1,4 @@
 node_modules/
 .env
-src/run.js
-.js
+*.js
+!run.js
