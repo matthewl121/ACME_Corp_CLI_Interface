@@ -21,9 +21,6 @@ try {
       const coverage = parseInt(values[3], 10);
 
       if (!isNaN(coverage)) {
-        console.log(`Total: _`);
-        console.log(`Passed: _`);
-        console.log(`Coverage: ${coverage}%`);
         console.log(`_/_ test cases passed. ${coverage}% line coverage achieved.`);
       } else {
         logToFile('The 4th value on the 5th line is not a valid integer', 1);
