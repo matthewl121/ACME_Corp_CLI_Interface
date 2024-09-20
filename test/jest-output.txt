@@ -1,0 +1,8 @@
+No tests found, exiting with code 1
+Run with `--passWithNoTests` to exit with code 0
+In /home/shay/a/mcli/Desktop/ACME_Corp_CLI_Interface
+  34 files checked.
+  testMatch: **/__tests__/**/*.[jt]s?(x), **/?(*.)+(spec|test).[tj]s?(x) - 0 matches
+  testPathIgnorePatterns: /node_modules/ - 34 matches
+  testRegex:  - 0 matches
+Pattern:  - 0 matches

@@ -61,11 +61,50 @@ program
             }
             const urls = data.split('\n').filter(line => line.trim() !== '');
             urls.forEach(url => {
-                const metrics = calculateMetrics(url);
+                const metrics = MetricsManager(url);
                 console.log(JSON.stringify(metrics));
             });
         });
     });
     //include the commands to run the tests etc
 
-    program.parse(process.argv);
+program
+    .command('test')
+    .description('run tests, compile TypeScript, and execute compiled JavaScript')
+    .action(() => {
+        try {
+            // Run Jest tests and output results to a file
+            // console.log('Running Jest tests...');
+            execSync('npx jest --silent > test/jest-output.txt 2>&1', { stdio: 'ignore' });
+            // console.log('Tests completed. Output written to test/jest-output.txt');
+        } catch (error) {
+            // console.error('Error: Failed to run Jest tests.');
+            // console.error('Details:', error.message);
+            process.exit(1);
+        }
+
+        try {
+            // Compile the TypeScript test file
+            // console.log('Compiling TypeScript...');
+            execSync('npx tsc test_output.ts', { stdio: 'ignore' });
+            // console.log('TypeScript compiled successfully.');
+        } catch (error) {
+            // console.error('Error: Failed to compile TypeScript file "test_output.ts".');
+            // console.error('Details:', error.message);
+            process.exit(1);
+        }
+
+        try {
+            // Execute the compiled JavaScript file
+            // console.log('Running compiled JavaScript...');
+            execSync('node test_output.js', { stdio: 'ignore' });
+            // console.log('Test execution completed.');
+        } catch (error) {
+            // console.error('Error: Failed to execute the compiled JavaScript file "test_output.js".');
+            // console.error('Details:', error.message);
+            process.exit(1);
+        }
+    });
+
+
+program.parse(process.argv);
