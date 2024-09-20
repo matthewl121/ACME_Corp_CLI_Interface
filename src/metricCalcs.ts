@@ -1,7 +1,7 @@
 import { ContributorResponse, Issue, IssueSearchResponse } from "./types";
 
 export const calcBusFactor = (contributorActivity: ContributorResponse[]) => {
-    const totalCommits = contributorActivity.reduce((sum, contributor) => sum + contributor.total, 0)
+    let totalCommits = contributorActivity.reduce((sum, contributor) => sum + contributor.total, 0)
     const threshold = Math.ceil(totalCommits * 0.5); // 50% of commits
 
     let curr = 0;
