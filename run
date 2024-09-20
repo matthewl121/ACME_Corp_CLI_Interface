@@ -75,7 +75,7 @@ program
         try {
             // Run Jest tests and output results to a file
             // console.log('Running Jest tests...');
-            execSync('npx jest --silent > test/jest-output.txt 2>&1', { stdio: 'ignore' });
+            execSync('npx jest --silent > test/jest-output.txt 2>&1', { stdio: 'inherit' });
             // console.log('Tests completed. Output written to test/jest-output.txt');
         } catch (error) {
             // console.error('Error: Failed to run Jest tests.');
@@ -86,7 +86,7 @@ program
         try {
             // Compile the TypeScript test file
             // console.log('Compiling TypeScript...');
-            execSync('npx tsc test_output.ts', { stdio: 'ignore' });
+            execSync('npx tsc test_output.ts', { stdio: 'inherit' });
             // console.log('TypeScript compiled successfully.');
         } catch (error) {
             // console.error('Error: Failed to compile TypeScript file "test_output.ts".');
@@ -97,7 +97,7 @@ program
         try {
             // Execute the compiled JavaScript file
             // console.log('Running compiled JavaScript...');
-            execSync('node test_output.js', { stdio: 'ignore' });
+            execSync('node test_output.js', { stdio: 'inherit' });
             // console.log('Test execution completed.');
         } catch (error) {
             // console.error('Error: Failed to execute the compiled JavaScript file "test_output.js".');
