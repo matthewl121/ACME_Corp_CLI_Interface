@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const {exec, execSync} = require('child_process');
+import {main} from './src/index.ts';
+import * as fs from 'fs';
+import {exec, execSync} from 'child_process';
 
 try {
     execSync('npm -v', { stdio: 'ignore' });
@@ -25,7 +26,7 @@ try {
 }
 
 
-const {Command} = require('commander');
+import {Command} from 'commander';
 
 const program = new Command();
 
@@ -61,7 +62,7 @@ program
             }
             const urls = data.split('\n').filter(line => line.trim() !== '');
             urls.forEach(url => {
-                const metrics = MetricsManager(url);
+                const metrics = main(url);
                 console.log(JSON.stringify(metrics));
             });
         });

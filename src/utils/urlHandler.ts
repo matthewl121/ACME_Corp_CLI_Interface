@@ -1,5 +1,9 @@
 export const extractDomainFromUrl = (url: string): string | null => {
     // unsure if we would receive a url without this
+    if(url == null) {
+        console.error('URL is null');
+        return null;
+    }
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
         url = 'https://' + url;
     }

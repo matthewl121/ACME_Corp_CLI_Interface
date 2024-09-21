@@ -14,9 +14,10 @@ import { MetricManager } from './metricManager.js';
 // import { initLogFile, logToFile } from './utils/log.js';
 import { get } from 'axios';
 
-const main = async () => {
+export const main = async (url: string) => {
     const token: string = process.env.GITHUB_TOKEN || "";
-    const inputURL: string = "https://www.npmjs.com/package/socket.io"
+    const inputURL: string = url
+    console.log(inputURL)
     
 
     // Extract hostname (www.npm.js or github.com or null)
@@ -132,5 +133,3 @@ const main = async () => {
         License Score:        ${license.toFixed(2)}
     `);
 }
-
-main()
