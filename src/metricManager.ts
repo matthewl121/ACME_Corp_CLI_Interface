@@ -1,19 +1,9 @@
 import 'dotenv/config';
-import { fetchRecentIssuesByState, fetchLicense, fetchContributorActivity, fetchRecentPullRequests } from "./api/GithubApi.js";
-import { calcBusFactor, calcCorrectness, calcResponsiveness } from './metricCalcs.js';
-import { writeFile } from './utils/utils.js';
-import { logToFile } from './utils/log.js';
-
-// metrics.ts
-export interface Metrics {
-    URL: string; // Added URL field to the Metrics class
-    NetScore:  number | null;
-    BusFactor: number | null;
-    Correctness: number | null;
-    ResponsiveMaintainer: number | null;
-    License: number | null;
-}
-
+import { fetchContributorActivity } from "./api/githubApi.js";
+import { calcBusFactorScore, calcCorrectnessScore, calcResponsivenessScore } from './metricCalcs.js';
+import { writeFile } from './utils/utils';
+import { logToFile } from './utils/log';
+import { Metrics } from './types';
 export class MetricManager {
     private owner: string;
     private repo: string;
@@ -34,7 +24,7 @@ export class MetricManager {
             return null;
         }
         await writeFile(contributorActivity, "contributorActivity.json");
-        const busFactor = calcBusFactor(contributorActivity.data);
+        const busFactor = calcBusFactorScore(contributorActivity.data);
         return busFactor;
     }
 

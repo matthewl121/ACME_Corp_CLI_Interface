@@ -82,3 +82,13 @@ export interface GraphQLResponse {
         repository: RepositoryResponse;
     }
 }
+
+// metrics.ts
+export interface Metrics {
+    URL: string; // Added URL field to the Metrics class
+    NetScore:  number | null;
+    BusFactor: number | null;
+    Correctness: number | null;
+    ResponsiveMaintainer: number | null;
+    License: number | null;
+}
