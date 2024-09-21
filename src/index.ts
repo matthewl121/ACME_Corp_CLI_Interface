@@ -76,6 +76,9 @@ const main = async () => {
 
     await writeFile(repoData, "repoData.json")
 
+    return
+
+
     const totalOpenIssues = repoData.data.data.repository.openIssues;
     const totalClosedIssues = repoData.data.data.repository.closedIssues;
     const recentPullRequests = repoData.data.data.repository.pullRequests;
