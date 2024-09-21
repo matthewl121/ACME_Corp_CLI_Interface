@@ -1,7 +1,21 @@
-import { ContributorResponse, Issue, IssueSearchResponse } from "./types";
+import { clone } from 'isomorphic-git';
+import * as fs from 'fs';
+import http from 'isomorphic-git/http/node';
+import { ContributorResponse, ClosedIssueNode, PullRequestNode, OpenIssueNode } from "./types";
+import { hasLicenseHeading } from "./utils/utils";
 
-export const calcBusFactor = (contributorActivity: ContributorResponse[]) => {
-    const totalCommits = contributorActivity.reduce((sum, contributor) => sum + contributor.total, 0)
+export const calcBusFactorScore = (contributorActivity: ContributorResponse[]): number => {
+    if (!contributorActivity) {
+        return 0;
+    }
+
+    let totalCommits = 0;
+    let totalContributors = 0;
+    for (const contributor of contributorActivity) {
+        totalCommits += contributor.total
+        ++totalContributors
+    }
+
     const threshold = Math.ceil(totalCommits * 0.5); // 50% of commits
 
     let curr = 0;
@@ -17,57 +31,99 @@ export const calcBusFactor = (contributorActivity: ContributorResponse[]) => {
         }
     }
 
-    return busFactor;
+    const averageBusFactor = 3;
+    // if bus factor is 10+, thats more than enough
+    if (busFactor > 9) {
+        return 1;
+    }
+
+    // scale bus factor values using sigmoid function
+    return 1 - Math.exp(-(busFactor ** 2) / (2 * averageBusFactor ** 2));
 }
 
-export const calcCorrectness = (totalOpenIssuesCount: number, totalClosedIssuesCount: number): number => {
+export const calcCorrectnessScore = (totalOpenIssuesCount: number, totalClosedIssuesCount: number): number => {
     const totalIssues = totalOpenIssuesCount + totalClosedIssuesCount;
+    if (totalIssues == 0) {
+        return 1;
+    }
 
-    return (totalClosedIssuesCount / totalIssues);
+    return totalClosedIssuesCount / totalIssues;
 }
 
-// Potential rework: Responsiveness score currently caps open PRs max close time to be
-//                   30 days. Open to other methods of penalization for open PRs
-export const calcResponsiveness = (closedIssues: Issue[], pullRequests: Issue[]): number => {
-    const calcCloseTime = (created_at: string, closed_at: string): number => {
-        const startTime = new Date(created_at);
-        const endTime = new Date(closed_at);
-
-        // Calculate the difference in hours
-        const diffMs = endTime.getTime() - startTime.getTime();
-        // Convert milliseconds to hours
-        return diffMs / (1000 * 60 * 60);
-    };
-
-    const MAX_CLOSE_TIME_HOURS = 24 * 30; // Cap stagnant open PRs at 30 days response time
-    let totalIssueCloseTime = 0;
-
-    for (const issue of closedIssues) {
-        totalIssueCloseTime += calcCloseTime(issue.created_at, issue.closed_at);
+export const calcResponsivenessScore = (
+    closedIssues: ClosedIssueNode[], 
+    openIssues: OpenIssueNode[], 
+    pullRequests: PullRequestNode[],
+    sinceDate: Date,
+    isArchived: boolean
+): number => {
+    if (isArchived) {
+        // repo is no longer maintained
+        return 0;
     }
 
-    // Calculate average time for PR closing
-    let totalPRCloseTime = 0;
-    for (const pr of pullRequests) {
-        // If PR is open, set close time to current time
-        const closeTime = pr.closed_at || new Date().toISOString();
-        totalPRCloseTime += Math.min(calcCloseTime(pr.created_at, closeTime), MAX_CLOSE_TIME_HOURS);
+    let openIssueCount = 0;
+    let closedIssueCount = 0;
+    let openPRCount = 0;
+    let closedPRCount = 0;
+
+    for (let i = 0; i < Math.max(pullRequests.length, openIssues.length, closedIssues.length); ++i) {
+        if (i < pullRequests.length && new Date(pullRequests[i].createdAt) >= sinceDate && !pullRequests[i].closedAt) {
+            openPRCount++;
+        }
+        if (i < pullRequests.length && new Date(pullRequests[i].createdAt) >= sinceDate && pullRequests[i].closedAt) {
+            closedPRCount++;
+        }
+        if (i < openIssues.length && new Date(openIssues[i].createdAt) >= sinceDate) {
+            openIssueCount++;
+        }
+        if (i < closedIssues.length && new Date(closedIssues[i].createdAt) >= sinceDate) {
+            closedIssueCount++;
+        }
     }
 
-    // Handle division by 0 with empty case
-    const avgIssueCloseTime = closedIssues.length > 0 
-        ? totalIssueCloseTime / closedIssues.length
-        : MAX_CLOSE_TIME_HOURS; // Treat no issues as max close time
-    const avgPRCloseTime = pullRequests.length > 0 
-        ? totalPRCloseTime / pullRequests.length
-        : MAX_CLOSE_TIME_HOURS; // Treat no PRs as max close time
+    const totalRecentIssues = openIssueCount + closedIssueCount;
+    const totalRecentPRs = openPRCount + closedPRCount;
 
-    // Calculate the overall average close time
-    const avgCloseTime = (avgIssueCloseTime + avgPRCloseTime) / 2;
+    const issueCloseRatio = totalRecentIssues > 0 
+        ? closedIssueCount / totalRecentIssues 
+        : 0;
+    const prCloseRatio = totalRecentPRs > 0 
+        ? closedPRCount / totalRecentPRs 
+        : 0;
+    
+    return 0.5 * issueCloseRatio + 0.5 * prCloseRatio
+};
 
-    // Normalize the result to a [0,1] scale where 0 is the worst and 1 is the best
-    // A lower average close time is better responsiveness
-    const normalizedResponsiveness = Math.max(0, 1 - (avgCloseTime / MAX_CLOSE_TIME_HOURS));
+export const calcLicenseScore = async (repoUrl: string, localDir: string): Promise<number> => {
+    await clone({
+        fs,
+        http,
+        dir: localDir,
+        url: repoUrl,
+        singleBranch: true,
+        depth: 1,
+    });
+  
+    const licenseFilePath = `${localDir}/LICENSE`;
+    const readmeFilePath = `${localDir}/README.md`;
+    const packageJsonPath = `${localDir}/package.json`;
 
-    return normalizedResponsiveness;
+    if (fs.existsSync(licenseFilePath)) {
+        return 1;
+    }
+  
+    if (fs.existsSync(packageJsonPath)) {
+        const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+        if (packageJson.license) {
+            return 1;
+        }
+    }
+
+    if (fs.existsSync(readmeFilePath)) {
+        const readmeText = fs.readFileSync(readmeFilePath, 'utf8');
+        return hasLicenseHeading(readmeText) ? 1 : 0;
+    }
+  
+    return 0;
 };

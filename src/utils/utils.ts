@@ -5,3 +5,10 @@ export const writeFile = async (data: any, filename: string) => {
     await fs.writeFile(filename, dataString);
 }
 
+export const hasLicenseHeading = (readmeText: string): boolean => {
+    const licenseHeadingRegex = /^(#+)\s*License\b/m;
+    const match = licenseHeadingRegex.exec(readmeText);
+    return match !== null;
+};
+
+

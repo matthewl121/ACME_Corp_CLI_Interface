@@ -4,21 +4,20 @@
 */
 
 import 'dotenv/config';
-import { fetchRecentIssuesByState, fetchLicense, fetchContributorActivity, fetchRecentPullRequests, fetchReadMe, fetchExamplesFolder, getReadmeDetails, checkFolderExists } from "./api/GithubApi";
-import { calcBusFactor, calcCorrectness, calcResponsiveness } from './metricCalcs';
+import { fetchContributorActivity, fetchRepoData, fetchReadMe, fetchExamplesFolder, getReadmeDetails, checkFolderExists } from "./api/GithubApi";
+import { calcBusFactorScore, calcCorrectnessScore, calcLicenseScore, calcResponsivenessScore } from './metricCalcs';
 import { writeFile } from './utils/utils';
 import { extractNpmPackageName, extractGithubOwnerAndRepo, extractDomainFromUrl } from './utils/urlHandler'
 import { fetchGithubUrlFromNpm } from './api/npmApi';
-import { ContributorResponse } from './types';
+import * as path from 'path';
 import { MetricManager } from './metricManager.js';
 // import { initLogFile, logToFile } from './utils/log.js';
 import { get } from 'axios';
 
 const main = async () => {
-    // initLogFile();
+    const token: string = process.env.GITHUB_TOKEN || "";
+    const inputURL: string = "https://www.npmjs.com/package/unlicensed"
     
-    const token = process.env.GITHUB_TOKEN || "";
-    const inputURL = "https://www.npmjs.com/package/react";
 
     // Extract hostname (www.npm.js or github.com or null)
     const hostname = extractDomainFromUrl(inputURL)
@@ -52,7 +51,9 @@ const main = async () => {
         return;
     }
 
-    const [owner, repo] = repoDetails
+    const [owner, repo]: [string, string] = repoDetails
+
+
 
     /* 
         Now that the repo owner (owner) and repo name (repo) have
@@ -61,42 +62,53 @@ const main = async () => {
 
     // Bus Factor
     const contributorActivity = await fetchContributorActivity(owner, repo, token);
-    if (!contributorActivity?.data) {
+    if (!contributorActivity?.data || !Array.isArray(contributorActivity.data)) {
+        console.error('Invalid contributor activity data:', contributorActivity.data);
         return;
     }
-    
-    await writeFile(contributorActivity, "contributorActivity.json");
-    const busFactor = calcBusFactor(contributorActivity.data);
+    const busFactor = calcBusFactorScore(contributorActivity.data);
+
+    const repoData = await fetchRepoData(owner, repo, token);
+    if (!repoData.data) {
+        console.log("Error fetching repo data")
+        return;
+    }
+
+    await writeFile(repoData, "repoData.json")
+
+    const totalOpenIssues = repoData.data.data.repository.openIssues;
+    const totalClosedIssues = repoData.data.data.repository.closedIssues;
+    const recentPullRequests = repoData.data.data.repository.pullRequests;
+    const isArchived = repoData.data.data.repository.isArchived;
+
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+    // DEBUG:
+    // await writeFile(contributorActivity, "contributorActivity.json");
+    // await writeFile(totalOpenIssues, "totalOpenIssues.json")
+    // await writeFile(totalClosedIssues, "totalClosedIssues.json")
+    // await writeFile(recentPullRequests, "recentPullRequests.json")
+    // await writeFile(licenseResponse, "licenseResponse.json");
+    // await writeFile(readmeResponse, "readmeResponse.txt")
 
     // Correctness
-    const totalOpenIssues = await fetchRecentIssuesByState(owner, repo, "open", token);
-    const totalClosedIssues = await fetchRecentIssuesByState(owner, repo, "closed", token);
-    if (!totalOpenIssues?.data || !totalClosedIssues?.data) {
+    if (!totalOpenIssues || !totalClosedIssues) {
         return;
     }
-
-    await writeFile(totalOpenIssues, "totalOpenIssues.json")
-    await writeFile(totalClosedIssues, "totalClosedIssues.json")
-    const correctness = calcCorrectness(totalOpenIssues.data.total_count, totalClosedIssues.data.total_count)
+    const correctness = calcCorrectnessScore(totalOpenIssues.totalCount, totalClosedIssues.totalCount)
 
     // Responsive Maintainer
-    const recentPullRequests = await fetchRecentPullRequests(owner, repo, token)
-    if (!recentPullRequests?.data) {
+    if (!recentPullRequests?.nodes) {
         return;
     }
+    const responsiveness = calcResponsivenessScore(totalClosedIssues.nodes, totalOpenIssues.nodes, recentPullRequests.nodes, oneMonthAgo, isArchived);
 
-    await writeFile(recentPullRequests, "recentPullRequests.json")
-    const responsiveness = calcResponsiveness(totalClosedIssues.data.items, recentPullRequests.data.items);
+    // License
+    const localDir = path.join("./repos", `${owner}_${repo}`)
+    const license = await calcLicenseScore(repoURL, localDir)
 
-    // Licenses
-    const licenses = await fetchLicense(owner, repo, token);
-    if (!licenses?.data) {
-        return;
-    }
-
-    await writeFile(licenses, "licenses.json")
-    const license = licenses.data.license.name
-
+    
     let rampUp = null;
     const readMe = await fetchReadMe(owner, repo, token);
     if(!readMe?.data) {
@@ -112,15 +124,14 @@ const main = async () => {
     // const manager = new MetricManager(owner, repo, token, repoURL);
     // const metricsALL = await manager.calculateAndLogMetrics();
     console.log(`
-        --- METRICS --- 
+        --- METRICS ---       --- SCORE --- 
         
-        Bus Factor:     ${busFactor} devs
-        Ramp Up Time:   ${rampUp}
-        Correctness:    ${correctness}%
-        Responsiveness: ${responsiveness} hours
-        License:        ${license}
+        Bus Factor Score:     ${busFactor.toFixed(2)}
+        Ramp Up Time:         ${rampUp}
+        Correctness Score:    ${correctness.toFixed(2)}
+        Responsiveness Score: ${responsiveness.toFixed(2)}
+        License Score:        ${license.toFixed(2)}
     `);
-        
 }
 
 main()
