@@ -1,4 +1,4 @@
-import { apiGetRequest, apiPostRequest } from './apiUtils'
+import { apiGetRequest, apiPostRequest, apiGetRequest_NoOutput } from './apiUtils'
 import { ApiResponse, GraphQLResponse } from '../types';
 import { ContributorResponse } from '../types';
 import { getRepoDataQuery } from './graphqlQueries';
@@ -169,3 +169,99 @@ export const fetchRepoData = async (
     
 //     return { data: response.data, error: null};
 // };
+// export const fetchReadMe = async (
+//     owner: string, 
+//     repo: string, 
+//     token: string
+// ): Promise<ApiResponse<IssueSearchResponse | null>> => {
+//     const q = `repo:${owner}/${repo}+filename:readme`;
+//     const url = `${GITHUB_BASE_URL}/search/code?q=${q}`;
+//     const response = await apiGetRequest_NoOutput<IssueSearchResponse>(url, token);
+
+//     if (response.error) {
+//         console.error('Error fetching readme file:', response.error);
+//         return { data: null, error: response.error };
+//     }
+
+//     return { data: response.data, error: null };
+// }
+
+export const checkFolderExists = async (
+    owner: string,
+    repo: string,
+    token?: string
+  ): Promise<boolean> => {
+    const url = `https://api.github.com/repos/${owner}/${repo}/contents/examples`;
+    
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers["Authorization"] = `token ${token}`;
+    }
+  
+    try {
+      const response = await fetch(url, { headers });
+      
+      if (response.status === 200) {
+        return true
+      } else if (response.status === 404) {
+        // console.log("Folder does not exist.");
+        return false
+      } else {
+        // console.log(`Error: ${response.status} - ${response.statusText}`);
+        return false
+      }
+    } catch (error) {
+      console.error("Request failed:", error);
+      return false
+    }
+}
+
+export const getReadmeDetails = async (
+    readMe: any,
+    examplesFolder: boolean
+): Promise<number> => {
+    const git_content = readMe.data.items[0].url;
+    try {
+        const response = await fetch(git_content, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/vnd.github.v3+json',
+            }
+        });
+        if(!response.ok) {
+            throw new Error(`${response.status}: ${response.statusText}`);
+        }
+        const data = await response.json();
+        const content = Buffer.from(data.content, 'base64').toString('utf-8');
+        const linesLength= content.split('\n').length;
+        if(linesLength > 75) {
+            if(content.includes('documentation') && examplesFolder === true) {
+                return 0.1;
+            } else if(content.includes('documentation')) {
+                return 0.2;
+            } else if(examplesFolder === true) {
+                return 0.2;
+            } else {
+                return 0.4;
+            }
+        } else if(content.includes('documentation') && examplesFolder === true) {
+            return 0.2;
+        } else if(content.includes('documentation')) {
+            return 0.3;
+        } else if(examplesFolder === true) {
+            return 0.3;
+        } else if(linesLength <= 5) {
+            return 0.9;
+        } else if(linesLength > 5 && linesLength <= 20) {
+            return 0.8;
+        } else if (linesLength > 20 && linesLength <= 35) {
+            return 0.7;
+        } else if (linesLength > 35 && linesLength <= 50) {
+            return 0.6;
+        } else {
+            return 0.5;
+        }
+    } catch (error) {
+        return -1;
+    }
+}

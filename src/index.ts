@@ -4,7 +4,7 @@
 */
 
 import 'dotenv/config';
-import { fetchContributorActivity, fetchRepoData, fetchReadMe, fetchExamplesFolder, getReadmeDetails, checkFolderExists } from "./api/GithubApi";
+import { fetchContributorActivity, fetchRepoData, getReadmeDetails, checkFolderExists } from "./api/githubApi";
 import { calcBusFactorScore, calcCorrectnessScore, calcLicenseScore, calcResponsivenessScore } from './metricCalcs';
 import { writeFile } from './utils/utils';
 import { extractNpmPackageName, extractGithubOwnerAndRepo, extractDomainFromUrl } from './utils/urlHandler'
@@ -80,6 +80,7 @@ const main = async () => {
     const totalClosedIssues = repoData.data.data.repository.closedIssues;
     const recentPullRequests = repoData.data.data.repository.pullRequests;
     const isArchived = repoData.data.data.repository.isArchived;
+    const readMe = repoData.data.data.repository.readme;
 
     const oneMonthAgo = new Date();
     oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
@@ -110,8 +111,7 @@ const main = async () => {
 
     
     let rampUp = null;
-    const readMe = await fetchReadMe(owner, repo, token);
-    if(!readMe?.data) {
+    if(!readMe?.text) {
         rampUp = 'High (readme has no information)';
     } else {
         const exampleFolder = await checkFolderExists(owner, repo, token);
