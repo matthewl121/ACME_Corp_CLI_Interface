@@ -60,13 +60,21 @@ export interface PullRequests {
     nodes?: PullRequestNode[];
 }
 
+export interface examplesFolder {
+    entries: {
+        name: string;
+        type: string;
+    }[];
+}
+
 export interface RepositoryResponse {
     licenseInfo: LicenseInfo;
     readme: Readme;
     openIssues: OpenIssues;
     closedIssues: ClosedIssues;
     pullRequests: PullRequests;
-    isArchived: boolean
+    isArchived: boolean;
+    examplesFolder: examplesFolder;
 }
 
 export interface GraphQLResponse {

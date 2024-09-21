@@ -3,6 +3,7 @@ import { ApiResponse, GraphQLResponse } from '../types';
 import { ContributorResponse } from '../types';
 import { getRepoDataQuery } from './graphqlQueries';
 import { writeFile } from '../utils/utils';
+import { StringLiteral } from 'typescript';
 
 const GITHUB_BASE_URL: string = "https://api.github.com"
 
@@ -217,38 +218,26 @@ export const checkFolderExists = async (
 }
 
 export const getReadmeDetails = async (
-    readMe: any,
-    examplesFolder: boolean
+    readMe: string,
+    examplesFolder: any
 ): Promise<number> => {
-    const git_content = readMe.data.items[0].url;
     try {
-        const response = await fetch(git_content, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/vnd.github.v3+json',
-            }
-        });
-        if(!response.ok) {
-            throw new Error(`${response.status}: ${response.statusText}`);
-        }
-        const data = await response.json();
-        const content = Buffer.from(data.content, 'base64').toString('utf-8');
-        const linesLength= content.split('\n').length;
+        const linesLength= readMe.split('\n').length;
         if(linesLength > 75) {
-            if(content.includes('documentation') && examplesFolder === true) {
+            if(readMe.includes('documentation') && examplesFolder != null) {
                 return 0.1;
-            } else if(content.includes('documentation')) {
+            } else if(readMe.includes('documentation')) {
                 return 0.2;
-            } else if(examplesFolder === true) {
+            } else if(examplesFolder != null) {
                 return 0.2;
             } else {
                 return 0.4;
             }
-        } else if(content.includes('documentation') && examplesFolder === true) {
+        } else if(readMe.includes('documentation') && examplesFolder != null) {
             return 0.2;
-        } else if(content.includes('documentation')) {
+        } else if(readMe.includes('documentation')) {
             return 0.3;
-        } else if(examplesFolder === true) {
+        } else if(examplesFolder != null) {
             return 0.3;
         } else if(linesLength <= 5) {
             return 0.9;
@@ -262,6 +251,7 @@ export const getReadmeDetails = async (
             return 0.5;
         }
     } catch (error) {
+        console.log(error)
         return -1;
     }
 }

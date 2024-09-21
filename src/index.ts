@@ -16,7 +16,7 @@ import { get } from 'axios';
 
 const main = async () => {
     const token: string = process.env.GITHUB_TOKEN || "";
-    const inputURL: string = "https://www.npmjs.com/package/unlicensed"
+    const inputURL: string = "https://www.npmjs.com/package/socket.io"
     
 
     // Extract hostname (www.npm.js or github.com or null)
@@ -76,18 +76,15 @@ const main = async () => {
 
     await writeFile(repoData, "repoData.json")
 
-    return
-
 
     const totalOpenIssues = repoData.data.data.repository.openIssues;
     const totalClosedIssues = repoData.data.data.repository.closedIssues;
     const recentPullRequests = repoData.data.data.repository.pullRequests;
     const isArchived = repoData.data.data.repository.isArchived;
     const readMe = repoData.data.data.repository.readme;
-
+    const examplesFolder = repoData.data.data.repository.examplesFolder;
     const oneMonthAgo = new Date();
     oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-
     // DEBUG:
     // await writeFile(contributorActivity, "contributorActivity.json");
     // await writeFile(totalOpenIssues, "totalOpenIssues.json")
@@ -115,12 +112,11 @@ const main = async () => {
     
     let rampUp = null;
     if(!readMe?.text) {
-        rampUp = 'High (readme has no information)';
+        rampUp = 0.1;
     } else {
-        const exampleFolder = await checkFolderExists(owner, repo, token);
-        rampUp = await getReadmeDetails(readMe, exampleFolder);
+        rampUp = await getReadmeDetails(readMe.text, examplesFolder);
 
-        await writeFile(exampleFolder, "exampleFolder.json")
+        await writeFile(examplesFolder, "exampleFolder.json")
     }
 
     // Log the metrics

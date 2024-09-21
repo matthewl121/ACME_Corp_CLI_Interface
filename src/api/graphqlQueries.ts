@@ -30,7 +30,7 @@ export const getRepoDataQuery = (owner: string, repo: string) => `
 
     isArchived
 
-    object(expression: "HEAD:README.md") {
+    readme: object(expression: "HEAD:README.md") {
       ... on Blob {
         text
       }
