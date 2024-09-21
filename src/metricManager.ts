@@ -128,7 +128,7 @@ export class MetricManager {
             const netScore = (weightedMetrics.BusFactor ?? 0) + (weightedMetrics.Correctness ?? 0) + (weightedMetrics.ResponsiveMaintainer ?? 0) + (weightedMetrics.License ?? 0);
             metrics.NetScore = netScore;
 
-
+            console.log("Metric Output: ", metrics);
             logToFile("Metrics Output (JSON):", 1);
             logToFile(JSON.stringify(metrics, null, 2), 1); // Pretty-print with 2-space indentation
         } catch (error) {
