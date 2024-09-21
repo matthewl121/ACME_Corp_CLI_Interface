@@ -17,7 +17,6 @@ import { get } from 'axios';
 export const main = async (url: string) => {
     const token: string = process.env.GITHUB_TOKEN || "";
     const inputURL: string = url
-    console.log(inputURL)
     
 
     // Extract hostname (www.npm.js or github.com or null)
@@ -133,3 +132,5 @@ export const main = async (url: string) => {
         License Score:        ${license.toFixed(2)}
     `);
 }
+
+main("https://www.npmjs.com/package/socket.io")

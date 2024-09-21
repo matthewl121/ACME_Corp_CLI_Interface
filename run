@@ -1,7 +1,6 @@
 #!/usr/bin/env node
-import {main} from './src/index.ts';
-import * as fs from 'fs';
-import {exec, execSync} from 'child_process';
+const fs = require('fs');
+const {exec, execSync} = require('child_process');
 
 try {
     execSync('npm -v', { stdio: 'ignore' });
@@ -11,22 +10,17 @@ try {
 }
 
 try {
-    // Check if commander is installed
-    require.resolve('commander');
-} catch (error) {
-    // If commander is not installed, install it
-    // console.log('Commander not found. Installing commander...');
-    try {
-        execSync('npm install commander', { stdio: 'ignore' });
-        // console.log('Commander has been successfully installed');
-    } catch (installError) {
-        // console.error('Error: Failed to install commander. Please try installing it manually.');
-        process.exit(1);
-    }
+    execSync('npm install commander', { stdio: 'ignore' });
+    // console.log('Commander has been successfully installed');
+} catch (installError) {
+    // console.error('Error: Failed to install commander. Please try installing it manually.');
+    process.exit(1);
 }
 
+const {main} =  require('./src/index');
 
-import {Command} from 'commander';
+
+const {Command} = require('commander');
 
 const program = new Command();
 
@@ -54,7 +48,7 @@ program
 program
     .argument('<file>', 'file to run')
     .description('process URL of the file to run and output metrics in NDJSON format')
-    .action((file) => {
+    .action((file) => {    
         fs.readFile(file, 'utf8', (err, data) => {
             if (err) {
                 console.error(`%cError reading file: ${err}`, `color: red`);
@@ -62,8 +56,9 @@ program
             }
             const urls = data.split('\n').filter(line => line.trim() !== '');
             urls.forEach(url => {
+                // console.log(`Processing URL: ${url}`);
                 const metrics = main(url);
-                console.log(JSON.stringify(metrics));
+                // console.log(JSON.stringify(metrics));
             });
         });
     });
