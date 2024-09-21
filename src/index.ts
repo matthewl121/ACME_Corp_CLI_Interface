@@ -9,10 +9,11 @@ import { calcBusFactorScore, calcCorrectnessScore, calcLicenseScore, calcRespons
 import { writeFile } from './utils/utils';
 import { extractNpmPackageName, extractGithubOwnerAndRepo, extractDomainFromUrl } from './utils/urlHandler'
 import { fetchGithubUrlFromNpm } from './api/npmApi';
+import * as path from 'path';
 
 const main = async () => {
     const token: string = process.env.GITHUB_TOKEN || "";
-    const inputURL: string = "https://github.com/nodejs/node"
+    const inputURL: string = "https://www.npmjs.com/package/unlicensed"
     
 
     // Extract hostname (www.npm.js or github.com or null)
@@ -70,11 +71,15 @@ const main = async () => {
         return;
     }
 
+    await writeFile(repoData, "repoData.json")
+
     const totalOpenIssues = repoData.data.data.repository.openIssues;
     const totalClosedIssues = repoData.data.data.repository.closedIssues;
     const recentPullRequests = repoData.data.data.repository.pullRequests;
-    const licenseResponse = repoData.data.data.repository.licenseInfo;
-    const readmeResponse = repoData.data.data.repository.readme;
+    const isArchived = repoData.data.data.repository.isArchived;
+
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
 
     // DEBUG:
     // await writeFile(contributorActivity, "contributorActivity.json");
@@ -94,18 +99,11 @@ const main = async () => {
     if (!recentPullRequests?.nodes) {
         return;
     }
-    const responsiveness = calcResponsivenessScore(totalClosedIssues.nodes, totalOpenIssues.nodes, recentPullRequests.nodes);
+    const responsiveness = calcResponsivenessScore(totalClosedIssues.nodes, totalOpenIssues.nodes, recentPullRequests.nodes, oneMonthAgo, isArchived);
 
-    // licenseResponse
-    if (!licenseResponse) {
-        console.error("Error retrieving license information.");
-        return;
-    }
-    if (!readmeResponse) {
-        console.error("Error retrieving README information.");
-        return;
-    }
-    const license = calcLicenseScore(licenseResponse, readmeResponse.text)
+    // License
+    const localDir = path.join("./repos", `${owner}_${repo}`)
+    const license = await calcLicenseScore(repoURL, localDir)
 
     
     // Log the metrics

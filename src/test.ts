@@ -23,20 +23,6 @@ const main = async (url: string) => {
     console.log(owner, repo)
 
     try {
-        try {
-            // Create a unique directory for the cloned repo (e.g., ./repos/owner_repo)
-            const localDir = path.join("./repos", `${owner}_${repo}`);
-            
-            // Call the function and pass the unique directory
-            const res = await calcLicenseScore(url, localDir);
-        
-            console.log("License score:", res);
-            return
-        } catch (error) {
-            console.error("Error processing the repository:", error);
-            return
-        }
-        
         const repoData = await fetchRepoData(owner, repo, token);
         if (!repoData.data?.data) {
             console.log("Error fetching repo data for", inputURL);
@@ -48,17 +34,20 @@ const main = async (url: string) => {
         const totalClosedIssues = repoData.data.data.repository.closedIssues;
         const totalOpenIssues = repoData.data.data.repository.openIssues;
         const recentPullRequests = repoData.data.data.repository.pullRequests;
-        const isLocked = repoData.data?.data.repository.isLocked
+        const isArchived = repoData.data?.data.repository.isArchived
+
+        const oneMonthAgo = new Date();
+        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
 
         if (!recentPullRequests?.nodes) {
             console.log("No pull requests found for", inputURL);
             return;
         }
 
-        const responsiveness = calcResponsivenessScore(totalClosedIssues.nodes, totalOpenIssues.nodes, recentPullRequests.nodes, isLocked);
+        const responsiveness = calcResponsivenessScore(totalClosedIssues.nodes, totalOpenIssues.nodes, recentPullRequests.nodes, oneMonthAgo, isArchived);
 
-        await fs.appendFile('./src/data/out.txt', `${inputURL}, ${responsiveness}, ${totalClosedIssues.totalCount}, ${recentPullRequests.totalCount}\n`, 'utf-8');
-        await fs.appendFile('./src/data/resp.txt', `${responsiveness}\n`);
+        await fs.appendFile('./src/data/out.txt', `${inputURL}, ${responsiveness}, ${totalClosedIssues.totalCount}, ${recentPullRequests.totalCount}, ${isArchived}\n`, 'utf-8');
+        await fs.appendFile('./src/data/resp.txt', `${responsiveness.toFixed(2)}\n`);
         console.log(`Processed ${inputURL}, responsiveness: ${responsiveness}`);
     } catch (error) {
         console.error("Error processing URL:", inputURL, error);
@@ -67,7 +56,7 @@ const main = async (url: string) => {
 
 const processUrls = async () => {
     try {
-        await fs.writeFile('./src/data/out.txt', "URL, Score, Closed Issue Count, PR Count\n");
+        await fs.writeFile('./src/data/out.txt', "URL, Score, Closed Issue Count, PR Count, isArchived\n");
         await fs.writeFile('./src/data/resp.txt', "Score\n");
         const data = await fs.readFile('./src/data/url.txt', 'utf-8');
         

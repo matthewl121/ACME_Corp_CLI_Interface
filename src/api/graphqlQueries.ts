@@ -19,25 +19,12 @@ export const getRepoDataQuery = (owner: string, repo: string) => `
       }
     }
 
-    pullRequests(first: 100, orderBy: {field: UPDATED_AT, direction: DESC}) {
+    pullRequests(first: 100, orderBy: {field: CREATED_AT, direction: DESC}) {
       totalCount
       nodes {
         createdAt
         updatedAt
         closedAt
-      }
-    }
-
-    licenseInfo {
-      key
-      name
-      spdxId
-      url
-    }
-
-    readme: object(expression: "HEAD:README.md") {
-      ... on Blob {
-        text
       }
     }
     isArchived

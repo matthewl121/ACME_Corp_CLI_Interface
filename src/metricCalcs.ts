@@ -31,15 +31,14 @@ export const calcBusFactorScore = (contributorActivity: ContributorResponse[]): 
         }
     }
 
-    // scale bus factor values using sigmoid function
     const averageBusFactor = 3;
-
     // if bus factor is 10+, thats more than enough
     if (busFactor > 9) {
         return 1;
     }
-    
-    return Math.exp(-(busFactor ** 2) / (2 * averageBusFactor ** 2));
+
+    // scale bus factor values using sigmoid function
+    return 1 - Math.exp(-(busFactor ** 2) / (2 * averageBusFactor ** 2));
 }
 
 export const calcCorrectnessScore = (totalOpenIssuesCount: number, totalClosedIssuesCount: number): number => {
@@ -51,80 +50,50 @@ export const calcCorrectnessScore = (totalOpenIssuesCount: number, totalClosedIs
     return totalClosedIssuesCount / totalIssues;
 }
 
-// Need to calc score
 export const calcResponsivenessScore = (
     closedIssues: ClosedIssueNode[], 
     openIssues: OpenIssueNode[], 
     pullRequests: PullRequestNode[],
-    isLocked: boolean
+    sinceDate: Date,
+    isArchived: boolean
 ): number => {
-    const calcCloseTime = (created_at: string, closed_at: string): number => {
-        const startTime = new Date(created_at);
-        const endTime = new Date(closed_at);
-        
-        // close time in hours
-        return (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
-    };
-  
-    const calcOpenTime = (created_at: string): number => {
-        const startTime = new Date(created_at);
-        const now = new Date();
-        
-        // open time in hours (from creation to current time)
-        return (now.getTime() - startTime.getTime()) / (1000 * 60 * 60);
-    };
-
-    if (isLocked) {
+    if (isArchived) {
         // repo is no longer maintained
-        console.log('Repo is locked')
         return 0;
     }
 
-    // calc total time for closed issue resolution
-    let totalIssueCloseTime = 0;
-    for (const issue of closedIssues) {
-        totalIssueCloseTime += calcCloseTime(issue.createdAt, issue.closedAt);
+    let openIssueCount = 0;
+    let closedIssueCount = 0;
+    let openPRCount = 0;
+    let closedPRCount = 0;
+
+    for (let i = 0; i < Math.max(pullRequests.length, openIssues.length, closedIssues.length); ++i) {
+        if (i < pullRequests.length && new Date(pullRequests[i].createdAt) >= sinceDate && !pullRequests[i].closedAt) {
+            openPRCount++;
+        }
+        if (i < pullRequests.length && new Date(pullRequests[i].createdAt) >= sinceDate && pullRequests[i].closedAt) {
+            closedPRCount++;
+        }
+        if (i < openIssues.length && new Date(openIssues[i].createdAt) >= sinceDate) {
+            openIssueCount++;
+        }
+        if (i < closedIssues.length && new Date(closedIssues[i].createdAt) >= sinceDate) {
+            closedIssueCount++;
+        }
     }
 
-    // calc total time for open issue penalization
-    let totalOpenIssueTime = 0;
-    for (const issue of openIssues) {
-        totalOpenIssueTime += calcOpenTime(issue.createdAt);
-    }
+    const totalRecentIssues = openIssueCount + closedIssueCount;
+    const totalRecentPRs = openPRCount + closedPRCount;
 
-    // calc total time for PR closing
-    let totalPRCloseTime = 0;
-    for (const pr of pullRequests) {
-        const prCloseTime = pr.closedAt || new Date().toISOString();
-        totalPRCloseTime += calcCloseTime(pr.createdAt, prCloseTime);
-    }
-
-    // handle div by 0 with empty case
-    const avgIssueCloseTime = closedIssues.length > 0 
-        ? totalIssueCloseTime / closedIssues.length
+    const issueCloseRatio = totalRecentIssues > 0 
+        ? closedIssueCount / totalRecentIssues 
+        : 0;
+    const prCloseRatio = totalRecentPRs > 0 
+        ? closedPRCount / totalRecentPRs 
         : 0;
     
-    const avgOpenIssueTime = openIssues.length > 0 
-        ? totalOpenIssueTime / openIssues.length
-        : 0;
-
-    const avgPRCloseTime = pullRequests.length > 0 
-        ? totalPRCloseTime / pullRequests.length
-        : 0;
-
-    // Calculate the final score (you can tweak the weight of open issues)
-    return (avgIssueCloseTime + avgPRCloseTime + avgOpenIssueTime) / 3;
-  }
-  
-
-// export const calcLicenseScore = (license: LicenseInfo, readmeText: string): number => {
-//     // if no LICENSE file, check README for license header
-//     if (license.spdxId === "NOASSERTION") {
-//         return hasLicenseHeading(readmeText) ? 1 : 0;
-//     }
-
-//     return 1;
-// };
+    return 0.5 * issueCloseRatio + 0.5 * prCloseRatio
+};
 
 export const calcLicenseScore = async (repoUrl: string, localDir: string): Promise<number> => {
     await clone({
@@ -138,15 +107,23 @@ export const calcLicenseScore = async (repoUrl: string, localDir: string): Promi
   
     const licenseFilePath = `${localDir}/LICENSE`;
     const readmeFilePath = `${localDir}/README.md`;
-  
+    const packageJsonPath = `${localDir}/package.json`;
+
     if (fs.existsSync(licenseFilePath)) {
-      return 1;
+        return 1;
     }
   
+    if (fs.existsSync(packageJsonPath)) {
+        const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+        if (packageJson.license) {
+            return 1;
+        }
+    }
+
     if (fs.existsSync(readmeFilePath)) {
-      const readmeText = fs.readFileSync(readmeFilePath, 'utf8');
-      return hasLicenseHeading(readmeText) ? 1 : 0;
+        const readmeText = fs.readFileSync(readmeFilePath, 'utf8');
+        return hasLicenseHeading(readmeText) ? 1 : 0;
     }
   
     return 0;
-  };
+};

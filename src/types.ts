@@ -66,7 +66,7 @@ export interface RepositoryResponse {
     openIssues: OpenIssues;
     closedIssues: ClosedIssues;
     pullRequests: PullRequests;
-    isLocked: boolean;
+    isArchived: boolean
 }
 
 export interface GraphQLResponse {
