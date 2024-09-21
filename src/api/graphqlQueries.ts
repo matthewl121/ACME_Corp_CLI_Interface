@@ -27,7 +27,23 @@ export const getRepoDataQuery = (owner: string, repo: string) => `
         closedAt
       }
     }
+
     isArchived
+
+    object(expression: "HEAD:README.md") {
+      ... on Blob {
+        text
+      }
+    }
+
+    examplesFolder: object(expression: "HEAD:examples/") {
+      ... on Tree {
+        entries {
+          name
+          type
+        }
+      }
+    }
   }
 }
 `;
