@@ -17,6 +17,12 @@ try {
     process.exit(1);
 }
 
+try {
+    execSync('tsc src/index.ts', { stdio: 'ignore' });
+} catch(error) {
+    console.log('TSC file compiled successfully');
+}
+
 const {main} =  require('./src/index');
 
 
@@ -54,7 +60,7 @@ program
                 console.error(`%cError reading file: ${err}`, `color: red`);
                 process.exit(1);
             }
-            const urls = data.split('\n').filter(line => line.trim() !== '');
+            const urls = data.split('\n').map(line => line.trim()).filter(line => line !== '');
             urls.forEach(url => {
                 // console.log(`Processing URL: ${url}`);
                 const metrics = main(url);
