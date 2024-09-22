@@ -142,7 +142,6 @@ export const main = async (url: string) => {
 
     let rampUp = null;
     if(!readMe?.text) {
-        console.log(repoURL)
         rampUp = 0.9;
     } else {
         rampUp = await getReadmeDetails(readMe.text, examplesFolder);
