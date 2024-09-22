@@ -78,7 +78,7 @@ export const main = async (url: string) => {
         return;
     }
 
-    await writeFile(repoData, "repoData.json")
+    // await writeFile(repoData, "repoData.json")
 
 
     const totalOpenIssues = repoData.data.data.repository.openIssues;
