@@ -228,10 +228,8 @@ export const getReadmeDetails = async (
                 return 0.1;
             } else if(readMe.includes('documentation')) {
                 return 0.2;
-            } else if(examplesFolder != null && examplesFolder.entries.length > 15) {
-                return 0.2;
-            } else if(examplesFolder != null && examplesFolder.entries.length <= 15) {
-                return 0.3;  
+            } else if(examplesFolder != null) {
+                return 0.2;  
             } else {
                 return 0.5;
             }

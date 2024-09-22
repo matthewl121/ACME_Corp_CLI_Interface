@@ -2,7 +2,7 @@ import { clone, checkout } from 'isomorphic-git';
 import * as fs from 'fs';
 import http from 'isomorphic-git/http/node';
 import { ContributorResponse, ClosedIssueNode, PullRequestNode, OpenIssueNode } from "./types";
-import { hasLicenseHeading } from "./utils/utils";
+import { hasLicenseHeading, writeFile } from "./utils/utils";
 import { fetchContributorActivity, fetchRepoData, getReadmeDetails, checkFolderExists } from "./api/githubApi";
 import { ApiResponse, GraphQLResponse } from './types';
 import { runWorker } from './index';
@@ -185,29 +185,96 @@ export async function calcLicense(owner: string, repo: string, repoURL: string):
 }
 
 export async function calcRampUp(repoData: ApiResponse<GraphQLResponse | null>): Promise<number> {
-    const readMeMd = repoData.data?.data.repository.readmeMd;
-    const readMeNoExt = repoData.data?.data.repository.readmeNoExt;
-    const readMeTxt = repoData.data?.data.repository.readmeTxt;
-    const readMeRDoc = repoData.data?.data.repository.readmeRDoc;
-    const readMeHtml = repoData.data?.data.repository.readmeHtml;
-    const readmeadoc = repoData.data?.data.repository.readmeAdoc;
+    const READMEMD = repoData.data?.data.repository.READMEMD;
+    const READMENOEXT = repoData.data?.data.repository.READMENOEXT;
+    const READMETXT = repoData.data?.data.repository.READMETXT;
+    const READMERDOC = repoData.data?.data.repository.READMERDOC;
+    const READMEHTML = repoData.data?.data.repository.READMEHTML;
+    const READMEADOC = repoData.data?.data.repository.READMEADOC;
+    const READMEMARKDOWN = repoData.data?.data.repository.READMEMARKDOWN;
+    const READMEYAML = repoData.data?.data.repository.READMEYAML;
+    const READMERST = repoData.data?.data.repository.READMERST;
+    const READMETEXTILE = repoData.data?.data.repository.READMETEXTILE;
+    const readmemd = repoData.data?.data.repository.readmemd;
+    const readmenoext = repoData.data?.data.repository.readmenoext;
+    const readmetxt = repoData.data?.data.repository.readmetxt;
+    const readmerdoc = repoData.data?.data.repository.readmerdoc;
+    const readmehtml = repoData.data?.data.repository.readmehtml;
+    const readmeadoc = repoData.data?.data.repository.readmeadoc;
     const readmemarkdown = repoData.data?.data.repository.readmemarkdown;
     const readmeyaml = repoData.data?.data.repository.readmeyaml;
     const readmerst = repoData.data?.data.repository.readmerst;
+    const readmetextile = repoData.data?.data.repository.readmetextile;
+    const readMemd = repoData.data?.data.repository.readMemd;
+    const readMenoext = repoData.data?.data.repository.readMenoext;
+    const readMetxt = repoData.data?.data.repository.readMetxt;
+    const readMerdoc = repoData.data?.data.repository.readMerdoc;
+    const readMehtml = repoData.data?.data.repository.readMehtml;
+    const readMeadoc = repoData.data?.data.repository.readMeadoc;
+    const readMemarkdown = repoData.data?.data.repository.readMemarkdown;
+    const readMeyaml = repoData.data?.data.repository.readMeyaml;
+    const readMerst = repoData.data?.data.repository.readMerst;
+    const readMetextile = repoData.data?.data.repository.readMetextile;
+    const ReadMemd = repoData.data?.data.repository.ReadMemd;
+    const ReadMenoext = repoData.data?.data.repository.ReadMenoext;
+    const ReadMetxt = repoData.data?.data.repository.ReadMetxt;
+    const ReadMerdoc = repoData.data?.data.repository.ReadMerdoc;
+    const ReadMehtml = repoData.data?.data.repository.ReadMehtml;
+    const ReadMeadoc = repoData.data?.data.repository.ReadMeadoc;
+    const ReadMemarkdown = repoData.data?.data.repository.ReadMemarkdown;
+    const ReadMeyaml = repoData.data?.data.repository.ReadMeyaml;
+    const ReadMerst = repoData.data?.data.repository.ReadMerst;
+    const ReadMetextile = repoData.data?.data.repository.ReadMetextile;
+    const Readmemd = repoData.data?.data.repository.Readmemd;
+    const Readmenoext = repoData.data?.data.repository.Readmenoext;
+    const Readmetxt = repoData.data?.data.repository.Readmetxt;
+    const Readmerdoc = repoData.data?.data.repository.Readmerdoc;
+    const Readmehtml = repoData.data?.data.repository.Readmehtml;
+    const Readmeadoc = repoData.data?.data.repository.Readmeadoc;
+    const Readmemarkdown = repoData.data?.data.repository.Readmemarkdown;
+    const Readmeyaml = repoData.data?.data.repository.Readmeyaml;
+    const Readmerst = repoData.data?.data.repository.Readmerst;
+    const Readmetextile = repoData.data?.data.repository.Readmetextile;
+
+
     const examplesFolder = repoData.data?.data.repository.examplesFolder;
+    const exampleFolder = repoData.data?.data.repository.exampleFolder;
+    const ExamplesFolder = repoData.data?.data.repository.ExamplesFolder;
+    const ExampleFolder = repoData.data?.data.repository.ExampleFolder;
+    await writeFile(repoData, "repoData.json");
     
     // Readme
     let readMe = null;
-    if(readMeMd?.text) {
-        readMe = readMeMd;
-    } else if(readMeNoExt?.text) {
-        readMe = readMeNoExt;
-    } else if(readMeTxt?.text) {
-        readMe = readMeTxt;
-    } else if(readMeRDoc?.text) {
-        readMe = readMeRDoc;
-    } else if(readMeHtml?.text) {
-        readMe = readMeHtml;
+    if(READMEMD?.text) {
+        readMe = READMEMD;
+    } else if(READMENOEXT?.text) {
+        readMe = READMENOEXT;
+    } else if(READMETXT?.text) {
+        readMe = READMETXT;
+    } else if(READMERDOC?.text) {
+        readMe = READMERDOC;
+    } else if(READMEHTML?.text) {
+        readMe = READMEHTML;
+    } else if(READMEADOC?.text) {
+        readMe = READMEADOC;
+    } else if(READMEMARKDOWN?.text) {
+        readMe = READMEMARKDOWN;
+    } else if(READMEYAML?.text) {
+        readMe = READMEYAML;
+    } else if(READMERST?.text) {
+        readMe = READMERST;
+    } else if(READMETEXTILE?.text) {
+        readMe = READMETEXTILE;
+    } else if(readmemd?.text) {
+        readMe = readmemd;
+    } else if(readmenoext?.text) {
+        readMe = readmenoext;
+    } else if(readmetxt?.text) {
+        readMe = readmetxt;
+    } else if(readmerdoc?.text) {
+        readMe = readmerdoc;
+    } else if(readmehtml?.text) {
+        readMe = readmehtml;
     } else if(readmeadoc?.text) {
         readMe = readmeadoc;
     } else if(readmemarkdown?.text) {
@@ -216,13 +283,86 @@ export async function calcRampUp(repoData: ApiResponse<GraphQLResponse | null>):
         readMe = readmeyaml;
     } else if(readmerst?.text) {
         readMe = readmerst;
+    } else if(readmetextile?.text) {
+        readMe = readmetextile;
+    } else if(readMemd?.text) {
+        readMe = readMemd;
+    } else if(readMenoext?.text) {
+        readMe = readMenoext;
+    } else if(readMetxt?.text) {
+        readMe = readMetxt;
+    } else if(readMerdoc?.text) {
+        readMe = readMerdoc;
+    } else if(readMehtml?.text) {
+        readMe = readMehtml;
+    } else if(readMeadoc?.text) {
+        readMe = readMeadoc;
+    } else if(readMemarkdown?.text) {
+        readMe = readMemarkdown;
+    } else if(readMeyaml?.text) {
+        readMe = readMeyaml;
+    } else if(readMerst?.text) {
+        readMe = readMerst;
+    } else if(readMetextile?.text) {
+        readMe = readMetextile;
+    } else if(ReadMemd?.text) {
+        readMe = ReadMemd;
+    } else if(ReadMenoext?.text) {
+        readMe = ReadMenoext;
+    } else if(ReadMetxt?.text) {
+        readMe = ReadMetxt;
+    } else if(ReadMerdoc?.text) {
+        readMe = ReadMerdoc;
+    } else if(ReadMehtml?.text) {
+        readMe = ReadMehtml;
+    } else if(ReadMeadoc?.text) {
+        readMe = ReadMeadoc;
+    } else if(ReadMemarkdown?.text) {
+        readMe = ReadMemarkdown;
+    } else if(ReadMeyaml?.text) {
+        readMe = ReadMeyaml;
+    } else if(ReadMerst?.text) {
+        readMe = ReadMerst;
+    } else if(ReadMetextile?.text) {
+        readMe = ReadMetextile;
+    } else if(Readmemd?.text) {
+        readMe = Readmemd;
+    } else if(Readmenoext?.text) {
+        readMe = Readmenoext;
+    } else if(Readmetxt?.text) {
+        readMe = Readmetxt;
+    } else if(Readmerdoc?.text) {
+        readMe = Readmerdoc;
+    } else if(Readmehtml?.text) {
+        readMe = Readmehtml;
+    } else if(Readmeadoc?.text) {
+        readMe = Readmeadoc;
+    } else if(Readmemarkdown?.text) {
+        readMe = Readmemarkdown;
+    } else if(Readmeyaml?.text) {
+        readMe = Readmeyaml;
+    } else if(Readmerst?.text) {
+        readMe = Readmerst;
+    } else if(Readmetextile?.text) {
+        readMe = Readmetextile;
+    }
+
+    let exFolder = null;
+    if(examplesFolder != null) {
+        exFolder = examplesFolder;
+    } else if(exampleFolder != null) {
+        exFolder = exampleFolder;
+    } else if(ExamplesFolder != null) {
+        exFolder = ExamplesFolder;
+    } else if(ExampleFolder != null) {
+        exFolder = ExampleFolder;
     }
 
     let rampUp = null;
     if(!readMe?.text) {
         rampUp = 0.9;
     } else {
-        rampUp = await getReadmeDetails(readMe.text, examplesFolder);
+        rampUp = await getReadmeDetails(readMe.text, exFolder);
     }
 
     return rampUp;
