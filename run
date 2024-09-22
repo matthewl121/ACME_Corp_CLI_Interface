@@ -55,17 +55,17 @@ program
         
         const {main} =  require('./src/index');
         fs.readFile(file, 'utf8', (err, data) => {
-            console.log(process.env.LOG_FILE);
-            console.log(process.env.GITHUB_TOKEN);
             if (err) {
                 console.error(`%cError reading file: ${err}`, `color: red`);
                 process.exit(1);
             } else if(process.env.LOG_FILE == null || process.env.LOG_FILE == '') {
                 console.log('LOG_FILE environment variable is not set');
                 process.exit(1);
-            } 
-            if(process.env.GITHUB_TOKEN == null || process.env.GITHUB_TOKEN == '') {
+            } else if(process.env.GITHUB_TOKEN == null || process.env.GITHUB_TOKEN == '') {
                 console.log('GITHUB_TOKEN environment variable is not set');
+                process.exit(1);
+            } else if(process.env.LOG_LEVEL == null || process.env.LOG_LEVEL == '') {
+                console.log('LOG_LEVEL environment variable is not set');
                 process.exit(1);
             }
             const urls = data.split('\n').map(line => line.trim()).filter(line => line !== '');
