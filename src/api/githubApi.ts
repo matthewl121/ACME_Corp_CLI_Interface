@@ -1,4 +1,4 @@
-import { apiGetRequest, apiPostRequest, apiGetRequest_NoOutput } from './apiUtils'
+import { apiGetRequest, apiPostRequest } from './apiUtils'
 import { ApiResponse, GraphQLResponse } from '../types';
 import { ContributorResponse } from '../types';
 import { getRepoDataQuery } from './graphqlQueries';
