@@ -15,7 +15,10 @@ export const fetchGithubUrlFromNpm = async (packageName: string): Promise<ApiRes
     if (repoUrl.startsWith('ssh://')) {
         repoUrl = repoUrl.replace('ssh://git@', 'https://');
     } else if (repoUrl.startsWith('git@')) {
-        repoUrl = repoUrl.replace('git@', 'https://').replace(':', '/');
+        repoUrl = repoUrl.replace('git@', 'https://').replace('.com:', '.com/');
+    } else if(repoUrl.startsWith('git://')) {
+        repoUrl = repoUrl.replace('git://', 'https://');
     }
+
     return { data: repoUrl, error: null };
 };
