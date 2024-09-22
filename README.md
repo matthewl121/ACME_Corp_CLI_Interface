@@ -58,7 +58,7 @@ The output will be in NDJSON format, with each row containing the following fiel
 - `ResponsiveMaintainer`, `ResponsiveMaintainer_Latency`
 - `License`, `License_Latency`
 
-#### Metrics and Weights
+### Metrics and Weights
 
 | Metric                    | Weight |
 |---------------------------|--------|
