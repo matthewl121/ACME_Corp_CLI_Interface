@@ -149,29 +149,29 @@ export const main = async (url: string) => {
         rampUp = await getReadmeDetails(readMe.text, examplesFolder);
     }
 
-        const metrics: Metrics = {
-            URL: inputURL,
-            NetScore: null,
-            RampUp: rampUp,
-            BusFactor: busFactor,
-            Correctness: correctness,
-            ResponsiveMaintainer: responsiveness,
-            License: license
-        };
+    const metrics: Metrics = {
+        URL: inputURL,
+        NetScore: null,
+        RampUp: rampUp,
+        BusFactor: busFactor,
+        Correctness: correctness,
+        ResponsiveMaintainer: responsiveness,
+        License: license
+    };
 
-        // const weightedMetrics: Metrics = {
-        //     URL: repoURL,
-        //     NetScore: null,
-        //     BusFactor: (metrics.BusFactor ?? 0) * 0.25,
-        //     Correctness: (metrics.Correctness ?? 0) * 0.30,
-        //     ResponsiveMaintainer: (metrics.ResponsiveMaintainer ?? 0) * 0.15,
-        //     License: (license) * 0.10,
-        // };
+    // const weightedMetrics: Metrics = {
+    //     URL: repoURL,
+    //     NetScore: null,
+    //     BusFactor: (metrics.BusFactor ?? 0) * 0.25,
+    //     Correctness: (metrics.Correctness ?? 0) * 0.30,
+    //     ResponsiveMaintainer: (metrics.ResponsiveMaintainer ?? 0) * 0.15,
+    //     License: (license) * 0.10,
+    // };
 
-        const netScore = (busFactor*0.25) + (correctness*0.30) + (responsiveness*0.15) + (license*0.10);
-        metrics.NetScore = netScore;
-        logToFile("Metrics Output (JSON):", 1);
-        logToFile(JSON.stringify(metrics, null, 2), 1);
+    const netScore = (busFactor*0.25) + (correctness*0.30) + (responsiveness*0.15) + (license*0.10);
+    metrics.NetScore = netScore;
+    logToFile("Metrics Output (JSON):", 1);
+    logToFile(JSON.stringify(metrics, null, 2), 1);
 
 
     // Log the metrics
