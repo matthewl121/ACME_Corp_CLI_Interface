@@ -4,19 +4,11 @@
 */
 
 import 'dotenv/config';
-import { fetchContributorActivity, fetchRepoData, getReadmeDetails, checkFolderExists } from "./api/githubApi";
-// import { calcBusFactorScore, calcCorrectnessScore, calcLicenseScore, calcResponsivenessScore } from './metricCalcs';
-// import { writeFile } from './utils/utils';
+import { fetchRepoData } from "./api/githubApi";
 import { getRepoDetails } from './utils/urlHandler';
-// import { fetchGithubUrlFromNpm } from './api/npmApi';
-// import * as path from 'path';
-import { Metrics, WorkerResult } from './types';
+import { WorkerResult } from './types';
 import { logToFile, metricsLogToStdout } from './utils/log';
-// import { initLogFile, logToFile } from './utils/log.js';
-// import { get } from 'axios';
-// import { read } from 'fs';
 import { ApiResponse, GraphQLResponse } from './types';
-// import { resolveNaptr } from 'dns';
 import { Worker } from 'worker_threads';
 import { calculateMetrics } from './metricCalcs';
 
@@ -56,25 +48,24 @@ export const main = async (url: string) => {
     const token: string = process.env.GITHUB_TOKEN || "";
     const inputURL: string = url;
     
+    // get repoDetails
     const repoDetails = await getRepoDetails(token, inputURL);
-
     const [owner, repo, repoURL]: [string, string, string] = repoDetails;
 
     /* 
         Now that the repo owner (owner) and repo name (repo) have
         been parsed, we can use the github api to calc metrics
     */
-
    const repoData = await fetchRepoData(owner, repo, token);
    if (!repoData.data) {
-       logToFile("Error fetching repo data", 1);
+       logToFile("Error fetching repo data", 1); 
        return;
     }
 
     // calculate all metrics (concurrently)
     let metrics = await calculateMetrics(owner, repo, token, repoURL, repoData, inputURL);
     if (metrics == null) {
-        return;
+        return 1;
     }
 
     // logMetrics
@@ -82,16 +73,5 @@ export const main = async (url: string) => {
     // print metrics to stdout
     metricsLogToStdout(metrics, 1);
 
-    // Log the metrics
-    // const manager = new MetricManager(owner, repo, token, repoURL);
-    // const metricsALL = await manager.calculateAndLogMetrics();
-    // console.log(`
-    //     --- METRICS ---       --- SCORE --- 
-        
-    //     Bus Factor Score:     ${busFactor.toFixed(2)}
-    //     Ramp Up Time:         ${rampUp}
-    //     Correctness Score:    ${correctness.toFixed(2)}
-    //     Responsiveness Score: ${responsiveness.toFixed(2)}
-    //     License Score:        ${license.toFixed(2)}
-    // `);
+    return 0;
 }

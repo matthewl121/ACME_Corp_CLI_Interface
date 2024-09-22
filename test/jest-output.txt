@@ -1,8 +1,140 @@
-No tests found, exiting with code 1
-Run with `--passWithNoTests` to exit with code 0
-In /home/shay/a/mcli/Desktop/ACME_Corp_CLI_Interface
-  34 files checked.
-  testMatch: **/__tests__/**/*.[jt]s?(x), **/?(*.)+(spec|test).[tj]s?(x) - 0 matches
-  testPathIgnorePatterns: /node_modules/ - 34 matches
-  testRegex:  - 0 matches
-Pattern:  - 0 matches
+FAIL repos/caged_javascript-bits/canvasprimitives/src/test.js
+  ● Test suite failed to run
+
+    Your test suite must contain at least one test.
+
+      at onResult (node_modules/@jest/core/build/TestScheduler.js:133:18)
+      at node_modules/@jest/core/build/TestScheduler.js:254:19
+      at node_modules/emittery/index.js:363:13
+          at Array.map (<anonymous>)
+      at Emittery.emit (node_modules/emittery/index.js:361:23)
+
+FAIL repos/cloudinary_cloudinary_npm/test/unit/sdkAnalytics/imageTagWithAnalytics.spec.js
+  ● Test suite failed to run
+
+    Cannot find module 'mock-fs' from 'repos/cloudinary_cloudinary_npm/test/unit/sdkAnalytics/imageTagWithAnalytics.spec.js'
+
+      1 | const path = require('path');
+    > 2 | const mock = require('mock-fs');
+        |              ^
+      3 | const assert = require("assert");
+      4 | const sinon = require("sinon");
+      5 | const fs = require('fs');
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (repos/cloudinary_cloudinary_npm/test/unit/sdkAnalytics/imageTagWithAnalytics.spec.js:2:14)
+
+FAIL src/test.ts
+  ● Test suite failed to run
+
+    SyntaxError: /home/shay/a/jiaccari/461dev/DEV/ACME_Corp_CLI_Interface/src/test.ts: Unexpected token, expected "," (10:23)
+
+       8 | import * as path from 'path';
+       9 |
+    > 10 | const main = async (url: string) => {
+         |                        ^
+      11 |     const token: string = process.env.GITHUB_TOKEN || "";
+      12 |     const inputURL: string = url;
+      13 |
+
+      at constructor (node_modules/@babel/parser/src/parse-error.ts:95:45)
+      at Parser.toParseError [as raise] (node_modules/@babel/parser/src/tokenizer/index.ts:1496:19)
+      at Parser.raise [as unexpected] (node_modules/@babel/parser/src/tokenizer/index.ts:1536:16)
+      at Parser.unexpected [as expect] (node_modules/@babel/parser/src/parser/util.ts:157:12)
+      at Parser.expect [as parseCallExpressionArguments] (node_modules/@babel/parser/src/parser/expression.ts:1016:14)
+      at Parser.parseCallExpressionArguments [as parseCoverCallAndAsyncArrowHead] (node_modules/@babel/parser/src/parser/expression.ts:880:29)
+      at Parser.parseCoverCallAndAsyncArrowHead [as parseSubscript] (node_modules/@babel/parser/src/parser/expression.ts:769:19)
+      at Parser.parseSubscript [as parseSubscripts] (node_modules/@babel/parser/src/parser/expression.ts:727:19)
+      at Parser.parseSubscripts [as parseExprSubscripts] (node_modules/@babel/parser/src/parser/expression.ts:712:17)
+      at Parser.parseExprSubscripts [as parseUpdate] (node_modules/@babel/parser/src/parser/expression.ts:685:21)
+      at Parser.parseUpdate [as parseMaybeUnary] (node_modules/@babel/parser/src/parser/expression.ts:647:23)
+      at Parser.parseMaybeUnary [as parseMaybeUnaryOrPrivate] (node_modules/@babel/parser/src/parser/expression.ts:388:14)
+      at Parser.parseMaybeUnaryOrPrivate [as parseExprOps] (node_modules/@babel/parser/src/parser/expression.ts:400:23)
+      at Parser.parseExprOps [as parseMaybeConditional] (node_modules/@babel/parser/src/parser/expression.ts:355:23)
+      at Parser.parseMaybeConditional [as parseMaybeAssign] (node_modules/@babel/parser/src/parser/expression.ts:297:21)
+      at parseMaybeAssign (node_modules/@babel/parser/src/parser/expression.ts:251:12)
+      at Parser.callback [as allowInAnd] (node_modules/@babel/parser/src/parser/expression.ts:3130:16)
+      at Parser.allowInAnd [as parseMaybeAssignAllowIn] (node_modules/@babel/parser/src/parser/expression.ts:250:17)
+      at Parser.parseMaybeAssignAllowIn [as parseVar] (node_modules/@babel/parser/src/parser/statement.ts:1539:18)
+      at Parser.parseVar [as parseVarStatement] (node_modules/@babel/parser/src/parser/statement.ts:1203:10)
+      at Parser.parseVarStatement [as parseStatementContent] (node_modules/@babel/parser/src/parser/statement.ts:555:21)
+      at Parser.parseStatementContent [as parseStatementLike] (node_modules/@babel/parser/src/parser/statement.ts:426:17)
+      at Parser.parseStatementLike [as parseModuleItem] (node_modules/@babel/parser/src/parser/statement.ts:363:17)
+      at Parser.parseModuleItem [as parseBlockOrModuleBlockBody] (node_modules/@babel/parser/src/parser/statement.ts:1395:16)
+      at Parser.parseBlockOrModuleBlockBody [as parseBlockBody] (node_modules/@babel/parser/src/parser/statement.ts:1369:10)
+      at Parser.parseBlockBody [as parseProgram] (node_modules/@babel/parser/src/parser/statement.ts:217:10)
+      at Parser.parseProgram [as parseTopLevel] (node_modules/@babel/parser/src/parser/statement.ts:199:25)
+      at Parser.parseTopLevel [as parse] (node_modules/@babel/parser/src/parser/index.ts:46:10)
+      at parse (node_modules/@babel/parser/src/index.ts:65:38)
+      at parser (node_modules/@babel/core/src/parser/index.ts:28:19)
+          at parser.next (<anonymous>)
+      at normalizeFile (node_modules/@babel/core/src/transformation/normalize-file.ts:50:24)
+          at normalizeFile.next (<anonymous>)
+      at run (node_modules/@babel/core/src/transformation/index.ts:39:36)
+          at run.next (<anonymous>)
+      at transform (node_modules/@babel/core/src/transform.ts:29:20)
+          at transform.next (<anonymous>)
+      at evaluateSync (node_modules/gensync/index.js:251:28)
+      at sync (node_modules/gensync/index.js:89:14)
+      at fn (node_modules/@babel/core/src/errors/rewrite-stack-trace.ts:99:14)
+      at transformSync (node_modules/@babel/core/src/transform.ts:66:52)
+      at ScriptTransformer.transformSource (node_modules/@jest/transform/build/ScriptTransformer.js:545:31)
+      at ScriptTransformer._transformAndBuildScript (node_modules/@jest/transform/build/ScriptTransformer.js:674:40)
+      at ScriptTransformer.transform (node_modules/@jest/transform/build/ScriptTransformer.js:726:19)
+
+PASS repos/cloudinary_cloudinary_npm/test/unit/cloudinaryUtils/processLayer.spec.js
+FAIL repos/cloudinary_cloudinary_npm/test/unit/cloudinaryUtils/getUserAgent.spec.js
+  ● Test suite failed to run
+
+    Cannot find module 'q' from 'repos/cloudinary_cloudinary_npm/lib/uploader.js'
+
+    Require stack:
+      repos/cloudinary_cloudinary_npm/lib/uploader.js
+      repos/cloudinary_cloudinary_npm/lib/cloudinary.js
+      repos/cloudinary_cloudinary_npm/cloudinary.js
+      repos/cloudinary_cloudinary_npm/test/unit/cloudinaryUtils/getUserAgent.spec.js
+
+      1 | const fs = require('fs');
+      2 | const { extname, basename } = require('path');
+    > 3 | const Q = require('q');
+        |           ^
+      4 | const Writable = require("stream").Writable;
+      5 | const urlLib = require('url');
+      6 |
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (repos/cloudinary_cloudinary_npm/lib/uploader.js:3:11)
+      at Object.require (repos/cloudinary_cloudinary_npm/lib/cloudinary.js:4:20)
+      at Object.<anonymous> (repos/cloudinary_cloudinary_npm/cloudinary.js:1:45)
+      at Object.<anonymous> (repos/cloudinary_cloudinary_npm/test/unit/cloudinaryUtils/getUserAgent.spec.js:2:50)
+
+FAIL repos/cloudinary_cloudinary_npm/test/unit/config.spec.js
+  ● Test suite failed to run
+
+    Cannot find module 'q' from 'repos/cloudinary_cloudinary_npm/lib/uploader.js'
+
+    Require stack:
+      repos/cloudinary_cloudinary_npm/lib/uploader.js
+      repos/cloudinary_cloudinary_npm/lib/cloudinary.js
+      repos/cloudinary_cloudinary_npm/cloudinary.js
+      repos/cloudinary_cloudinary_npm/test/unit/config.spec.js
+
+      1 | const fs = require('fs');
+      2 | const { extname, basename } = require('path');
+    > 3 | const Q = require('q');
+        |           ^
+      4 | const Writable = require("stream").Writable;
+      5 | const urlLib = require('url');
+      6 |
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.require (repos/cloudinary_cloudinary_npm/lib/uploader.js:3:11)
+      at Object.require (repos/cloudinary_cloudinary_npm/lib/cloudinary.js:4:20)
+      at Object.<anonymous> (repos/cloudinary_cloudinary_npm/cloudinary.js:1:45)
+      at Object.<anonymous> (repos/cloudinary_cloudinary_npm/test/unit/config.spec.js:2:47)
+
+A worker process has failed to exit gracefully and has been force exited. This is likely caused by tests leaking due to improper teardown. Try running with --detectOpenHandles to find leaks. Active timers can also cause this, ensure that .unref() was called on them.
+Test Suites: 5 failed, 1 passed, 6 total
+Tests:       11 passed, 11 total
+Snapshots:   0 total
+Time:        2.536 s
