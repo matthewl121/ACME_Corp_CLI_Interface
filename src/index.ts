@@ -15,54 +15,49 @@ import {logToFile} from './utils/log'
 // import { initLogFile, logToFile } from './utils/log.js';
 import { get } from 'axios';
 import { read } from 'fs';
+import { ApiResponse, GraphQLResponse } from './types';
+import { resolveNaptr } from 'dns';
 
-export const main = async (url: string) => {
-    const token: string = process.env.GITHUB_TOKEN || "";
-    const inputURL: string = url
-    
 
+export async function getRepoDetails(token: string, inputURL: string): Promise<[string, string, string]> {
     // Extract hostname (www.npm.js or github.com or null)
-    const hostname = extractDomainFromUrl(inputURL)
+    const hostname = extractDomainFromUrl(inputURL);
     if (!hostname || (hostname !== "www.npmjs.com" && hostname !== "github.com")) {
-        return;
+        process.exit(1);
     }
 
-    let repoURL ="";
+    let repoURL: string = "";
 
     // If url is npm, fetch the github repo
     if (hostname === "www.npmjs.com") {
-        const npmPackageName = extractNpmPackageName(inputURL)
+        const npmPackageName = extractNpmPackageName(inputURL);
         if (!npmPackageName) {
-            return;
+            process.exit(1);
         }
 
         // Fetch the Github repo url from npm package
         const npmResponse = await fetchGithubUrlFromNpm(npmPackageName);
         if (!npmResponse?.data) {
-            return;
+            process.exit(1);
         }
 
-        repoURL = npmResponse.data
+        repoURL = npmResponse.data;
     } else {
         // URL must be github, so use it directly
-        repoURL = inputURL
+        repoURL = inputURL;
     }
 
-    const repoDetails = extractGithubOwnerAndRepo(repoURL)
+    const repoDetails = extractGithubOwnerAndRepo(repoURL);
     if (!repoDetails) {
-        return;
+        process.exit(1);
     }
 
-    const [owner, repo]: [string, string] = repoDetails
+    const extendedDetails: [string, string, string] = [...repoDetails, repoURL];
 
+    return extendedDetails;
+}
 
-
-    /* 
-        Now that the repo owner (owner) and repo name (repo) have
-        been parsed, we can use the github api to calc metrics
-    */
-
-    // Bus Factor
+export async function calcBusFactor(owner: string, repo: string, token: string): Promise<number> {
     let busFactor;
     const contributorActivity = await fetchContributorActivity(owner, repo, token);
     if (!contributorActivity?.data || !Array.isArray(contributorActivity.data)) {
@@ -70,57 +65,57 @@ export const main = async (url: string) => {
     } else {
         busFactor = calcBusFactorScore(contributorActivity.data);
     }
-    
 
-    const repoData = await fetchRepoData(owner, repo, token);
-    if (!repoData.data) {
-        console.log("Error fetching repo data")
-        return;
+    return busFactor;
+}
+
+export function calcCorrectness(repoData: ApiResponse<GraphQLResponse | null>): number {
+    const totalOpenIssues = repoData.data?.data.repository.openIssues;
+    const totalClosedIssues = repoData.data?.data.repository.closedIssues;
+
+    if (!totalOpenIssues || !totalClosedIssues) {
+        return -1;
     }
+    const correctness = calcCorrectnessScore(totalOpenIssues.totalCount, totalClosedIssues.totalCount);
 
-    // await writeFile(repoData, "repoData.json")
+    return correctness;
+}
 
-
-    const totalOpenIssues = repoData.data.data.repository.openIssues;
-    const totalClosedIssues = repoData.data.data.repository.closedIssues;
-    const recentPullRequests = repoData.data.data.repository.pullRequests;
-    const isArchived = repoData.data.data.repository.isArchived;
-    const readMeMd = repoData.data.data.repository.readmeMd;
-    const readMeNoExt = repoData.data.data.repository.readmeNoExt;
-    const readMeTxt = repoData.data.data.repository.readmeTxt;
-    const readMeRDoc = repoData.data.data.repository.readmeRDoc;
-    const readMeHtml = repoData.data.data.repository.readmeHtml;
-    const readmeadoc = repoData.data.data.repository.readmeAdoc;
-    const readmemarkdown = repoData.data.data.repository.readmemarkdown;
-    const readmeyaml = repoData.data.data.repository.readmeyaml;
-    const readmerst = repoData.data.data.repository.readmerst;
-    const examplesFolder = repoData.data.data.repository.examplesFolder;
+export function calcResponsiveness(repoData: ApiResponse<GraphQLResponse | null>): number {
+    const recentPullRequests = repoData.data?.data.repository.pullRequests;
+    const isArchived = repoData.data?.data.repository.isArchived;
+    const totalOpenIssues = repoData.data?.data.repository.openIssues;
+    const totalClosedIssues = repoData.data?.data.repository.closedIssues;
     const oneMonthAgo = new Date();
     oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-    // DEBUG:
-    // await writeFile(contributorActivity, "contributorActivity.json");
-    // await writeFile(totalOpenIssues, "totalOpenIssues.json")
-    // await writeFile(totalClosedIssues, "totalClosedIssues.json")
-    // await writeFile(recentPullRequests, "recentPullRequests.json")
-    // await writeFile(licenseResponse, "licenseResponse.json");
-    // await writeFile(readmeResponse, "readmeResponse.txt")
 
-    // Correctness
-    if (!totalOpenIssues || !totalClosedIssues) {
-        return;
+    if (!recentPullRequests?.nodes || !totalClosedIssues?.nodes || !totalOpenIssues?.nodes) {
+        return -1;
     }
-    const correctness = calcCorrectnessScore(totalOpenIssues.totalCount, totalClosedIssues.totalCount)
+    const responsiveness = calcResponsivenessScore(totalClosedIssues.nodes, totalOpenIssues.nodes, recentPullRequests.nodes, oneMonthAgo, isArchived ?? false);
 
-    // Responsive Maintainer
-    if (!recentPullRequests?.nodes) {
-        return;
-    }
-    const responsiveness = calcResponsivenessScore(totalClosedIssues.nodes, totalOpenIssues.nodes, recentPullRequests.nodes, oneMonthAgo, isArchived);
+    return responsiveness;
+}
 
-    // License
-    const localDir = path.join("./repos", `${owner}_${repo}`)
-    const license = await calcLicenseScore(repoURL, localDir)
+export async function calcLicense(owner: string, repo: string, repoURL: string): Promise<number> {
+    const localDir = path.join("./repos", `${owner}_${repo}`);
+    const license = await calcLicenseScore(repoURL, localDir);
 
+    return license;
+}
+
+export async function calcRampUp(repoData: ApiResponse<GraphQLResponse | null>): Promise<number> {
+    const readMeMd = repoData.data?.data.repository.readmeMd;
+    const readMeNoExt = repoData.data?.data.repository.readmeNoExt;
+    const readMeTxt = repoData.data?.data.repository.readmeTxt;
+    const readMeRDoc = repoData.data?.data.repository.readmeRDoc;
+    const readMeHtml = repoData.data?.data.repository.readmeHtml;
+    const readmeadoc = repoData.data?.data.repository.readmeAdoc;
+    const readmemarkdown = repoData.data?.data.repository.readmemarkdown;
+    const readmeyaml = repoData.data?.data.repository.readmeyaml;
+    const readmerst = repoData.data?.data.repository.readmerst;
+    const examplesFolder = repoData.data?.data.repository.examplesFolder;
+    
     // Readme
     let readMe = null;
     if(readMeMd?.text) {
@@ -149,6 +144,43 @@ export const main = async (url: string) => {
     } else {
         rampUp = await getReadmeDetails(readMe.text, examplesFolder);
     }
+
+    return rampUp;
+}
+
+
+export const main = async (url: string) => {
+    const token: string = process.env.GITHUB_TOKEN || "";
+    const inputURL: string = url;
+    
+    const repoDetails = await getRepoDetails(token, inputURL);
+
+    const [owner, repo, repoURL]: [string, string, string] = repoDetails;
+
+    /* 
+        Now that the repo owner (owner) and repo name (repo) have
+        been parsed, we can use the github api to calc metrics
+    */
+
+   const repoData = await fetchRepoData(owner, repo, token);
+   if (!repoData.data) {
+       logToFile("Error fetching repo data", 1);
+       return;
+    }
+
+    let busFactor = await calcBusFactor(owner, repo, token);
+    let correctness = calcCorrectness(repoData);
+    if (correctness == -1) {
+        logToFile("Unable to calculate correctness", 1);
+        return;
+    }
+    let responsiveness = calcResponsiveness(repoData);
+    if (responsiveness == -1) {
+        logToFile("Unable to calculate responsiveness", 1);
+        return;
+    }
+    let license = await calcLicense(owner, repo, repoURL);
+    let rampUp = await calcRampUp(repoData);
 
     const metrics: Metrics = {
         URL: inputURL,

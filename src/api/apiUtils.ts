@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { ApiResponse } from '../types';
 import { writeFile } from '../utils/utils';
+import {logToFile} from '../utils/log';
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -21,7 +22,7 @@ export const apiGetRequest = async <T>(
         let response = await axios.get<T>(url, config);
         
         if (response.status === 202 && retries > 0) {
-            console.log(`Received 202, retrying in ${retryDelay / 1000} seconds...`);
+            logToFile(`Received 202, retrying in ${retryDelay / 1000} seconds...`, 1);
             await delay(retryDelay);
             return await apiGetRequest<T>(url, token, retries - 1, retryDelay);
         }
