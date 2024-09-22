@@ -14,6 +14,7 @@ import {Metrics} from './types'
 import {logToFile} from './utils/log'
 // import { initLogFile, logToFile } from './utils/log.js';
 import { get } from 'axios';
+import { read } from 'fs';
 
 export const main = async (url: string) => {
     const token: string = process.env.GITHUB_TOKEN || "";
@@ -82,7 +83,15 @@ export const main = async (url: string) => {
     const totalClosedIssues = repoData.data.data.repository.closedIssues;
     const recentPullRequests = repoData.data.data.repository.pullRequests;
     const isArchived = repoData.data.data.repository.isArchived;
-    const readMe = repoData.data.data.repository.readme;
+    const readMeMd = repoData.data.data.repository.readmeMd;
+    const readMeNoExt = repoData.data.data.repository.readmeNoExt;
+    const readMeTxt = repoData.data.data.repository.readmeTxt;
+    const readMeRDoc = repoData.data.data.repository.readmeRDoc;
+    const readMeHtml = repoData.data.data.repository.readmeHtml;
+    const readmeadoc = repoData.data.data.repository.readmeAdoc;
+    const readmemarkdown = repoData.data.data.repository.readmemarkdown;
+    const readmeyaml = repoData.data.data.repository.readmeyaml;
+    const readmerst = repoData.data.data.repository.readmerst;
     const examplesFolder = repoData.data.data.repository.examplesFolder;
     const oneMonthAgo = new Date();
     oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
@@ -110,9 +119,30 @@ export const main = async (url: string) => {
     const localDir = path.join("./repos", `${owner}_${repo}`)
     const license = await calcLicenseScore(repoURL, localDir)
 
-    
+    let readMe = null;
+    if(readMeMd?.text) {
+        readMe = readMeMd;
+    } else if(readMeNoExt?.text) {
+        readMe = readMeNoExt;
+    } else if(readMeTxt?.text) {
+        readMe = readMeTxt;
+    } else if(readMeRDoc?.text) {
+        readMe = readMeRDoc;
+    } else if(readMeHtml?.text) {
+        readMe = readMeHtml;
+    } else if(readmeadoc?.text) {
+        readMe = readmeadoc;
+    } else if(readmemarkdown?.text) {
+        readMe = readmemarkdown;
+    } else if(readmeyaml?.text) {
+        readMe = readmeyaml;
+    } else if(readmerst?.text) {
+        readMe = readmerst;
+    }
+
     let rampUp = null;
     if(!readMe?.text) {
+        console.log(repoURL)
         rampUp = 0.9;
     } else {
         rampUp = await getReadmeDetails(readMe.text, examplesFolder);
