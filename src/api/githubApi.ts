@@ -233,7 +233,7 @@ export const getReadmeDetails = async (
             } else if(examplesFolder != null && examplesFolder.entries.length <= 15) {
                 return 0.3;  
             } else {
-                return 0.4;
+                return 0.5;
             }
         } else if(readMe.includes('documentation') && examplesFolder != null) {
             return 0.2;
