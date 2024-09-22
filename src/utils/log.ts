@@ -31,5 +31,5 @@ export function logToFile(message: string | object, message_level: number) {
 }
 
 // Usage examples:
-logToFile('Informational messages', 1);
-logToFile('Debug messages', 2);
+// logToFile('Informational messages', 1);
+// logToFile('Debug messages', 2);

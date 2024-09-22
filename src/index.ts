@@ -10,13 +10,14 @@ import { writeFile } from './utils/utils';
 import { extractNpmPackageName, extractGithubOwnerAndRepo, extractDomainFromUrl } from './utils/urlHandler'
 import { fetchGithubUrlFromNpm } from './api/npmApi';
 import * as path from 'path';
-import {Metrics} from './types'
-import {logToFile} from './utils/log'
+import { Metrics, WorkerResult } from './types'
+import { logToFile } from './utils/log'
 // import { initLogFile, logToFile } from './utils/log.js';
 import { get } from 'axios';
 import { read } from 'fs';
 import { ApiResponse, GraphQLResponse } from './types';
 import { resolveNaptr } from 'dns';
+import { Worker } from 'worker_threads';
 
 
 export async function getRepoDetails(token: string, inputURL: string): Promise<[string, string, string]> {
@@ -148,6 +149,93 @@ export async function calcRampUp(repoData: ApiResponse<GraphQLResponse | null>):
     return rampUp;
 }
 
+// Function to create and manage worker threads
+export function runWorker(owner: string, repo: string, token: string, repoURL: string, repoData: ApiResponse<GraphQLResponse | null>, metric: string): Promise<WorkerResult> {
+    return new Promise((resolve, reject) => {
+        // PATH TO WORKER SCRIPT
+        const worker = new Worker('./src/utils/worker.ts');
+        
+        // SEND DATA TO WORKER AND START THE WORKER
+        worker.postMessage({owner, repo, token, repoURL, repoData, metric});
+
+        // GET THE WORKER'S RESULT
+        worker.on('message', (result: WorkerResult) => {
+            resolve(result);
+            worker.terminate();
+        });
+
+        // HANDLE ERRORS
+        worker.on('error', (error) => {
+            reject(error);
+            worker.terminate();
+        });
+
+        // EXIT
+        worker.on('exit', (code) => {
+            if (code !== 0) {
+                reject(new Error(`Worker stopped with exit code ${code}`));
+            }
+        });
+    });
+}
+
+export async function calculateMetrics(owner: string, repo: string, token: string, repoURL: string, repoData: ApiResponse<GraphQLResponse | null>, inputURL: string): Promise<Metrics | null> {
+    // concurrently calculate metrics
+    const busFactorWorker = runWorker(owner, repo, token, repoURL, repoData, "busFactor");
+    const correctnessWorker = runWorker(owner, repo, token, repoURL, repoData, "correctness");
+    const rampUpWorker = runWorker(owner, repo, token, repoURL, repoData, "rampUp");
+    const responsivenessWorker = runWorker(owner, repo, token, repoURL, repoData, "responsiveness");
+    const licenseWorker = runWorker(owner, repo, token, repoURL, repoData, "license");
+
+    const results = await Promise.all([busFactorWorker, correctnessWorker, rampUpWorker, responsivenessWorker, licenseWorker]);
+
+    // parse metric scores and latencies
+    let busFactor = results[0].score;
+    let correctness = results[1].score;
+    let rampUp = results[2].score;
+    let responsiveness = results[3].score;
+    let license = results[4].score;
+
+    let busFactorLatency = results[0].latency;
+    let correctnessLatency = results[1].latency;
+    let rampUpLatency = results[2].latency;
+    let responsivenessLatency = results[3].latency;
+    let licenseLatency = results[4].latency;
+
+    // verify calculations
+    if (correctness == -1) {
+        logToFile("Unable to calculate correctness", 1);
+        return null;
+    }
+    if (responsiveness == -1) {
+        logToFile("Unable to calculate responsiveness", 1);
+        return null;
+    }
+
+    // calculate net score
+    const begin = Date.now();
+    const netScore = (busFactor*0.25) + (correctness*0.30) + (rampUp*0.20) + (responsiveness*0.15) + (license*0.10);
+    const end = Date.now();
+
+    const metrics: Metrics = {
+        URL: inputURL,
+        NetScore: netScore,
+        NetScore_Latency: (end - begin) / 1000,
+        RampUp: rampUp,
+        RampUp_Latency: rampUpLatency,
+        Correctness: correctness,
+        Correctness_Latency: correctnessLatency,
+        BusFactor: busFactor,
+        BusFactor_Latency: busFactorLatency,
+        ResponsiveMaintainer: responsiveness,
+        ResponsiveMaintainer_Latency: responsivenessLatency,
+        License: license,
+        License_Latency: licenseLatency
+    };
+
+    return metrics;
+}
+
 
 export const main = async (url: string) => {
     const token: string = process.env.GITHUB_TOKEN || "";
@@ -168,44 +256,14 @@ export const main = async (url: string) => {
        return;
     }
 
-    let busFactor = await calcBusFactor(owner, repo, token);
-    let correctness = calcCorrectness(repoData);
-    if (correctness == -1) {
-        logToFile("Unable to calculate correctness", 1);
+    // calculate all metrics (concurrently)
+    let metrics = await calculateMetrics(owner, repo, token, repoURL, repoData, inputURL);
+    if (metrics == null) {
         return;
     }
-    let responsiveness = calcResponsiveness(repoData);
-    if (responsiveness == -1) {
-        logToFile("Unable to calculate responsiveness", 1);
-        return;
-    }
-    let license = await calcLicense(owner, repo, repoURL);
-    let rampUp = await calcRampUp(repoData);
 
-    const metrics: Metrics = {
-        URL: inputURL,
-        NetScore: null,
-        RampUp: rampUp,
-        BusFactor: busFactor,
-        Correctness: correctness,
-        ResponsiveMaintainer: responsiveness,
-        License: license
-    };
-
-    // const weightedMetrics: Metrics = {
-    //     URL: repoURL,
-    //     NetScore: null,
-    //     BusFactor: (metrics.BusFactor ?? 0) * 0.25,
-    //     Correctness: (metrics.Correctness ?? 0) * 0.30,
-    //     ResponsiveMaintainer: (metrics.ResponsiveMaintainer ?? 0) * 0.15,
-    //     License: (license) * 0.10,
-    // };
-
-    const netScore = (busFactor*0.25) + (correctness*0.30) + (responsiveness*0.15) + (license*0.10);
-    metrics.NetScore = netScore;
     logToFile("Metrics Output (JSON):", 1);
     logToFile(JSON.stringify(metrics, null, 2), 1);
-
 
     // Log the metrics
     // const manager = new MetricManager(owner, repo, token, repoURL);

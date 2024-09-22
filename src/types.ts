@@ -85,11 +85,22 @@ export interface GraphQLResponse {
 
 // metrics.ts
 export interface Metrics {
-    URL: string; // Added URL field to the Metrics class
+    URL: string | null; // Added URL field to the Metrics class
     NetScore:  number | null;
+    NetScore_Latency: number | null;
     RampUp: number | null;
-    BusFactor: number | null;
+    RampUp_Latency: number | null;
     Correctness: number | null;
+    Correctness_Latency: number | null;
+    BusFactor: number | null;
+    BusFactor_Latency: number | null;
     ResponsiveMaintainer: number | null;
+    ResponsiveMaintainer_Latency: number | null;
     License: number | null;
+    License_Latency: number | null;
+}
+
+export interface WorkerResult {
+    score: number;
+    latency: number;
 }
