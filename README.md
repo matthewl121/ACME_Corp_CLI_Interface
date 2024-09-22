@@ -72,9 +72,7 @@ The output will be in NDJSON format, with each row containing the following fiel
 
 The Net Score is calculated using the formula:
 
-\[
-\text{Net Score} = (\text{Ramp-Up Time} \times 0.30) + (\text{Correctness} \times 0.30) + (\text{Bus Factor} \times 0.20) + (\text{Responsive Maintainer} \times 0.10) + (\text{License Compatibility} \times 0.10) 
-\]
+Net Score = (Ramp-Up Time * 0.30) + (Correctness * 0.30) + (Bus Factor * 0.20) + (Responsive Maintainer * 0.10) + (License Compatibility * 0.10)
 
 #### Score Range
 
