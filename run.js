@@ -77,24 +77,26 @@ program
     .action(() => {
         try {
             // Run Jest tests and output results to a file
-            console.log('Running Jest tests...');
+            // console.log('Running Jest tests...');
             execSync('npx jest --silent > test/jest-output.txt 2>&1', { stdio: 'ignore' });
-            console.log('Tests completed. Output written to test/jest-output.txt');
+            // console.log('Tests completed. Output written to test/jest-output.txt');
         } catch (error) {
-            console.error('Error: Failed to run Jest tests.');
-            console.error('Details:', error.message);
-            process.exit(1);
+            continueOnError = true;
+        }
+
+        try {
+            execSync('npx tsc test/test_output.ts', { stdio: 'ignore' });
+        } catch(error) {
+            continueOnError = true;
         }
 
         try {
             // Execute the compiled JavaScript file
-            console.log('Running compiled JavaScript...');
-            execSync('tsc test/test_otput.ts ; node test_output.js', { stdio: 'ignore' });
-            console.log('Test execution completed.');
+            // console.log('Running compiled JavaScript...');
+            execSync('node test/test_output.js', { stdio: 'inherit' });
+            // console.log('Test execution completed.');
         } catch (error) {
-            console.error('Error: Failed to execute the compiled JavaScript file "test_output.js".');
-            console.error('Details:', error.message);
-            process.exit(1);
+            continueOnError = true;
         }
     });
 
