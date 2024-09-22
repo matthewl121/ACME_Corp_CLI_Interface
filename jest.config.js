@@ -4,10 +4,17 @@ module.exports = {
     // setupFilesAfterEnv: ['/home/shay/a/gscheng/ece461/ECE461/prototype_testing/jest.setup.ts'],
     testMatch: ['**/*.test.ts'],
     collectCoverageFrom: [
-        // 'index.js',          // Explicitly include 'index.js' in the coverage
-        'src/**/*.{ts,js}',  // Include all JS/TS files in the 'src' directory
+        // 'src/index.js',
+        // 'src/metricCalcs.js',
+        // 'src/api/apiUtils.js',
+        // 'src/api/githubApi.js',
+        'src/api/graphqlQueries.js',
+        // 'src/api/npmApi.js',
+        'src/utils/log.js',
+        'src/utils/urlHandler/js',
+        'src/utils/utils.js',
+        'src/worker.js'
       ],
-    silent: true,
     collectCoverage: true, // Enable coverage collection
     coverageDirectory: 'coverage', // Output directory for coverage reports
     coverageReporters: ['text'], // Specify the format of the coverage report
