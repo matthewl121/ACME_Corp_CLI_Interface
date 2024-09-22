@@ -121,6 +121,7 @@ export const main = async (url: string) => {
     const localDir = path.join("./repos", `${owner}_${repo}`)
     const license = await calcLicenseScore(repoURL, localDir)
 
+    // Readme
     let readMe = null;
     if(readMeMd?.text) {
         readMe = readMeMd;
