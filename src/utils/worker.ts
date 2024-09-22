@@ -1,6 +1,7 @@
 const { parentPort } = require('worker_threads');
 const { logToFile } = require('./log');
-const { calcBusFactor, calcCorrectness, calcResponsiveness, calcLicense, calcRampUp } = require('../index');
+const { calcBusFactor, calcCorrectness, calcResponsiveness, calcLicense, calcRampUp } = require('../metricCalcs');
+
 
 // Worker function that computes something
 parentPort?.on('message', async (params) => {

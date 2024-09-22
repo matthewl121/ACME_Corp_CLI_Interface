@@ -3,6 +3,13 @@ import * as fs from 'fs';
 import http from 'isomorphic-git/http/node';
 import { ContributorResponse, ClosedIssueNode, PullRequestNode, OpenIssueNode } from "./types";
 import { hasLicenseHeading } from "./utils/utils";
+import { fetchContributorActivity, fetchRepoData, getReadmeDetails, checkFolderExists } from "./api/githubApi";
+import { ApiResponse, GraphQLResponse } from './types';
+import { runWorker } from './index';
+import { Metrics, WorkerResult } from './types'
+import * as path from 'path';
+import { logToFile } from './utils/log';
+
 
 export const calcBusFactorScore = (contributorActivity: ContributorResponse[]): number => {
     if (!contributorActivity) {
@@ -127,3 +134,151 @@ export const calcLicenseScore = async (repoUrl: string, localDir: string): Promi
   
     return 0;
 };
+
+export async function calcBusFactor(owner: string, repo: string, token: string): Promise<number> {
+    let busFactor;
+    const contributorActivity = await fetchContributorActivity(owner, repo, token);
+    if (!contributorActivity?.data || !Array.isArray(contributorActivity.data)) {
+        busFactor = -1
+    } else {
+        busFactor = calcBusFactorScore(contributorActivity.data);
+    }
+
+    return busFactor;
+}
+
+export function calcCorrectness(repoData: ApiResponse<GraphQLResponse | null>): number {
+    const totalOpenIssues = repoData.data?.data.repository.openIssues;
+    const totalClosedIssues = repoData.data?.data.repository.closedIssues;
+
+    if (!totalOpenIssues || !totalClosedIssues) {
+        return -1;
+    }
+    const correctness = calcCorrectnessScore(totalOpenIssues.totalCount, totalClosedIssues.totalCount);
+
+    return correctness;
+}
+
+export function calcResponsiveness(repoData: ApiResponse<GraphQLResponse | null>): number {
+    const recentPullRequests = repoData.data?.data.repository.pullRequests;
+    const isArchived = repoData.data?.data.repository.isArchived;
+    const totalOpenIssues = repoData.data?.data.repository.openIssues;
+    const totalClosedIssues = repoData.data?.data.repository.closedIssues;
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+    if (!recentPullRequests?.nodes || !totalClosedIssues?.nodes || !totalOpenIssues?.nodes) {
+        return -1;
+    }
+    const responsiveness = calcResponsivenessScore(totalClosedIssues.nodes, totalOpenIssues.nodes, recentPullRequests.nodes, oneMonthAgo, isArchived ?? false);
+
+    return responsiveness;
+}
+
+export async function calcLicense(owner: string, repo: string, repoURL: string): Promise<number> {
+    const localDir = path.join("./repos", `${owner}_${repo}`);
+    const license = await calcLicenseScore(repoURL, localDir);
+
+    return license;
+}
+
+export async function calcRampUp(repoData: ApiResponse<GraphQLResponse | null>): Promise<number> {
+    const readMeMd = repoData.data?.data.repository.readmeMd;
+    const readMeNoExt = repoData.data?.data.repository.readmeNoExt;
+    const readMeTxt = repoData.data?.data.repository.readmeTxt;
+    const readMeRDoc = repoData.data?.data.repository.readmeRDoc;
+    const readMeHtml = repoData.data?.data.repository.readmeHtml;
+    const readmeadoc = repoData.data?.data.repository.readmeAdoc;
+    const readmemarkdown = repoData.data?.data.repository.readmemarkdown;
+    const readmeyaml = repoData.data?.data.repository.readmeyaml;
+    const readmerst = repoData.data?.data.repository.readmerst;
+    const examplesFolder = repoData.data?.data.repository.examplesFolder;
+    
+    // Readme
+    let readMe = null;
+    if(readMeMd?.text) {
+        readMe = readMeMd;
+    } else if(readMeNoExt?.text) {
+        readMe = readMeNoExt;
+    } else if(readMeTxt?.text) {
+        readMe = readMeTxt;
+    } else if(readMeRDoc?.text) {
+        readMe = readMeRDoc;
+    } else if(readMeHtml?.text) {
+        readMe = readMeHtml;
+    } else if(readmeadoc?.text) {
+        readMe = readmeadoc;
+    } else if(readmemarkdown?.text) {
+        readMe = readmemarkdown;
+    } else if(readmeyaml?.text) {
+        readMe = readmeyaml;
+    } else if(readmerst?.text) {
+        readMe = readmerst;
+    }
+
+    let rampUp = null;
+    if(!readMe?.text) {
+        rampUp = 0.9;
+    } else {
+        rampUp = await getReadmeDetails(readMe.text, examplesFolder);
+    }
+
+    return rampUp;
+}
+
+export async function calculateMetrics(owner: string, repo: string, token: string, repoURL: string, repoData: ApiResponse<GraphQLResponse | null>, inputURL: string): Promise<Metrics | null> {
+    // concurrently calculate metrics
+    const busFactorWorker = runWorker(owner, repo, token, repoURL, repoData, "busFactor");
+    const correctnessWorker = runWorker(owner, repo, token, repoURL, repoData, "correctness");
+    const rampUpWorker = runWorker(owner, repo, token, repoURL, repoData, "rampUp");
+    const responsivenessWorker = runWorker(owner, repo, token, repoURL, repoData, "responsiveness");
+    const licenseWorker = runWorker(owner, repo, token, repoURL, repoData, "license");
+
+    const results = await Promise.all([busFactorWorker, correctnessWorker, rampUpWorker, responsivenessWorker, licenseWorker]);
+
+    // parse metric scores and latencies
+    let busFactor = results[0].score;
+    let correctness = results[1].score;
+    let rampUp = results[2].score;
+    let responsiveness = results[3].score;
+    let license = results[4].score;
+
+    let busFactorLatency = results[0].latency;
+    let correctnessLatency = results[1].latency;
+    let rampUpLatency = results[2].latency;
+    let responsivenessLatency = results[3].latency;
+    let licenseLatency = results[4].latency;
+
+    // verify calculations
+    if (correctness == -1) {
+        logToFile("Unable to calculate correctness", 1);
+        return null;
+    }
+    if (responsiveness == -1) {
+        logToFile("Unable to calculate responsiveness", 1);
+        return null;
+    }
+
+    // calculate net score
+    const begin = Date.now();
+    const netScore = (busFactor*0.25) + (correctness*0.30) + (rampUp*0.20) + (responsiveness*0.15) + (license*0.10);
+    const end = Date.now();
+
+    const metrics: Metrics = {
+        URL: inputURL,
+        NetScore: netScore,
+        NetScore_Latency: (end - begin) / 1000,
+        RampUp: rampUp,
+        RampUp_Latency: rampUpLatency,
+        Correctness: correctness,
+        Correctness_Latency: correctnessLatency,
+        BusFactor: busFactor,
+        BusFactor_Latency: busFactorLatency,
+        ResponsiveMaintainer: responsiveness,
+        ResponsiveMaintainer_Latency: responsivenessLatency,
+        License: license,
+        License_Latency: licenseLatency
+    };
+
+    return metrics;
+}
