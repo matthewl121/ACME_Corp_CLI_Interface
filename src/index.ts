@@ -116,17 +116,16 @@ export const main = async (url: string) => {
         rampUp = 0.9;
     } else {
         rampUp = await getReadmeDetails(readMe.text, examplesFolder);
-
-        await writeFile(examplesFolder, "exampleFolder.json")
     }
 
         const metrics: Metrics = {
             URL: repoURL,
             NetScore: null,
+            RampUp: rampUp,
             BusFactor: busFactor,
             Correctness: correctness,
             ResponsiveMaintainer: responsiveness,
-            License: license,
+            License: license
         };
 
         // const weightedMetrics: Metrics = {
