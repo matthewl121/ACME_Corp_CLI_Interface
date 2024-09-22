@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { promises as fs } from 'fs';  // Import fs promises
-import { fetchContributorActivity, fetchRepoData } from "./api/GithubApi";
+import { fetchContributorActivity, fetchRepoData } from "./api/githubApi";
 import { calcBusFactorScore, calcCorrectnessScore, calcLicenseScore, calcResponsivenessScore } from './metricCalcs';
 import { writeFile } from './utils/utils';
 import { extractNpmPackageName, extractGithubOwnerAndRepo, extractDomainFromUrl } from './utils/urlHandler'

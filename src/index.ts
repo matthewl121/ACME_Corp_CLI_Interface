@@ -63,12 +63,14 @@ export const main = async (url: string) => {
     */
 
     // Bus Factor
+    let busFactor;
     const contributorActivity = await fetchContributorActivity(owner, repo, token);
     if (!contributorActivity?.data || !Array.isArray(contributorActivity.data)) {
-        console.error('Invalid contributor activity data:', contributorActivity.data);
-        return;
+        busFactor = -1
+    } else {
+        busFactor = calcBusFactorScore(contributorActivity.data);
     }
-    const busFactor = calcBusFactorScore(contributorActivity.data);
+    
 
     const repoData = await fetchRepoData(owner, repo, token);
     if (!repoData.data) {
@@ -148,7 +150,7 @@ export const main = async (url: string) => {
     }
 
         const metrics: Metrics = {
-            URL: repoURL,
+            URL: inputURL,
             NetScore: null,
             RampUp: rampUp,
             BusFactor: busFactor,
