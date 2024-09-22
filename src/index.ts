@@ -65,13 +65,11 @@ export const main = async (url: string) => {
     // calculate all metrics (concurrently)
     let metrics = await calculateMetrics(owner, repo, token, repoURL, repoData, inputURL);
     if (metrics == null) {
-        return 1;
+        return;
     }
 
     // logMetrics
     logToFile(JSON.stringify(metrics, null, 2), 1);
     // print metrics to stdout
     metricsLogToStdout(metrics, 1);
-
-    return 0;
 }
