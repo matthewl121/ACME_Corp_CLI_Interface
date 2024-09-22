@@ -222,7 +222,6 @@ export const getReadmeDetails = async (
     examplesFolder: any
 ): Promise<number> => {
     try {
-        console.log(examplesFolder.entries.length)
         const linesLength= readMe.split('\n').length;
         if(linesLength > 75) {
             if(readMe.includes('documentation') && examplesFolder.entries.length != null) {
