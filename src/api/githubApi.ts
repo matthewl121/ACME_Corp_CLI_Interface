@@ -45,7 +45,7 @@ export const fetchRepoData = async (
     const body = JSON.stringify({ query });
 
     const response = await apiPostRequest<GraphQLResponse>(url, body, token);
-    await writeFile(response, "response1.json")
+    // await writeFile(response, "response1.json")
 
     if (response.error || !response.data) {
         console.error('Error fetching repository data:', response.error);

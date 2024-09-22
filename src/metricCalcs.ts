@@ -1,4 +1,4 @@
-import { clone } from 'isomorphic-git';
+import { clone, checkout } from 'isomorphic-git';
 import * as fs from 'fs';
 import http from 'isomorphic-git/http/node';
 import { ContributorResponse, ClosedIssueNode, PullRequestNode, OpenIssueNode } from "./types";
@@ -103,6 +103,7 @@ export const calcResponsivenessScore = (
 };
 
 export const calcLicenseScore = async (repoUrl: string, localDir: string): Promise<number> => {
+
     await clone({
         fs,
         http,
@@ -110,6 +111,7 @@ export const calcLicenseScore = async (repoUrl: string, localDir: string): Promi
         url: repoUrl,
         singleBranch: true,
         depth: 1,
+        
     });
   
     const licenseFilePath = `${localDir}/LICENSE`;
