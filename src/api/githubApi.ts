@@ -241,7 +241,7 @@ export const getReadmeDetails = async (
             return 0.3;
         } else if(examplesFolder != null && examplesFolder.entries.length > 15) {
             return 0.3;
-        } else if(examplesFolder != null && examplesFolder.entreis.length <= 15) {
+        } else if(examplesFolder != null && examplesFolder.entries.length <= 15) {
             return 0.4;  
         } else if(linesLength <= 5) {
             return 0.9;
