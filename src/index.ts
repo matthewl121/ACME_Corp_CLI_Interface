@@ -48,14 +48,11 @@ export function runWorker(owner: string, repo: string, token: string, repoURL: s
 export const main = async (url: string) => {
     const token: string = process.env.GITHUB_TOKEN || "";
     const inputURL: string = url;
-<<<<<<< HEAD
     
     // get repoDetails
-=======
 
     initLogFile();
 
->>>>>>> 1d7bc71b892d874eb199ba241905f69d4e876898
     const repoDetails = await getRepoDetails(token, inputURL);
     const [owner, repo, repoURL]: [string, string, string] = repoDetails;
 
