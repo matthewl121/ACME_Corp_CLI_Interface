@@ -59,8 +59,8 @@ program
                 console.error(`%cError reading file: ${err}`, `color: red`);
                 process.exit(1);
             }
-            const f = fs.openSync(process.env.LOG_FILE, 'w');
-            fs.closeSync(f);
+            // const f = fs.openSync(process.env.LOG_FILE, 'w');
+            // fs.closeSync(f);
             const urls = data.split('\n').map(line => line.trim()).filter(line => line !== '');
             urls.forEach(url => {
                 // console.log(`Processing URL: ${url}`);

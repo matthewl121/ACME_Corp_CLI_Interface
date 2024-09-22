@@ -7,10 +7,11 @@ import 'dotenv/config';
 import { fetchRepoData } from "./api/githubApi";
 import { getRepoDetails } from './utils/urlHandler';
 import { WorkerResult } from './types';
-import { logToFile, metricsLogToStdout } from './utils/log';
+import { initLogFile, logToFile, metricsLogToStdout } from './utils/log';
 import { ApiResponse, GraphQLResponse } from './types';
 import { Worker } from 'worker_threads';
 import { calculateMetrics } from './metricCalcs';
+import { init } from 'isomorphic-git';
 
 
 // Function to create and manage worker threads
@@ -47,7 +48,9 @@ export function runWorker(owner: string, repo: string, token: string, repoURL: s
 export const main = async (url: string) => {
     const token: string = process.env.GITHUB_TOKEN || "";
     const inputURL: string = url;
-    
+
+    initLogFile();
+
     const repoDetails = await getRepoDetails(token, inputURL);
 
     const [owner, repo, repoURL]: [string, string, string] = repoDetails;
