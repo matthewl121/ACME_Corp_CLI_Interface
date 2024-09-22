@@ -4,19 +4,11 @@
 */
 
 import 'dotenv/config';
-import { fetchContributorActivity, fetchRepoData, getReadmeDetails, checkFolderExists } from "./api/githubApi";
-// import { calcBusFactorScore, calcCorrectnessScore, calcLicenseScore, calcResponsivenessScore } from './metricCalcs';
-// import { writeFile } from './utils/utils';
+import { fetchRepoData } from "./api/githubApi";
 import { getRepoDetails } from './utils/urlHandler';
-// import { fetchGithubUrlFromNpm } from './api/npmApi';
-// import * as path from 'path';
-import { Metrics, WorkerResult } from './types';
+import { WorkerResult } from './types';
 import { logToFile, metricsLogToStdout } from './utils/log';
-// import { initLogFile, logToFile } from './utils/log.js';
-// import { get } from 'axios';
-// import { read } from 'fs';
 import { ApiResponse, GraphQLResponse } from './types';
-// import { resolveNaptr } from 'dns';
 import { Worker } from 'worker_threads';
 import { calculateMetrics } from './metricCalcs';
 
@@ -81,17 +73,4 @@ export const main = async (url: string) => {
     logToFile(JSON.stringify(metrics, null, 2), 1);
     // print metrics to stdout
     metricsLogToStdout(metrics, 1);
-
-    // Log the metrics
-    // const manager = new MetricManager(owner, repo, token, repoURL);
-    // const metricsALL = await manager.calculateAndLogMetrics();
-    // console.log(`
-    //     --- METRICS ---       --- SCORE --- 
-        
-    //     Bus Factor Score:     ${busFactor.toFixed(2)}
-    //     Ramp Up Time:         ${rampUp}
-    //     Correctness Score:    ${correctness.toFixed(2)}
-    //     Responsiveness Score: ${responsiveness.toFixed(2)}
-    //     License Score:        ${license.toFixed(2)}
-    // `);
 }
