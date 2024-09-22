@@ -16,78 +16,7 @@ export class MetricManager {
         this.token = token;
         this.url = url;
     }
-
-    // Fetches and calculates the bus factor
-    public async getBusFactor(): Promise<number | null> {
-        const contributorActivity = await fetchContributorActivity(this.owner, this.repo, this.token);
-        if (!contributorActivity?.data) {
-            return null;
-        }
-        await writeFile(contributorActivity, "contributorActivity.json");
-        const busFactor = calcBusFactorScore(contributorActivity.data);
-        return busFactor;
-    }
-
-    // Fetches and calculates the correctness
-    public async getCorrectness(): Promise<number | null> {
-        const totalOpenIssues = await fetchRecentIssuesByState(this.owner, this.repo, "open", this.token);
-        const totalClosedIssues = await fetchRecentIssuesByState(this.owner, this.repo, "closed", this.token);
-
-        if (!totalOpenIssues?.data || !totalClosedIssues?.data) {
-            return null;
-        }
-
-        await writeFile(totalOpenIssues, "totalOpenIssues.json");
-        await writeFile(totalClosedIssues, "totalClosedIssues.json");
-        const correctness = calcCorrectness(totalOpenIssues.data.total_count, totalClosedIssues.data.total_count);
-        return correctness;
-    }
-
-    // Fetches and calculates the responsiveness
-    public async getResponsiveness(): Promise<number | null> {
-        const recentPullRequests = await fetchRecentPullRequests(this.owner, this.repo, this.token)
-        const totalClosedIssues = await fetchRecentIssuesByState(this.owner, this.repo, "closed", this.token);
-        if (!recentPullRequests?.data || !totalClosedIssues?.data) {
-            return null;
-        }
-
-        await writeFile(recentPullRequests, "recentPullRequests.json")
-        const responsiveness = calcResponsiveness(totalClosedIssues.data.items, recentPullRequests.data.items);
-        return responsiveness;
-    }
-
-    // Fetches and calculates the license
-    public async getLicense(): Promise<number | null> {
-        const licenses = await fetchLicense(this.owner, this.repo, this.token);
-        if (!licenses?.data) {
-            return null;
-        }
-
-        await writeFile(licenses, "licenses.json")
-        const license = licenses.data.license.name
-        // Handle license as 1 or 0 based on its presence
-        const licenseValue = license != null ? 1 : 0;
-        return licenseValue;
-    }
-
-    // Calculates all metrics and returns them in a structured format
-    public async getMetrics(): Promise<Metrics> {
-        const busFactor = await this.getBusFactor();
-        const correctness = await this.getCorrectness();
-        const responsiveness = await this.getResponsiveness();
-        const license = await this.getLicense();
-        const metrics: Metrics = {
-            URL: this.url,
-            NetScore: null,
-            BusFactor: busFactor,
-            Correctness: correctness,
-            ResponsiveMaintainer: responsiveness,
-            License: license,
-        };
-
-        return metrics;
-    }
-
+    
     // Calculates weighted metrics based on provided metrics
     public async getWeightedMetrics(metrics: Metrics): Promise<Metrics> {
         // Handle license as 1 or 0 based on its presence

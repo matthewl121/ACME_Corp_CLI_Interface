@@ -125,12 +125,11 @@ export const main = async (url: string) => {
     console.log(`
         --- METRICS ---       --- SCORE --- 
         
+        URL:                  ${repoURL}
         Bus Factor Score:     ${busFactor.toFixed(2)}
-        Ramp Up Time:         ${rampUp}
+        Ramp Up Time:         ${rampUp.toFixed(2)}
         Correctness Score:    ${correctness.toFixed(2)}
         Responsiveness Score: ${responsiveness.toFixed(2)}
         License Score:        ${license.toFixed(2)}
     `);
 }
-
-main("https://www.npmjs.com/package/socket.io")
