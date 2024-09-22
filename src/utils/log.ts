@@ -1,15 +1,16 @@
 import { openSync, closeSync } from "fs";
 
 const fs = require('fs');
+const path = require('path');
 
 export function initLogFile() {
-    if (!fs.existsSync(process.env.LOG_FILE)) {
-        // Create log file if it doesn't exist
-        fs.writeFileSync(process.env.LOG_FILE, '');
-    } else {
-        // Clear it if it does exist
-        fs.writeFileSync(process.env.LOG_FILE, '');
-    }
+    const logDir = path.dirname(process.env.LOG_FILE);
+    if (!fs.existsSync(logDir)) {
+        fs.mkdirSync(logDir, { recursive: true });
+    } 
+    fs.writeFileSync(process.env.LOG_FILE, 'w'); 
+    // const f = fs.openSync(process.env.LOG_FILE, 'w');
+    // fs.closeSync(f);
 }
 
 export function logToFile(message: string | object, message_level: number) {

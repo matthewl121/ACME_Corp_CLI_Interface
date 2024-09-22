@@ -1,140 +1,343 @@
-FAIL repos/caged_javascript-bits/canvasprimitives/src/test.js
-  ● Test suite failed to run
+PASS test/index.test.ts (5.996 s)
+Failed to collect coverage from /home/shay/a/jiaccari/461dev/DEV/ACME_Corp_CLI_Interface/src/utils/worker.ts
+ERROR: [96msrc/utils/worker.ts[0m:[93m7[0m:[93m34[0m - [91merror[0m[90m TS7006: [0mParameter 'params' implicitly has an 'any' type.
 
-    Your test suite must contain at least one test.
+[7m7[0m parentPort?.on('message', async (params) => {
+[7m [0m [91m                                 ~~~~~~[0m
+STACK: 
+Failed to collect coverage from /home/shay/a/jiaccari/461dev/DEV/ACME_Corp_CLI_Interface/src/metricCalcs.ts
+ERROR: [96msrc/metricCalcs.ts[0m:[93m188[0m:[93m53[0m - [91merror[0m[90m TS2551: [0mProperty 'READMEMD' does not exist on type 'RepositoryResponse'. Did you mean 'readme'?
 
-      at onResult (node_modules/@jest/core/build/TestScheduler.js:133:18)
-      at node_modules/@jest/core/build/TestScheduler.js:254:19
-      at node_modules/emittery/index.js:363:13
-          at Array.map (<anonymous>)
-      at Emittery.emit (node_modules/emittery/index.js:361:23)
+[7m188[0m     const READMEMD = repoData.data?.data.repository.READMEMD;
+[7m   [0m [91m                                                    ~~~~~~~~[0m
 
-FAIL repos/cloudinary_cloudinary_npm/test/unit/sdkAnalytics/imageTagWithAnalytics.spec.js
-  ● Test suite failed to run
+  [96msrc/types.ts[0m:[93m72[0m:[93m5[0m
+    [7m72[0m     readme: Readme;
+    [7m  [0m [96m    ~~~~~~[0m
+    'readme' is declared here.
+[96msrc/metricCalcs.ts[0m:[93m189[0m:[93m56[0m - [91merror[0m[90m TS2339: [0mProperty 'READMENOEXT' does not exist on type 'RepositoryResponse'.
 
-    Cannot find module 'mock-fs' from 'repos/cloudinary_cloudinary_npm/test/unit/sdkAnalytics/imageTagWithAnalytics.spec.js'
+[7m189[0m     const READMENOEXT = repoData.data?.data.repository.READMENOEXT;
+[7m   [0m [91m                                                       ~~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m190[0m:[93m54[0m - [91merror[0m[90m TS2551: [0mProperty 'READMETXT' does not exist on type 'RepositoryResponse'. Did you mean 'readme'?
 
-      1 | const path = require('path');
-    > 2 | const mock = require('mock-fs');
-        |              ^
-      3 | const assert = require("assert");
-      4 | const sinon = require("sinon");
-      5 | const fs = require('fs');
+[7m190[0m     const READMETXT = repoData.data?.data.repository.READMETXT;
+[7m   [0m [91m                                                     ~~~~~~~~~[0m
 
-      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
-      at Object.require (repos/cloudinary_cloudinary_npm/test/unit/sdkAnalytics/imageTagWithAnalytics.spec.js:2:14)
+  [96msrc/types.ts[0m:[93m72[0m:[93m5[0m
+    [7m72[0m     readme: Readme;
+    [7m  [0m [96m    ~~~~~~[0m
+    'readme' is declared here.
+[96msrc/metricCalcs.ts[0m:[93m191[0m:[93m55[0m - [91merror[0m[90m TS2339: [0mProperty 'READMERDOC' does not exist on type 'RepositoryResponse'.
 
-FAIL src/test.ts
-  ● Test suite failed to run
+[7m191[0m     const READMERDOC = repoData.data?.data.repository.READMERDOC;
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m192[0m:[93m55[0m - [91merror[0m[90m TS2339: [0mProperty 'READMEHTML' does not exist on type 'RepositoryResponse'.
 
-    SyntaxError: /home/shay/a/jiaccari/461dev/DEV/ACME_Corp_CLI_Interface/src/test.ts: Unexpected token, expected "," (10:23)
+[7m192[0m     const READMEHTML = repoData.data?.data.repository.READMEHTML;
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m193[0m:[93m55[0m - [91merror[0m[90m TS2339: [0mProperty 'READMEADOC' does not exist on type 'RepositoryResponse'.
 
-       8 | import * as path from 'path';
-       9 |
-    > 10 | const main = async (url: string) => {
-         |                        ^
-      11 |     const token: string = process.env.GITHUB_TOKEN || "";
-      12 |     const inputURL: string = url;
-      13 |
+[7m193[0m     const READMEADOC = repoData.data?.data.repository.READMEADOC;
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m194[0m:[93m59[0m - [91merror[0m[90m TS2339: [0mProperty 'READMEMARKDOWN' does not exist on type 'RepositoryResponse'.
 
-      at constructor (node_modules/@babel/parser/src/parse-error.ts:95:45)
-      at Parser.toParseError [as raise] (node_modules/@babel/parser/src/tokenizer/index.ts:1496:19)
-      at Parser.raise [as unexpected] (node_modules/@babel/parser/src/tokenizer/index.ts:1536:16)
-      at Parser.unexpected [as expect] (node_modules/@babel/parser/src/parser/util.ts:157:12)
-      at Parser.expect [as parseCallExpressionArguments] (node_modules/@babel/parser/src/parser/expression.ts:1016:14)
-      at Parser.parseCallExpressionArguments [as parseCoverCallAndAsyncArrowHead] (node_modules/@babel/parser/src/parser/expression.ts:880:29)
-      at Parser.parseCoverCallAndAsyncArrowHead [as parseSubscript] (node_modules/@babel/parser/src/parser/expression.ts:769:19)
-      at Parser.parseSubscript [as parseSubscripts] (node_modules/@babel/parser/src/parser/expression.ts:727:19)
-      at Parser.parseSubscripts [as parseExprSubscripts] (node_modules/@babel/parser/src/parser/expression.ts:712:17)
-      at Parser.parseExprSubscripts [as parseUpdate] (node_modules/@babel/parser/src/parser/expression.ts:685:21)
-      at Parser.parseUpdate [as parseMaybeUnary] (node_modules/@babel/parser/src/parser/expression.ts:647:23)
-      at Parser.parseMaybeUnary [as parseMaybeUnaryOrPrivate] (node_modules/@babel/parser/src/parser/expression.ts:388:14)
-      at Parser.parseMaybeUnaryOrPrivate [as parseExprOps] (node_modules/@babel/parser/src/parser/expression.ts:400:23)
-      at Parser.parseExprOps [as parseMaybeConditional] (node_modules/@babel/parser/src/parser/expression.ts:355:23)
-      at Parser.parseMaybeConditional [as parseMaybeAssign] (node_modules/@babel/parser/src/parser/expression.ts:297:21)
-      at parseMaybeAssign (node_modules/@babel/parser/src/parser/expression.ts:251:12)
-      at Parser.callback [as allowInAnd] (node_modules/@babel/parser/src/parser/expression.ts:3130:16)
-      at Parser.allowInAnd [as parseMaybeAssignAllowIn] (node_modules/@babel/parser/src/parser/expression.ts:250:17)
-      at Parser.parseMaybeAssignAllowIn [as parseVar] (node_modules/@babel/parser/src/parser/statement.ts:1539:18)
-      at Parser.parseVar [as parseVarStatement] (node_modules/@babel/parser/src/parser/statement.ts:1203:10)
-      at Parser.parseVarStatement [as parseStatementContent] (node_modules/@babel/parser/src/parser/statement.ts:555:21)
-      at Parser.parseStatementContent [as parseStatementLike] (node_modules/@babel/parser/src/parser/statement.ts:426:17)
-      at Parser.parseStatementLike [as parseModuleItem] (node_modules/@babel/parser/src/parser/statement.ts:363:17)
-      at Parser.parseModuleItem [as parseBlockOrModuleBlockBody] (node_modules/@babel/parser/src/parser/statement.ts:1395:16)
-      at Parser.parseBlockOrModuleBlockBody [as parseBlockBody] (node_modules/@babel/parser/src/parser/statement.ts:1369:10)
-      at Parser.parseBlockBody [as parseProgram] (node_modules/@babel/parser/src/parser/statement.ts:217:10)
-      at Parser.parseProgram [as parseTopLevel] (node_modules/@babel/parser/src/parser/statement.ts:199:25)
-      at Parser.parseTopLevel [as parse] (node_modules/@babel/parser/src/parser/index.ts:46:10)
-      at parse (node_modules/@babel/parser/src/index.ts:65:38)
-      at parser (node_modules/@babel/core/src/parser/index.ts:28:19)
-          at parser.next (<anonymous>)
-      at normalizeFile (node_modules/@babel/core/src/transformation/normalize-file.ts:50:24)
-          at normalizeFile.next (<anonymous>)
-      at run (node_modules/@babel/core/src/transformation/index.ts:39:36)
-          at run.next (<anonymous>)
-      at transform (node_modules/@babel/core/src/transform.ts:29:20)
-          at transform.next (<anonymous>)
-      at evaluateSync (node_modules/gensync/index.js:251:28)
-      at sync (node_modules/gensync/index.js:89:14)
-      at fn (node_modules/@babel/core/src/errors/rewrite-stack-trace.ts:99:14)
-      at transformSync (node_modules/@babel/core/src/transform.ts:66:52)
-      at ScriptTransformer.transformSource (node_modules/@jest/transform/build/ScriptTransformer.js:545:31)
-      at ScriptTransformer._transformAndBuildScript (node_modules/@jest/transform/build/ScriptTransformer.js:674:40)
-      at ScriptTransformer.transform (node_modules/@jest/transform/build/ScriptTransformer.js:726:19)
+[7m194[0m     const READMEMARKDOWN = repoData.data?.data.repository.READMEMARKDOWN;
+[7m   [0m [91m                                                          ~~~~~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m195[0m:[93m55[0m - [91merror[0m[90m TS2339: [0mProperty 'READMEYAML' does not exist on type 'RepositoryResponse'.
 
-PASS repos/cloudinary_cloudinary_npm/test/unit/cloudinaryUtils/processLayer.spec.js
-FAIL repos/cloudinary_cloudinary_npm/test/unit/cloudinaryUtils/getUserAgent.spec.js
-  ● Test suite failed to run
+[7m195[0m     const READMEYAML = repoData.data?.data.repository.READMEYAML;
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m196[0m:[93m54[0m - [91merror[0m[90m TS2551: [0mProperty 'READMERST' does not exist on type 'RepositoryResponse'. Did you mean 'readme'?
 
-    Cannot find module 'q' from 'repos/cloudinary_cloudinary_npm/lib/uploader.js'
+[7m196[0m     const READMERST = repoData.data?.data.repository.READMERST;
+[7m   [0m [91m                                                     ~~~~~~~~~[0m
 
-    Require stack:
-      repos/cloudinary_cloudinary_npm/lib/uploader.js
-      repos/cloudinary_cloudinary_npm/lib/cloudinary.js
-      repos/cloudinary_cloudinary_npm/cloudinary.js
-      repos/cloudinary_cloudinary_npm/test/unit/cloudinaryUtils/getUserAgent.spec.js
+  [96msrc/types.ts[0m:[93m72[0m:[93m5[0m
+    [7m72[0m     readme: Readme;
+    [7m  [0m [96m    ~~~~~~[0m
+    'readme' is declared here.
+[96msrc/metricCalcs.ts[0m:[93m197[0m:[93m58[0m - [91merror[0m[90m TS2339: [0mProperty 'READMETEXTILE' does not exist on type 'RepositoryResponse'.
 
-      1 | const fs = require('fs');
-      2 | const { extname, basename } = require('path');
-    > 3 | const Q = require('q');
-        |           ^
-      4 | const Writable = require("stream").Writable;
-      5 | const urlLib = require('url');
-      6 |
+[7m197[0m     const READMETEXTILE = repoData.data?.data.repository.READMETEXTILE;
+[7m   [0m [91m                                                         ~~~~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m198[0m:[93m53[0m - [91merror[0m[90m TS2551: [0mProperty 'readmemd' does not exist on type 'RepositoryResponse'. Did you mean 'readme'?
 
-      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
-      at Object.require (repos/cloudinary_cloudinary_npm/lib/uploader.js:3:11)
-      at Object.require (repos/cloudinary_cloudinary_npm/lib/cloudinary.js:4:20)
-      at Object.<anonymous> (repos/cloudinary_cloudinary_npm/cloudinary.js:1:45)
-      at Object.<anonymous> (repos/cloudinary_cloudinary_npm/test/unit/cloudinaryUtils/getUserAgent.spec.js:2:50)
+[7m198[0m     const readmemd = repoData.data?.data.repository.readmemd;
+[7m   [0m [91m                                                    ~~~~~~~~[0m
 
-FAIL repos/cloudinary_cloudinary_npm/test/unit/config.spec.js
-  ● Test suite failed to run
+  [96msrc/types.ts[0m:[93m72[0m:[93m5[0m
+    [7m72[0m     readme: Readme;
+    [7m  [0m [96m    ~~~~~~[0m
+    'readme' is declared here.
+[96msrc/metricCalcs.ts[0m:[93m199[0m:[93m56[0m - [91merror[0m[90m TS2339: [0mProperty 'readmenoext' does not exist on type 'RepositoryResponse'.
 
-    Cannot find module 'q' from 'repos/cloudinary_cloudinary_npm/lib/uploader.js'
+[7m199[0m     const readmenoext = repoData.data?.data.repository.readmenoext;
+[7m   [0m [91m                                                       ~~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m200[0m:[93m54[0m - [91merror[0m[90m TS2551: [0mProperty 'readmetxt' does not exist on type 'RepositoryResponse'. Did you mean 'readme'?
 
-    Require stack:
-      repos/cloudinary_cloudinary_npm/lib/uploader.js
-      repos/cloudinary_cloudinary_npm/lib/cloudinary.js
-      repos/cloudinary_cloudinary_npm/cloudinary.js
-      repos/cloudinary_cloudinary_npm/test/unit/config.spec.js
+[7m200[0m     const readmetxt = repoData.data?.data.repository.readmetxt;
+[7m   [0m [91m                                                     ~~~~~~~~~[0m
 
-      1 | const fs = require('fs');
-      2 | const { extname, basename } = require('path');
-    > 3 | const Q = require('q');
-        |           ^
-      4 | const Writable = require("stream").Writable;
-      5 | const urlLib = require('url');
-      6 |
+  [96msrc/types.ts[0m:[93m72[0m:[93m5[0m
+    [7m72[0m     readme: Readme;
+    [7m  [0m [96m    ~~~~~~[0m
+    'readme' is declared here.
+[96msrc/metricCalcs.ts[0m:[93m201[0m:[93m55[0m - [91merror[0m[90m TS2339: [0mProperty 'readmerdoc' does not exist on type 'RepositoryResponse'.
 
-      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/resolver.js:427:11)
-      at Object.require (repos/cloudinary_cloudinary_npm/lib/uploader.js:3:11)
-      at Object.require (repos/cloudinary_cloudinary_npm/lib/cloudinary.js:4:20)
-      at Object.<anonymous> (repos/cloudinary_cloudinary_npm/cloudinary.js:1:45)
-      at Object.<anonymous> (repos/cloudinary_cloudinary_npm/test/unit/config.spec.js:2:47)
+[7m201[0m     const readmerdoc = repoData.data?.data.repository.readmerdoc;
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m202[0m:[93m55[0m - [91merror[0m[90m TS2339: [0mProperty 'readmehtml' does not exist on type 'RepositoryResponse'.
 
-A worker process has failed to exit gracefully and has been force exited. This is likely caused by tests leaking due to improper teardown. Try running with --detectOpenHandles to find leaks. Active timers can also cause this, ensure that .unref() was called on them.
-Test Suites: 5 failed, 1 passed, 6 total
-Tests:       11 passed, 11 total
+[7m202[0m     const readmehtml = repoData.data?.data.repository.readmehtml;
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m203[0m:[93m55[0m - [91merror[0m[90m TS2339: [0mProperty 'readmeadoc' does not exist on type 'RepositoryResponse'.
+
+[7m203[0m     const readmeadoc = repoData.data?.data.repository.readmeadoc;
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m204[0m:[93m59[0m - [91merror[0m[90m TS2339: [0mProperty 'readmemarkdown' does not exist on type 'RepositoryResponse'.
+
+[7m204[0m     const readmemarkdown = repoData.data?.data.repository.readmemarkdown;
+[7m   [0m [91m                                                          ~~~~~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m205[0m:[93m55[0m - [91merror[0m[90m TS2339: [0mProperty 'readmeyaml' does not exist on type 'RepositoryResponse'.
+
+[7m205[0m     const readmeyaml = repoData.data?.data.repository.readmeyaml;
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m206[0m:[93m54[0m - [91merror[0m[90m TS2551: [0mProperty 'readmerst' does not exist on type 'RepositoryResponse'. Did you mean 'readme'?
+
+[7m206[0m     const readmerst = repoData.data?.data.repository.readmerst;
+[7m   [0m [91m                                                     ~~~~~~~~~[0m
+
+  [96msrc/types.ts[0m:[93m72[0m:[93m5[0m
+    [7m72[0m     readme: Readme;
+    [7m  [0m [96m    ~~~~~~[0m
+    'readme' is declared here.
+[96msrc/metricCalcs.ts[0m:[93m207[0m:[93m58[0m - [91merror[0m[90m TS2339: [0mProperty 'readmetextile' does not exist on type 'RepositoryResponse'.
+
+[7m207[0m     const readmetextile = repoData.data?.data.repository.readmetextile;
+[7m   [0m [91m                                                         ~~~~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m208[0m:[93m53[0m - [91merror[0m[90m TS2551: [0mProperty 'readMemd' does not exist on type 'RepositoryResponse'. Did you mean 'readme'?
+
+[7m208[0m     const readMemd = repoData.data?.data.repository.readMemd;
+[7m   [0m [91m                                                    ~~~~~~~~[0m
+
+  [96msrc/types.ts[0m:[93m72[0m:[93m5[0m
+    [7m72[0m     readme: Readme;
+    [7m  [0m [96m    ~~~~~~[0m
+    'readme' is declared here.
+[96msrc/metricCalcs.ts[0m:[93m209[0m:[93m56[0m - [91merror[0m[90m TS2339: [0mProperty 'readMenoext' does not exist on type 'RepositoryResponse'.
+
+[7m209[0m     const readMenoext = repoData.data?.data.repository.readMenoext;
+[7m   [0m [91m                                                       ~~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m210[0m:[93m54[0m - [91merror[0m[90m TS2551: [0mProperty 'readMetxt' does not exist on type 'RepositoryResponse'. Did you mean 'readme'?
+
+[7m210[0m     const readMetxt = repoData.data?.data.repository.readMetxt;
+[7m   [0m [91m                                                     ~~~~~~~~~[0m
+
+  [96msrc/types.ts[0m:[93m72[0m:[93m5[0m
+    [7m72[0m     readme: Readme;
+    [7m  [0m [96m    ~~~~~~[0m
+    'readme' is declared here.
+[96msrc/metricCalcs.ts[0m:[93m211[0m:[93m55[0m - [91merror[0m[90m TS2339: [0mProperty 'readMerdoc' does not exist on type 'RepositoryResponse'.
+
+[7m211[0m     const readMerdoc = repoData.data?.data.repository.readMerdoc;
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m212[0m:[93m55[0m - [91merror[0m[90m TS2339: [0mProperty 'readMehtml' does not exist on type 'RepositoryResponse'.
+
+[7m212[0m     const readMehtml = repoData.data?.data.repository.readMehtml;
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m213[0m:[93m55[0m - [91merror[0m[90m TS2339: [0mProperty 'readMeadoc' does not exist on type 'RepositoryResponse'.
+
+[7m213[0m     const readMeadoc = repoData.data?.data.repository.readMeadoc;
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m214[0m:[93m59[0m - [91merror[0m[90m TS2339: [0mProperty 'readMemarkdown' does not exist on type 'RepositoryResponse'.
+
+[7m214[0m     const readMemarkdown = repoData.data?.data.repository.readMemarkdown;
+[7m   [0m [91m                                                          ~~~~~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m215[0m:[93m55[0m - [91merror[0m[90m TS2339: [0mProperty 'readMeyaml' does not exist on type 'RepositoryResponse'.
+
+[7m215[0m     const readMeyaml = repoData.data?.data.repository.readMeyaml;
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m216[0m:[93m54[0m - [91merror[0m[90m TS2551: [0mProperty 'readMerst' does not exist on type 'RepositoryResponse'. Did you mean 'readme'?
+
+[7m216[0m     const readMerst = repoData.data?.data.repository.readMerst;
+[7m   [0m [91m                                                     ~~~~~~~~~[0m
+
+  [96msrc/types.ts[0m:[93m72[0m:[93m5[0m
+    [7m72[0m     readme: Readme;
+    [7m  [0m [96m    ~~~~~~[0m
+    'readme' is declared here.
+[96msrc/metricCalcs.ts[0m:[93m217[0m:[93m58[0m - [91merror[0m[90m TS2339: [0mProperty 'readMetextile' does not exist on type 'RepositoryResponse'.
+
+[7m217[0m     const readMetextile = repoData.data?.data.repository.readMetextile;
+[7m   [0m [91m                                                         ~~~~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m218[0m:[93m53[0m - [91merror[0m[90m TS2551: [0mProperty 'ReadMemd' does not exist on type 'RepositoryResponse'. Did you mean 'readme'?
+
+[7m218[0m     const ReadMemd = repoData.data?.data.repository.ReadMemd;
+[7m   [0m [91m                                                    ~~~~~~~~[0m
+
+  [96msrc/types.ts[0m:[93m72[0m:[93m5[0m
+    [7m72[0m     readme: Readme;
+    [7m  [0m [96m    ~~~~~~[0m
+    'readme' is declared here.
+[96msrc/metricCalcs.ts[0m:[93m219[0m:[93m56[0m - [91merror[0m[90m TS2339: [0mProperty 'ReadMenoext' does not exist on type 'RepositoryResponse'.
+
+[7m219[0m     const ReadMenoext = repoData.data?.data.repository.ReadMenoext;
+[7m   [0m [91m                                                       ~~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m220[0m:[93m54[0m - [91merror[0m[90m TS2551: [0mProperty 'ReadMetxt' does not exist on type 'RepositoryResponse'. Did you mean 'readme'?
+
+[7m220[0m     const ReadMetxt = repoData.data?.data.repository.ReadMetxt;
+[7m   [0m [91m                                                     ~~~~~~~~~[0m
+
+  [96msrc/types.ts[0m:[93m72[0m:[93m5[0m
+    [7m72[0m     readme: Readme;
+    [7m  [0m [96m    ~~~~~~[0m
+    'readme' is declared here.
+[96msrc/metricCalcs.ts[0m:[93m221[0m:[93m55[0m - [91merror[0m[90m TS2339: [0mProperty 'ReadMerdoc' does not exist on type 'RepositoryResponse'.
+
+[7m221[0m     const ReadMerdoc = repoData.data?.data.repository.ReadMerdoc;
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m222[0m:[93m55[0m - [91merror[0m[90m TS2339: [0mProperty 'ReadMehtml' does not exist on type 'RepositoryResponse'.
+
+[7m222[0m     const ReadMehtml = repoData.data?.data.repository.ReadMehtml;
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m223[0m:[93m55[0m - [91merror[0m[90m TS2339: [0mProperty 'ReadMeadoc' does not exist on type 'RepositoryResponse'.
+
+[7m223[0m     const ReadMeadoc = repoData.data?.data.repository.ReadMeadoc;
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m224[0m:[93m59[0m - [91merror[0m[90m TS2339: [0mProperty 'ReadMemarkdown' does not exist on type 'RepositoryResponse'.
+
+[7m224[0m     const ReadMemarkdown = repoData.data?.data.repository.ReadMemarkdown;
+[7m   [0m [91m                                                          ~~~~~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m225[0m:[93m55[0m - [91merror[0m[90m TS2339: [0mProperty 'ReadMeyaml' does not exist on type 'RepositoryResponse'.
+
+[7m225[0m     const ReadMeyaml = repoData.data?.data.repository.ReadMeyaml;
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m226[0m:[93m54[0m - [91merror[0m[90m TS2551: [0mProperty 'ReadMerst' does not exist on type 'RepositoryResponse'. Did you mean 'readme'?
+
+[7m226[0m     const ReadMerst = repoData.data?.data.repository.ReadMerst;
+[7m   [0m [91m                                                     ~~~~~~~~~[0m
+
+  [96msrc/types.ts[0m:[93m72[0m:[93m5[0m
+    [7m72[0m     readme: Readme;
+    [7m  [0m [96m    ~~~~~~[0m
+    'readme' is declared here.
+[96msrc/metricCalcs.ts[0m:[93m227[0m:[93m58[0m - [91merror[0m[90m TS2339: [0mProperty 'ReadMetextile' does not exist on type 'RepositoryResponse'.
+
+[7m227[0m     const ReadMetextile = repoData.data?.data.repository.ReadMetextile;
+[7m   [0m [91m                                                         ~~~~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m228[0m:[93m53[0m - [91merror[0m[90m TS2551: [0mProperty 'Readmemd' does not exist on type 'RepositoryResponse'. Did you mean 'readme'?
+
+[7m228[0m     const Readmemd = repoData.data?.data.repository.Readmemd;
+[7m   [0m [91m                                                    ~~~~~~~~[0m
+
+  [96msrc/types.ts[0m:[93m72[0m:[93m5[0m
+    [7m72[0m     readme: Readme;
+    [7m  [0m [96m    ~~~~~~[0m
+    'readme' is declared here.
+[96msrc/metricCalcs.ts[0m:[93m229[0m:[93m56[0m - [91merror[0m[90m TS2339: [0mProperty 'Readmenoext' does not exist on type 'RepositoryResponse'.
+
+[7m229[0m     const Readmenoext = repoData.data?.data.repository.Readmenoext;
+[7m   [0m [91m                                                       ~~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m230[0m:[93m54[0m - [91merror[0m[90m TS2551: [0mProperty 'Readmetxt' does not exist on type 'RepositoryResponse'. Did you mean 'readme'?
+
+[7m230[0m     const Readmetxt = repoData.data?.data.repository.Readmetxt;
+[7m   [0m [91m                                                     ~~~~~~~~~[0m
+
+  [96msrc/types.ts[0m:[93m72[0m:[93m5[0m
+    [7m72[0m     readme: Readme;
+    [7m  [0m [96m    ~~~~~~[0m
+    'readme' is declared here.
+[96msrc/metricCalcs.ts[0m:[93m231[0m:[93m55[0m - [91merror[0m[90m TS2339: [0mProperty 'Readmerdoc' does not exist on type 'RepositoryResponse'.
+
+[7m231[0m     const Readmerdoc = repoData.data?.data.repository.Readmerdoc;
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m232[0m:[93m55[0m - [91merror[0m[90m TS2339: [0mProperty 'Readmehtml' does not exist on type 'RepositoryResponse'.
+
+[7m232[0m     const Readmehtml = repoData.data?.data.repository.Readmehtml;
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m233[0m:[93m55[0m - [91merror[0m[90m TS2339: [0mProperty 'Readmeadoc' does not exist on type 'RepositoryResponse'.
+
+[7m233[0m     const Readmeadoc = repoData.data?.data.repository.Readmeadoc;
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m234[0m:[93m59[0m - [91merror[0m[90m TS2339: [0mProperty 'Readmemarkdown' does not exist on type 'RepositoryResponse'.
+
+[7m234[0m     const Readmemarkdown = repoData.data?.data.repository.Readmemarkdown;
+[7m   [0m [91m                                                          ~~~~~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m235[0m:[93m55[0m - [91merror[0m[90m TS2339: [0mProperty 'Readmeyaml' does not exist on type 'RepositoryResponse'.
+
+[7m235[0m     const Readmeyaml = repoData.data?.data.repository.Readmeyaml;
+[7m   [0m [91m                                                      ~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m236[0m:[93m54[0m - [91merror[0m[90m TS2551: [0mProperty 'Readmerst' does not exist on type 'RepositoryResponse'. Did you mean 'readme'?
+
+[7m236[0m     const Readmerst = repoData.data?.data.repository.Readmerst;
+[7m   [0m [91m                                                     ~~~~~~~~~[0m
+
+  [96msrc/types.ts[0m:[93m72[0m:[93m5[0m
+    [7m72[0m     readme: Readme;
+    [7m  [0m [96m    ~~~~~~[0m
+    'readme' is declared here.
+[96msrc/metricCalcs.ts[0m:[93m237[0m:[93m58[0m - [91merror[0m[90m TS2339: [0mProperty 'Readmetextile' does not exist on type 'RepositoryResponse'.
+
+[7m237[0m     const Readmetextile = repoData.data?.data.repository.Readmetextile;
+[7m   [0m [91m                                                         ~~~~~~~~~~~~~[0m
+[96msrc/metricCalcs.ts[0m:[93m241[0m:[93m58[0m - [91merror[0m[90m TS2551: [0mProperty 'exampleFolder' does not exist on type 'RepositoryResponse'. Did you mean 'examplesFolder'?
+
+[7m241[0m     const exampleFolder = repoData.data?.data.repository.exampleFolder;
+[7m   [0m [91m                                                         ~~~~~~~~~~~~~[0m
+
+  [96msrc/types.ts[0m:[93m77[0m:[93m5[0m
+    [7m77[0m     examplesFolder: examplesFolder;
+    [7m  [0m [96m    ~~~~~~~~~~~~~~[0m
+    'examplesFolder' is declared here.
+[96msrc/metricCalcs.ts[0m:[93m242[0m:[93m59[0m - [91merror[0m[90m TS2551: [0mProperty 'ExamplesFolder' does not exist on type 'RepositoryResponse'. Did you mean 'examplesFolder'?
+
+[7m242[0m     const ExamplesFolder = repoData.data?.data.repository.ExamplesFolder;
+[7m   [0m [91m                                                          ~~~~~~~~~~~~~~[0m
+
+  [96msrc/types.ts[0m:[93m77[0m:[93m5[0m
+    [7m77[0m     examplesFolder: examplesFolder;
+    [7m  [0m [96m    ~~~~~~~~~~~~~~[0m
+    'examplesFolder' is declared here.
+[96msrc/metricCalcs.ts[0m:[93m243[0m:[93m58[0m - [91merror[0m[90m TS2551: [0mProperty 'ExampleFolder' does not exist on type 'RepositoryResponse'. Did you mean 'examplesFolder'?
+
+[7m243[0m     const ExampleFolder = repoData.data?.data.repository.ExampleFolder;
+[7m   [0m [91m                                                         ~~~~~~~~~~~~~[0m
+
+  [96msrc/types.ts[0m:[93m77[0m:[93m5[0m
+    [7m77[0m     examplesFolder: examplesFolder;
+    [7m  [0m [96m    ~~~~~~~~~~~~~~[0m
+    'examplesFolder' is declared here.
+STACK: 
+--------------------|---------|----------|---------|---------|--------------------------------------------------------------------------------------------------
+File                | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                                                                                
+--------------------|---------|----------|---------|---------|--------------------------------------------------------------------------------------------------
+All files           |   21.56 |    12.04 |   28.43 |   23.42 |                                                                                                  
+ src                |   17.73 |     5.14 |   25.37 |   18.81 |                                                                                                  
+  index.js          |    21.1 |     8.75 |   19.04 |   32.39 | 7-12,16-39,64-65,78-104                                                                          
+  index.ts          |       0 |        0 |       0 |       0 | 6-74                                                                                             
+  metricCalcs.js    |   20.65 |      4.9 |   39.39 |   20.33 | 6,23-24,27-31,49-76,80-84,88-118,123-151,157-170,178-184,189-199,203-212,220-454,486-487,490-491 
+  test.ts           |       0 |        0 |       0 |       0 | 1-74                                                                                             
+  types.js          |       0 |      100 |     100 |       0 | 2                                                                                                
+ src/api            |   23.68 |    16.27 |   32.18 |   26.15 |                                                                                                  
+  apiUtils.js       |   39.07 |    24.74 |   53.84 |   46.07 | 4-9,17,34-35,55-87,108-111,117-150                                                               
+  apiUtils.ts       |       0 |        0 |       0 |       0 | 1-96                                                                                             
+  githubApi.js      |   35.06 |    28.34 |      52 |   38.05 | 6,23-24,27-31,57-68,86-87,210-240,247-296                                                        
+  githubApi.ts      |       0 |        0 |       0 |       0 | 1-257                                                                                            
+  graphqlQueries.js |     100 |      100 |     100 |     100 |                                                                                                  
+  graphqlQueries.ts |       0 |      100 |       0 |       0 | 1                                                                                                
+  npmApi.js         |    9.09 |     7.31 |       0 |      16 | 3-8,12-35,44-64                                                                                  
+  npmApi.ts         |       0 |        0 |       0 |       0 | 2-23                                                                                             
+ src/utils          |      25 |     25.2 |      26 |   28.57 |                                                                                                  
+  log.js            |   22.22 |        0 |       0 |   22.22 | 6-12,17-31,36-50                                                                                 
+  log.ts            |       0 |        0 |       0 |       0 | 3-47                                                                                             
+  urlHandler.js     |   49.63 |    49.13 |      65 |   58.51 | 3,5-6,22-24,28-31,41-42,53-54,57,64-65,70-80,86-87,101,105-116,124                               
+  urlHandler.ts     |       0 |        0 |       0 |       0 | 1-88                                                                                             
+  utils.js          |   10.84 |     8.57 |       0 |      20 | 3-8,12-35,43-50,56-58                                                                            
+  utils.ts          |       0 |      100 |       0 |       0 | 1-11                                                                                             
+--------------------|---------|----------|---------|---------|--------------------------------------------------------------------------------------------------
+
+Test Suites: 1 passed, 1 total
+Tests:       5 passed, 5 total
 Snapshots:   0 total
-Time:        2.536 s
+Time:        15.234 s
