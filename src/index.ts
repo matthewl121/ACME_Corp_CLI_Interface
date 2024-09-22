@@ -11,7 +11,7 @@ import { getRepoDetails } from './utils/urlHandler';
 // import { fetchGithubUrlFromNpm } from './api/npmApi';
 // import * as path from 'path';
 import { Metrics, WorkerResult } from './types';
-import { logToFile } from './utils/log';
+import { logToFile, metricsLogToStdout } from './utils/log';
 // import { initLogFile, logToFile } from './utils/log.js';
 // import { get } from 'axios';
 // import { read } from 'fs';
@@ -77,8 +77,10 @@ export const main = async (url: string) => {
         return;
     }
 
-    logToFile("Metrics Output (JSON):", 1);
+    // logMetrics
     logToFile(JSON.stringify(metrics, null, 2), 1);
+    // print metrics to stdout
+    metricsLogToStdout(metrics, 1);
 
     // Log the metrics
     // const manager = new MetricManager(owner, repo, token, repoURL);
