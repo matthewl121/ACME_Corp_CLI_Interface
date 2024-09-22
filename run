@@ -58,9 +58,14 @@ program
             if (err) {
                 console.error(`%cError reading file: ${err}`, `color: red`);
                 process.exit(1);
+            } else if(process.env.LOG_FILE == null || process.env.LOG_FILE == '') {
+                console.log('LOG_FILE environment variable is not set');
+                process.exit(1);
+            } 
+            if(process.env.GITHUB_TOKEN == null || process.env.GITHUB_TOKEN == '') {
+                console.log('GITHUB_TOKEN environment variable is not set');
+                process.exit(1);
             }
-            // const f = fs.openSync(process.env.LOG_FILE, 'w');
-            // fs.closeSync(f);
             const urls = data.split('\n').map(line => line.trim()).filter(line => line !== '');
             urls.forEach(url => {
                 // console.log(`Processing URL: ${url}`);
