@@ -224,13 +224,13 @@ export const getReadmeDetails = async (
     try {
         const linesLength= readMe.split('\n').length;
         if(linesLength > 75) {
-            if(readMe.includes('documentation') && examplesFolder.entries.length != null) {
+            if(readMe.includes('documentation') && examplesFolder != null) {
                 return 0.1;
             } else if(readMe.includes('documentation')) {
                 return 0.2;
-            } else if(examplesFolder.entries != null && examplesFolder.entries.length > 15) {
+            } else if(examplesFolder != null && examplesFolder.entries.length > 15) {
                 return 0.2;
-            } else if(examplesFolder.entries != null && examplesFolder.entreis.length <= 15) {
+            } else if(examplesFolder != null && examplesFolder.entreis.length <= 15) {
                 return 0.3;  
             } else {
                 return 0.4;
@@ -239,9 +239,9 @@ export const getReadmeDetails = async (
             return 0.2;
         } else if(readMe.includes('documentation')) {
             return 0.3;
-        } else if(examplesFolder.entries != null && examplesFolder.entries.length > 15) {
+        } else if(examplesFolder != null && examplesFolder.entries.length > 15) {
             return 0.3;
-        } else if(examplesFolder.entries != null && examplesFolder.entreis.length <= 15) {
+        } else if(examplesFolder != null && examplesFolder.entreis.length <= 15) {
             return 0.4;  
         } else if(linesLength <= 5) {
             return 0.9;

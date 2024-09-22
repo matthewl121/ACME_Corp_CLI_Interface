@@ -1,3 +1,5 @@
+import { openSync, closeSync } from "fs";
+
 const fs = require('fs');
 
 export function initLogFile() {
