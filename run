@@ -55,6 +55,8 @@ program
         
         const {main} =  require('./src/index');
         fs.readFile(file, 'utf8', (err, data) => {
+            console.log(process.env.LOG_FILE);
+            console.log(process.env.GITHUB_TOKEN);
             if (err) {
                 console.error(`%cError reading file: ${err}`, `color: red`);
                 process.exit(1);
