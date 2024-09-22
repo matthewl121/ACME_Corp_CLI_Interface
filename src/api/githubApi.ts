@@ -255,7 +255,7 @@ export const getReadmeDetails = async (
             return 0.5;
         }
     } catch (error) {
-        console.log(error)
+        console.error(error)
         return -1;
     }
 }
