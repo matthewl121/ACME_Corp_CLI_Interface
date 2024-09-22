@@ -17,14 +17,6 @@ try {
     process.exit(1);
 }
 
-try {
-    execSync('tsc src/index.ts', { stdio: 'ignore' });
-} catch(error) {
-    console.log('TSC file compiled successfully');
-}
-
-const {main} =  require('./src/index');
-
 
 const {Command} = require('commander');
 
@@ -54,7 +46,14 @@ program
 program
     .argument('<file>', 'file to run')
     .description('process URL of the file to run and output metrics in NDJSON format')
-    .action((file) => {    
+    .action((file) => { 
+        try {
+            execSync('tsc src/index.ts', { stdio: 'ignore' });
+        } catch(error) {
+            // console.log('TSC file compiled successfully');
+        }
+        
+        const {main} =  require('./src/index');
         fs.readFile(file, 'utf8', (err, data) => {
             if (err) {
                 console.error(`%cError reading file: ${err}`, `color: red`);

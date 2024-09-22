@@ -16,7 +16,7 @@ export class MetricManager {
         this.token = token;
         this.url = url;
     }
-    
+
     // Calculates weighted metrics based on provided metrics
     public async getWeightedMetrics(metrics: Metrics): Promise<Metrics> {
         // Handle license as 1 or 0 based on its presence
@@ -46,7 +46,6 @@ export class MetricManager {
             const weightedMetrics = await this.getWeightedMetrics(metrics);
             const netScore = weightedMetrics.BusFactor + weightedMetrics.Correctness + weightedMetrics.ResponsiveMaintainer + weightedMetrics.License;
             metrics.NetScore = netScore;
-
 
             logToFile("Metrics Output (JSON):", 1);
             logToFile(JSON.stringify(metrics, null, 2), 1); // Pretty-print with 2-space indentation
