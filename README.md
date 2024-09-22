@@ -25,6 +25,7 @@ To install the CLI and its dependencies, run the following command in the root d
 
 ```bash
 ./run install
+```
 
 ## Usage
 
