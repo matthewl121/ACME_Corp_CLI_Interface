@@ -58,11 +58,7 @@ The output will be in NDJSON format, with each row containing the following fiel
 - `ResponsiveMaintainer`, `ResponsiveMaintainer_Latency`
 - `License`, `License_Latency`
 
-# Net Score Calculation
-
-The **Net Score** for evaluating Node.js modules is computed by applying weights to the following metrics and summing the results:
-
-## Metrics and Weights
+#### Metrics and Weights
 
 | Metric                    | Weight |
 |---------------------------|--------|
@@ -72,7 +68,7 @@ The **Net Score** for evaluating Node.js modules is computed by applying weights
 | **Responsive Maintainer** | 0.10   |
 | **License Compatibility**  | 0.10   |
 
-## Calculation Formula
+#### Calculation Formula
 
 The Net Score is calculated using the formula:
 
@@ -80,13 +76,13 @@ The Net Score is calculated using the formula:
 \text{Net Score} = (\text{Ramp-Up Time} \times 0.30) + (\text{Correctness} \times 0.30) + (\text{Bus Factor} \times 0.20) + (\text{Responsive Maintainer} \times 0.10) + (\text{License Compatibility} \times 0.10) 
 \]
 
-## Score Range
+#### Score Range
 
 Each metric is scored in the range of **[0, 1]**, where:
 - **0** indicates total failure.
 - **1** indicates perfection.
 
-## Metric Weight Justification
+#### Metric Weight Justification
 - **RampUp * 0.30**: The goal is to minimize the time it takes for engineers to effectively use new modules. A high ramp-up time means faster project kickoffs and reduced onboarding costs. This is crucial for maintaining productivity, especially as the user scales its use of Node.js services.
 - **Correctness * 0.30**:  Reliability is vital for production environments--so this weight ensures that modules are stable and trustworthy, reducing the risk of bugs and downtime that could impact the user's reputation.
 - **BusFactor * 0.25**: The bus factor assesses the risk associated with a module's maintainers. A slightly lower weight reflects the understanding that while important, teams can often find alternatives if necessary, though it’s still critical for long-term viability.
