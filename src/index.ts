@@ -10,7 +10,8 @@ import { writeFile } from './utils/utils';
 import { extractNpmPackageName, extractGithubOwnerAndRepo, extractDomainFromUrl } from './utils/urlHandler'
 import { fetchGithubUrlFromNpm } from './api/npmApi';
 import * as path from 'path';
-import { MetricManager } from './metricManager.js';
+import {Metrics} from './types'
+import {logToFile} from './utils/log'
 // import { initLogFile, logToFile } from './utils/log.js';
 import { get } from 'axios';
 
@@ -119,12 +120,37 @@ export const main = async (url: string) => {
         await writeFile(examplesFolder, "exampleFolder.json")
     }
 
+        const metrics: Metrics = {
+            URL: repoURL,
+            NetScore: null,
+            BusFactor: busFactor,
+            Correctness: correctness,
+            ResponsiveMaintainer: responsiveness,
+            License: license,
+        };
+
+        // const weightedMetrics: Metrics = {
+        //     URL: repoURL,
+        //     NetScore: null,
+        //     BusFactor: (metrics.BusFactor ?? 0) * 0.25,
+        //     Correctness: (metrics.Correctness ?? 0) * 0.30,
+        //     ResponsiveMaintainer: (metrics.ResponsiveMaintainer ?? 0) * 0.15,
+        //     License: (license) * 0.10,
+        // };
+
+        const netScore = (busFactor*0.25) + (correctness*0.30) + (responsiveness*0.15) + (license*0.10);
+        metrics.NetScore = netScore;
+        logToFile("Metrics Output (JSON):", 1);
+        logToFile(JSON.stringify(metrics, null, 2), 1);
+
+
     // Log the metrics
     // const manager = new MetricManager(owner, repo, token, repoURL);
     // const metricsALL = await manager.calculateAndLogMetrics();
-    console.log(`
-        --- METRICS ---       --- SCORE --- 
+    // console.log(`
+    //     --- METRICS ---       --- SCORE --- 
         
+<<<<<<< HEAD
         URL:                  ${repoURL}
         Bus Factor Score:     ${busFactor.toFixed(2)}
         Ramp Up Time:         ${rampUp.toFixed(2)}
@@ -133,3 +159,14 @@ export const main = async (url: string) => {
         License Score:        ${license.toFixed(2)}
     `);
 }
+=======
+    //     Bus Factor Score:     ${busFactor.toFixed(2)}
+    //     Ramp Up Time:         ${rampUp}
+    //     Correctness Score:    ${correctness.toFixed(2)}
+    //     Responsiveness Score: ${responsiveness.toFixed(2)}
+    //     License Score:        ${license.toFixed(2)}
+    // `);
+}
+
+main("https://www.npmjs.com/package/socket.io")
+>>>>>>> dfd7347 (logToFile)
